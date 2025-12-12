@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import 'pages/hesaplayici_sayfasi.dart';
+import 'pages/hakkinda_sayfasi.dart';
+import 'pages/ayarlar_sayfasi.dart';
+import 'pages/gizlilik_sayfasi.dart';
+import 'pages/hesaplamalar_sayfasi.dart';
+import 'pages/quiz_sayfasi.dart';
+import 'pages/premium_sayfasi.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'widgets/admob_banner.dart';
 final List<String> hesapGecmisi = [];
 
 void main() {
@@ -201,13 +210,50 @@ const List<Makale> tumMakaleler = [
     kategori: 'elektrik',
   ),
   Makale(
-    id: 'e6',
-    baslik: 'Multimetre ile Ölçüm',
+  id: 'e6',
+  baslik: 'Multimetre ile Ölçüm',
+  icerik:
+      'Multimetre ile Ölçüm Nedir?\n\n'
+      'Multimetre, elektriksel büyüklükleri (gerilim, akım ve direnç) ölçmek için kullanılan çok amaçlı bir ölçü aletidir. '
+      'Hem dijital hem analog tipleri bulunur. Elektrik devrelerinde arıza tespiti, komponent kontrolü ve sistem doğrulaması için vazgeçilmezdir.\n\n'
+      'Pil Gerilimi (DC Voltaj) Ölçümü\n\n'
+      '🔹 Multimetre kadranını "DC V" (⎓) sembolü olan bölgeye getir. Genellikle 2 V veya 20 V aralığı seçilir.\n'
+      '🔹 Siyah probu COM girişine, kırmızı probu VΩmA girişine tak ve prob uçlarını ölçmek istediğin pilin uçlarına bağla (kırmızı → pozitif (+), siyah → negatif (–) kutup).\n'
+      '🔹 Ekrandaki değeri oku. AA pil için 1.2 – 1.6 V arası normaldir. 1.0 V’un altı genellikle pilin zayıf olduğunu gösterir.\n'
+      '🔹 Prob yönünü ters bağlarsan ekranda eksi (–) işareti çıkar; bu normaldir.\n\n'
+      'Güvenlik ve İpuçları\n\n'
+      '🔹 Ölçüm sırasında problar birbirine değmemelidir.\n'
+      '🔹 Yüksek gerilim (örneğin 220 V AC) ölçümlerinde mutlaka dikkatli ol ve yalıtımlı prob kullan.\n'
+      '🔹 Ölçüm bittikten sonra multimetreyi OFF konumuna getir; akım ölçüm modunda bırakmamaya özen göster, aksi takdirde yanlış bağlantıda sigorta patlayabilir.\n\n'
+      'Kullanım Alanı\n\n'
+      'Bu yöntem sadece piller için değil; adaptör çıkışları, güç kaynakları, sensör gerilimleri ve devre çıkışlarının kontrolünde de kullanılır.',
+  kategori: 'elektrik',
+  resim: 'assets/images/multimetre.png',
+  ),
+  Makale(
+    id: 'e7',
+    baslik: 'Üç Fazlı Motorlarda Yıldız–Üçgen Yol Verme',
     icerik:
-        'Multimetre;🔹 Multimetre ile Ölçüm Nedir? Multimetre, elektriksel büyüklükleri (gerilim, akım ve direnç) ölçmek için kullanılan çok amaçlı bir ölçü aletidir. Hem dijital hem analog tipleri bulunur. Elektrik devrelerinde arıza tespiti, komponent kontrolü ve sistem doğrulaması için vazgeçilmezdir. 🔹 Pil Gerilimi (DC Voltaj) Ölçümü Multimetre kadranını “DC V” (⎓) sembolü olan bölgeye getir. Genellikle 2 V veya 20 V aralığı seçilir. Siyah probu COM girişine, kırmızı probu VΩmA girişine tak. Prob uçlarını ölçmek istediğin pilin uçlarına bağla: Kırmızı prob → pozitif (+) kutup Siyah prob → negatif (–) kutup Ekrandaki değeri oku. AA pil için: 1.2 – 1.6 V arası normaldir. 1.0 V’un altı genellikle pilin zayıf olduğunu gösterir. Prob yönünü ters bağlarsan ekranda eksi (–) işareti çıkar, bu normaldir. 🔹 Güvenlik ve İpuçları Ölçüm sırasında problar birbirine değmemelidir. Yüksek gerilim (220 V AC gibi) ölçümleri yaparken dikkatli ol. Ölçüm bittikten sonra multimetreyi OFF konumuna getir. Gereksiz akım ölçümü modunda bırakma; aksi takdirde yanlış bağlantıda sigorta patlayabilir. 🔹 Kullanım Alanı Bu yöntem sadece piller değil; adaptör çıkışları, güç kaynakları, sensör gerilimleri ve devre çıkışlarının kontrolünde de kullanılır.',
-
+        'Büyük güçlü üç fazlı motorlarda direkt yol verildiğinde yüksek kalkış akımı oluşur. '
+        'Yıldız–üçgen yol vericilerde motor önce yıldız bağlı çalıştırılır, hızlandıktan sonra üçgen bağlantıya geçirilir. '
+        'Bu sayede kalkış akımı yaklaşık 1/3 oranında azaltılmış olur.',
     kategori: 'elektrik',
-    resim: 'assets/images/multimetre.png',
+  ),
+  Makale(
+    id: 'e8',
+    baslik: 'Kompanzasyon Panosu Bakımında Dikkat Edilecekler',
+    icerik:
+        'Kondansatörlerin şişme ve ısınma durumları kontrol edilmeli, kontaktörlerin kontak yüzeyleri ve fanlar temizlenmelidir. '
+        'Reaktif oran takibi için sayaç değerleri periyodik olarak izlenmeli, cosφ hedef değeri 0.95 civarında tutulmalıdır.',
+    kategori: 'elektrik',
+  ),
+  Makale(
+    id: 'e9',
+    baslik: 'Topraklama Direncini Etkileyen Faktörler',
+    icerik:
+        'Toprak özgül direnci, topraklayıcı elektrot sayısı ve yerleşimi, nem oranı ve sıcaklık topraklama direncini etkiler. '
+        'Kuru ve taşlı zeminlerde direnç genellikle yüksektir; gerektiğinde kimyasal topraklama veya ek elektrotlar kullanılmalıdır.',
+    kategori: 'elektrik',
   ),
   Makale(
     id: 'el1',
@@ -295,7 +341,7 @@ const List<Makale> tumMakaleler = [
       'Arduino, PIC ve STM32 en bilinen mikrodenetleyici serileridir. '
       'Avantajı: düşük maliyet, düşük güç tüketimi ve kolay programlanabilirlik.',
     kategori: 'elektronik',
-    resim: 'assets/images/mikrodenetleyici.jpg',
+    resim: 'assets/images/mikrodenetleyici.png',
   ),
   Makale(
     id: 'el9',
@@ -318,7 +364,7 @@ const List<Makale> tumMakaleler = [
       'Renk sırası: Siyah(0), Kahverengi(1), Kırmızı(2), Turuncu(3), Sarı(4), Yeşil(5), Mavi(6), Mor(7), Gri(8), Beyaz(9). '
       'Bu sistem, dirençleri ölçüm cihazı olmadan tanımlamayı sağlar.',
     kategori: 'elektronik',
-    resim: 'assets/images/direnc.jpg',
+    resim: 'assets/images/direnc.webp',
   ),
   Makale(
     id: 'el11',
@@ -330,6 +376,45 @@ const List<Makale> tumMakaleler = [
       'Bu kurallar devre tasarımının temelini oluşturur.',
     kategori: 'elektronik',
     resim: 'assets/images/seri_paralel.jpg',
+  ),
+  Makale(
+    id: 'el12',
+    baslik: 'Op-Amp (Operation Amplifier) Temel Devreleri',
+    icerik:
+        'Op-amp, çok yüksek kazançlı bir fark kuvvetlendiricisidir. En sık kullanılan yapılar: eviren, evirmeyen ve toplayıcı kuvvetlendiriciler. Eviren yapıda giriş sinyali terslenerek çıkışa taşınır, kazanç -Rf/Rin ile belirlenir. Besleme gerilimi ±12V veya ±15V olabilir.',
+    kategori: 'elektronik',
+  ),
+  Makale(
+    id: 'el13',
+    baslik: 'ADC ve DAC Nedir?',
+    icerik:
+        'ADC (Analog-Dijital Dönüştürücü), analog gerilimi sayısal veriye çevirir. Mikrodenetleyicilerde sensör okuma için kullanılır. DAC (Dijital-Analog Dönüştürücü) ise sayısal veriden analog sinyal üretir. Çözünürlük (örneğin 10 bit, 12 bit) ve örnekleme hızı en kritik parametrelerdir.',
+    kategori: 'elektronik',
+  ),
+  Makale(
+    id: 'el14',
+    baslik: 'Filtre Devreleri: Alçak, Yüksek ve Bant Geçiren',
+    icerik:
+        'RC ve RLC devreleri kullanılarak alçak geçiren, yüksek geçiren ve bant geçiren filtreler yapılabilir. '
+        'Alçak geçiren filtre, belirli bir kesim frekansının altındaki sinyalleri geçirip üstünü zayıflatır. '
+        'Ses, güç kaynakları ve sinyal işleme devrelerinde sık kullanılır.',
+    kategori: 'elektronik',
+  ),
+  Makale(
+    id: 'el15',
+    baslik: 'Zener Diyot ile Gerilim Regülasyonu',
+    icerik:
+        'Zener diyot, ters polarmada belirli bir gerilimde iletime geçerek sabit çıkış gerilimi sağlar. '
+        'Basit regülatör devrelerinde seri direnç ile birlikte kullanılır. Yük akımı değişse bile zener gerilimi büyük oranda sabit kalır.',
+    kategori: 'elektronik',
+  ),
+  Makale(
+    id: 'el16',
+    baslik: 'Pull-up ve Pull-down Dirençleri',
+    icerik:
+        'Mikrodenetleyici giriş pinlerinin kararsız (floating) kalmaması için pull-up veya pull-down dirençleri kullanılır. '
+        'Pull-up direnç pin ile besleme arasına, pull-down direnç ise pin ile GND arasına bağlanarak kararlı lojik seviye sağlanır.',
+    kategori: 'elektronik',
   ),
   Makale(
     id: 'o1',
@@ -360,6 +445,44 @@ const List<Makale> tumMakaleler = [
   kategori: 'otomasyon',
   resim: 'assets/images/otomasyon_bilgi.jpg',
   ),
+  Makale(
+    id: 'o4',
+    baslik: 'Ladder Diyagramında Temel Mantık',
+    icerik:
+        'Ladder (merdiven) diyagramı, röleli kumanda mantığının PLC üzerinde grafiksel gösterimidir. Sol hat faz, sağ hat nötr gibi düşünülebilir. Normalde açık ve kapalı kontaklar, bobinler ve timer/counter blokları kullanılır. Elektrikçiler için okunması kolay olması en büyük avantajıdır.',
+    kategori: 'otomasyon',
+  ),
+  Makale(
+    id: 'o5',
+    baslik: 'Frekans Konvertörü (VFD) Temel Parametreleri',
+    icerik:
+        'Frekans konvertörleri, motor hızını frekans ve gerilimi değiştirerek kontrol eder. Kurulumda motor plaka değerleri (U, I, f, P, cosφ) doğru girilmelidir. Temel parametreler: rampa süresi, maksimum/minimum frekans, motor koruma akımı ve start/stop komut kaynaklarıdır.',
+    kategori: 'otomasyon',
+  ),
+  Makale(
+    id: 'o6',
+    baslik: 'Ladder Diyagramında Zaman Röleleri (Timer)',
+    icerik:
+        'TON (On-delay) ve TOF (Off-delay) timer blokları, çıkışın gecikmeli olarak aktif veya pasif olmasını sağlar. '
+        'PLC programlarında motor gecikmeli çalıştırma, fan çıkış gecikmesi gibi senaryolarda sıkça kullanılır.',
+    kategori: 'otomasyon',
+  ),
+  Makale(
+    id: 'o7',
+    baslik: 'Sayma (Counter) Blokları ile Parça Sayma',
+    icerik:
+        'CTU (count up) ve CTD (count down) blokları, giriş darbelerini sayarak belirli bir sayıya ulaşıldığında çıkış üretir. '
+        'Konveyör sistemlerinde ürün sayma, paketleme makinelerinde adet kontrolü için kullanılır.',
+    kategori: 'otomasyon',
+  ),
+  Makale(
+    id: 'o8',
+    baslik: 'Frekans Konvertörü Parametrelerine Giriş',
+    icerik:
+        'Frekans konvertörlerinde temel parametreler; motor plaka verileri, hız sınırları, rampa süreleri ve kontrol modu (V/f, vektör kontrol) olarak öne çıkar. '
+        'Yanlış parametre, motor ısınması ve tork kaybına neden olabilir.',
+    kategori: 'otomasyon',
+  ),
 ];
 
 class AnaSayfa extends StatefulWidget {
@@ -371,7 +494,7 @@ class AnaSayfa extends StatefulWidget {
 }
 
 class _AnaSayfaState extends State<AnaSayfa> {
-  final sayfaBasligi = 'Elektrik Elektronik Rehberi';
+  final sayfaBasligi = '';
 
   void _ara() {
     showSearch(context: context, delegate: MakaleArama(tumMakaleler));
@@ -409,7 +532,12 @@ class _AnaSayfaState extends State<AnaSayfa> {
   IconButton( // 🔥 Geçmiş
     icon: const Icon(Icons.history),
     onPressed: () => openHistoryPanel(context),
-  ),
+   ),
+
+  IconButton(
+    icon: const Icon(Icons.electrical_services),
+    onPressed: () => openVoltageDropCalculator(context),
+   ),
  ],
 ), 
 
@@ -419,7 +547,7 @@ class _AnaSayfaState extends State<AnaSayfa> {
         children: [
           Card(
             elevation: 0,
-            color: Colors.white,
+            color: Theme.of(context).cardColor, // otomatik tema uyumu
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -433,15 +561,22 @@ class _AnaSayfaState extends State<AnaSayfa> {
                           const Icon(Icons.bolt, size: 70),
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Bilgi Paneline Hoşgeldiniz!',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  SizedBox(height: 8),
+                  Text(
+                    'Elektrik ve Elektronik için Hesaplama, Bilgi ve Pratik Rehber.',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).textTheme.bodyLarge!.color,
+                   ),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Elektrik, Elektronik ve Otomasyon başlıklarında temel kavramlar, ipuçları ve mini rehberler.',
+                  SizedBox(height: 8),
+                  Text(
+                    '',
                     textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyMedium!.color,
+                   ),
                   ),
                 ],
               ),
@@ -463,12 +598,35 @@ class _AnaSayfaState extends State<AnaSayfa> {
             renk: Colors.deepOrange,
             sayfa: KategoriSayfasi(kategori: 'otomasyon', baslik: 'Otomasyon'),
           ),
-        ],
-      ),
-    );
-  }
-}
+          const SizedBox(height: 12),
 
+          Row(
+           children: [
+            Expanded(
+             child: _KategoriButonu(
+            etiket: '🔢 Hesaplamalar',
+            renk: Colors.indigo,
+            sayfa: HesaplamalarSayfasi(),
+          ),
+         ),
+           const SizedBox(width: 12),
+           Expanded(
+            child: _KategoriButonu(
+            etiket: '📝 Quiz',
+            renk: Colors.purple,
+            sayfa: QuizSayfasi(),
+          ),
+         ),
+        ],
+       ),
+      ],
+     ),
+    bottomNavigationBar: SafeArea(
+       child: AdMobBanner(),
+    ),
+   );
+  }
+ }
 class _KategoriButonu extends StatelessWidget {
   final String etiket;
   final Color renk;
@@ -524,7 +682,7 @@ class KategoriSayfasi extends StatelessWidget {
         itemBuilder: (ctx, i) {
           final m = liste[i];
           return ListTile(
-            tileColor: Colors.white,
+            tileColor: Theme.of(context).colorScheme.surface,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
@@ -570,7 +728,17 @@ class MakaleDetay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(m.baslik)),
+      appBar: AppBar(
+        title: Text(m.baslik),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.share),
+            onPressed: () {
+              Share.share('${m.baslik}\n\n${m.icerik}');
+            },
+          ),
+        ],
+      ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
         children: [
@@ -590,7 +758,10 @@ class MakaleDetay extends StatelessWidget {
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 8),
-          Text(m.icerik, style: const TextStyle(fontSize: 16, height: 1.4)),
+          Text(
+            m.icerik,
+            style: const TextStyle(fontSize: 16, height: 1.4),
+          ),
         ],
       ),
     );
@@ -664,6 +835,17 @@ class MakaleArama extends SearchDelegate {
             ),
             const Divider(),
             ListTile(
+             leading: const Icon(Icons.info_outline),
+             title: const Text('Hakkında'),
+             onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                 context,
+                 MaterialPageRoute(builder: (_) => const HakkindaSayfasi()),
+               );
+              },
+            ),
+            ListTile(
               leading: const Icon(Icons.support_agent),
               title: const Text('İletişim / BYRK Elektrik'),
               subtitle: const Text('Telefon, WhatsApp, E-posta'),
@@ -674,7 +856,31 @@ class MakaleArama extends SearchDelegate {
                   MaterialPageRoute(builder: (_) => const IletisimSayfasi()),
                 );
               },
-            ),          
+            ), 
+            ListTile(
+              leading: const Icon(Icons.workspace_premium),
+              title: const Text('Reklamları Kaldır (Premium)'),
+              subtitle: const Text('Tek sefer ödeme ile reklamsız kullanım'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const PremiumSayfasi()),
+                );
+              },
+            ),    
+            ListTile(
+              leading: const Icon(Icons.privacy_tip_outlined),
+              title: const Text('Gizlilik Politikası'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const GizlilikSayfasi()),
+                );
+              },
+            ),     
           ],
         ),
       ),
@@ -1148,6 +1354,109 @@ void openHistoryPanel(BuildContext context) {
         ),
         separatorBuilder: (_, __) => const Divider(height: 0),
         itemCount: hesapGecmisi.length,
+      );
+    },
+  );
+}
+void openVoltageDropCalculator(BuildContext context) {
+  final iCtrl = TextEditingController();
+  final lCtrl = TextEditingController();
+  final sCtrl = TextEditingController();
+
+  String? sonuc;
+  const double roCu = 0.018;
+
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+    ),
+    builder: (ctx) {
+      return StatefulBuilder(
+        builder: (ctx, setState) {
+          void hesapla() {
+            final I = double.tryParse(iCtrl.text.replaceAll(',', '.'));
+            final L = double.tryParse(lCtrl.text.replaceAll(',', '.'));
+            final S = double.tryParse(sCtrl.text.replaceAll(',', '.'));
+
+            if (I == null || L == null || S == null) {
+              setState(() => sonuc = 'Lütfen tüm alanları doldurun.');
+              return;
+            }
+
+            final deltaV = 2 * I * L * roCu / S;
+            final percent = (deltaV / 230.0) * 100.0;
+
+            setState(() {
+              sonuc =
+                  'ΔV ≈ ${deltaV.toStringAsFixed(2)} V (${percent.toStringAsFixed(2)} %)';
+            });
+
+            hesapGecmisi.add(
+                'Gerilim düşümü → I=$I A, L=$L m, S=$S mm² = $sonuc');
+          }
+
+          return Padding(
+            padding: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 12,
+              bottom: 16 + MediaQuery.of(ctx).viewInsets.bottom,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Gerilim Düşümü Hesaplayıcı',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: iCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Akım (A)',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: lCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Hat uzunluğu (m)',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: sCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Kablo kesiti (mm²)',
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(height: 12),
+                FilledButton(
+                  onPressed: hesapla,
+                  child: const Text('Hesapla'),
+                ),
+                if (sonuc != null) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    sonuc!,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ]
+              ],
+            ),
+          );
+        },
       );
     },
   );
