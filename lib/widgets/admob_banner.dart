@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AdMobBanner extends StatefulWidget {
   const AdMobBanner({super.key});
@@ -10,22 +11,44 @@ class AdMobBanner extends StatefulWidget {
 
 class _AdMobBannerState extends State<AdMobBanner> {
   BannerAd? _banner;
+  bool _isLoaded = false;
 
   @override
   void initState() {
     super.initState();
 
+    if (kIsWeb) return; // webde banner gösterme
+
     _banner = BannerAd(
       size: AdSize.banner,
-      adUnitId: 'ca-app-pub-3940256099942544/6300978111',
-      listener: BannerAdListener(),
+      adUnitId: 'ca-app-pub-6404557439064466/7717760726',
       request: const AdRequest(),
-    )..load();
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          if (!mounted) return;
+          setState(() => _isLoaded = true);
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          // İstersen debug için print:
+          // debugPrint('Banner failed: $error');
+          if (!mounted) return;
+          setState(() {
+            _banner = null;
+            _isLoaded = false;
+          });
+        },
+      ),
+    );
+
+    _banner!.load();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_banner == null) return const SizedBox.shrink();
+    if (kIsWeb || _banner == null || !_isLoaded) {
+      return const SizedBox.shrink();
+    }
 
     return SizedBox(
       width: _banner!.size.width.toDouble(),

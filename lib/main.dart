@@ -8,10 +8,17 @@ import 'pages/hesaplamalar_sayfasi.dart';
 import 'pages/quiz_sayfasi.dart';
 import 'pages/premium_sayfasi.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'widgets/admob_banner.dart';
 final List<String> hesapGecmisi = [];
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  if (!kIsWeb) {
+    await MobileAds.instance.initialize();
+  }
+
   runApp(const RehberApp());
 }
 
