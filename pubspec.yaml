@@ -61,14 +61,17 @@ flutter:
   # the material Icons class.
   uses-material-design: true 
   assets:
-    - assets/images/multimetre.png
-    - assets/images/kondansator.jpg
-    - assets/images/diyot.jpg
-    - assets/images/appicon.jpg
-    - assets/images/transistör.jpg
-    - assets/images/osiloskop.jpg
+    - assets/images/logo.jpg
     - assets/images/direnc.webp
+    - assets/images/diyot.jpg
+    - assets/images/kondansator.jpg
     - assets/images/mikrodenetleyici.png
+    - assets/images/multimetre.png
+    - assets/images/osiloskop.jpg
+    - assets/images/transıstor.jpg
+    - assets/images/appicon.jpg
+    - assets/logo.png
+    - assets/images/lego12.jpg
 
 flutter_launcher_icons:
   android: true

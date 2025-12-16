@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'pages/hesaplayici_sayfasi.dart';
 import 'pages/hakkinda_sayfasi.dart';
-import 'pages/ayarlar_sayfasi.dart';
 import 'pages/gizlilik_sayfasi.dart';
 import 'pages/hesaplamalar_sayfasi.dart';
 import 'pages/quiz_sayfasi.dart';
@@ -272,7 +271,7 @@ const List<Makale> tumMakaleler = [
         'NPN ve PNP olmak üzere iki tipi vardır. Anahtarlama, yükseltme ve darbe üretimi gibi işlemlerde kullanılır. '
         'Bölümler: Base (B), Collector (C), Emitter (E). Akım yönü B’den E’ye doğru kontrol edilir.',
     kategori: 'elektronik',
-    resim: 'assets/images/transistör.jpg',  
+    resim: 'assets/images/transıstor.jpg',  
   ),
   Makale(
     id: 'el3',
@@ -553,7 +552,7 @@ class _AnaSayfaState extends State<AnaSayfa> {
                   SizedBox(
                     height: 220,
                     child: Image.asset(
-                      'assets/images/',
+                      'assets/images/lego12.jpg',
                       fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) =>
                           const Icon(Icons.bolt, size: 70),
