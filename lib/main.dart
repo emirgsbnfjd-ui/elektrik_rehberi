@@ -6,19 +6,10 @@ import 'pages/ayarlar_sayfasi.dart';
 import 'pages/gizlilik_sayfasi.dart';
 import 'pages/hesaplamalar_sayfasi.dart';
 import 'pages/quiz_sayfasi.dart';
-import 'pages/premium_sayfasi.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'widgets/admob_banner.dart';
+
 final List<String> hesapGecmisi = [];
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  if (!kIsWeb) {
-    await MobileAds.instance.initialize();
-  }
-
   runApp(const RehberApp());
 }
 
@@ -627,13 +618,10 @@ class _AnaSayfaState extends State<AnaSayfa> {
         ],
        ),
       ],
-     ),
-    bottomNavigationBar: SafeArea(
-       child: AdMobBanner(),
-    ),
-   );
+     ),              
+    );
+   }
   }
- }
 class _KategoriButonu extends StatelessWidget {
   final String etiket;
   final Color renk;
@@ -863,20 +851,7 @@ class MakaleArama extends SearchDelegate {
                   MaterialPageRoute(builder: (_) => const IletisimSayfasi()),
                 );
               },
-            ), 
-            ListTile(
-              leading: const Icon(Icons.workspace_premium),
-              title: const Text('Reklamları Kaldır (Premium)'),
-              subtitle: const Text('Tek sefer ödeme ile reklamsız kullanım'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const PremiumSayfasi()),
-                );
-              },
-            ),    
+            ),
             ListTile(
               leading: const Icon(Icons.privacy_tip_outlined),
               title: const Text('Gizlilik Politikası'),
