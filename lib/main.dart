@@ -1000,124 +1000,122 @@ class _AnaSayfaState extends State<AnaSayfa> {
     showSearch(context: context, delegate: MakaleArama(tumMakaleler));
   }
 
-  @override
+    @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(sayfaBasligi),
-        actions: [
-  IconButton(onPressed: _ara, icon: const Icon(Icons.search)),
-  IconButton(                   // 
-    icon: const Icon(Icons.calculate),
-    onPressed: () => openOhmCalculator(context),
-   ),
-
-  IconButton( // Güç (eklediysen)
-    icon: const Icon(Icons.bolt),
-    onPressed: () => openPowerCalculator(context),
-
-   ),
-
-  IconButton( // Renk Kodu (eklediysen)
-    icon: const Icon(Icons.palette),
-    onPressed: () => openResistorColorCalc(context),
-
-   ),
-
-  IconButton(
-    icon: const Icon(Icons.dark_mode),
-    onPressed: widget.toggleTheme,
-   ),
-
-  IconButton( // 🔥 Geçmiş
-    icon: const Icon(Icons.history),
-    onPressed: () => openHistoryPanel(context),
-   ),
-
-  IconButton(
-    icon: const Icon(Icons.electrical_services),
-    onPressed: () => openVoltageDropCalculator(context),
-   ),
- ],
-), 
-
-      drawer: const _YanMenu(),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-        children: [
-          Card(
-            elevation: 0,
-            color: Theme.of(context).cardColor, // otomatik tema uyumu
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 220,
-                    child: Image.asset(
-                      'assets/images/lego12.png',
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) =>
-                          const Icon(Icons.bolt, size: 70),
-                    ),
-                  ),
-
-                  Visibility(
-                    visible: false,
-                    child: Text(
-                    'Elektrik • Elektronik • Otomasyon',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                     color: Theme.of(context).textTheme.bodyMedium!.color,
-                 ),
-                ),
-               ),
-              ],
-             ),
+    return SafeArea(
+      top: true,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(sayfaBasligi),
+          actions: [
+            IconButton(onPressed: _ara, icon: const Icon(Icons.search)),
+            IconButton(
+              icon: const Icon(Icons.calculate),
+              onPressed: () => openOhmCalculator(context),
             ),
-          ),
-          const SizedBox(height: 12),
-          _KategoriButonu(
-            etiket: '⚡ Elektrik',
-            renk: Colors.blue,
-            sayfa: KategoriSayfasi(kategori: 'elektrik', baslik: 'Elektrik'),
-          ),
-          _KategoriButonu(
-            etiket: '🔧 Elektronik',
-            renk: Colors.green,
-            sayfa: KategoriSayfasi(kategori: 'elektronik', baslik: 'Elektronik'),
-          ),
-          _KategoriButonu(
-            etiket: '🤖 Otomasyon',
-            renk: Colors.deepOrange,
-            sayfa: KategoriSayfasi(kategori: 'otomasyon', baslik: 'Otomasyon'),
-          ),
-          const SizedBox(height: 12),
+            IconButton(
+              icon: const Icon(Icons.bolt),
+              onPressed: () => openPowerCalculator(context),
+            ),
+            IconButton(
+              icon: const Icon(Icons.palette),
+              onPressed: () => openResistorColorCalc(context),
+            ),
+            IconButton(
+              icon: const Icon(Icons.dark_mode),
+              onPressed: widget.toggleTheme,
+            ),
+            IconButton(
+              icon: const Icon(Icons.history),
+              onPressed: () => openHistoryPanel(context),
+            ),
+            IconButton(
+              icon: const Icon(Icons.electrical_services),
+              onPressed: () => openVoltageDropCalculator(context),
+            ),
+          ],
+        ),
+        drawer: const _YanMenu(),
+        body: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+          children: [
+            Card(
+              elevation: 0,
+              color: Theme.of(context).cardColor,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 220,
+                      child: Image.asset(
+                        'assets/images/lego12.png',
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(Icons.bolt, size: 70),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Visibility(
+                      visible: false,
+                      child: Text(
+                        'Elektrik • Elektronik • Otomasyon',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyMedium!.color,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
 
-          Row(
-           children: [
-            Expanded(
-             child: _KategoriButonu(
-            etiket: '🔢 Hesaplamalar',
-            renk: Colors.indigo,
-            sayfa: HesaplamalarSayfasi(),
-          ),
-         ),
-           const SizedBox(width: 12),
-           Expanded(
-            child: _KategoriButonu(
-            etiket: '📝 Quiz',
-            renk: Colors.purple,
-            sayfa: QuizSayfasi(),
-          ),
-         ),
-        ],
-       ),
-      ],
-     ),              
+            const SizedBox(height: 12),
+
+            _KategoriButonu(
+              etiket: '⚡ Elektrik',
+              renk: Colors.blue,
+              sayfa: const KategoriSayfasi(kategori: 'elektrik', baslik: 'Elektrik'),
+            ),
+            _KategoriButonu(
+              etiket: '🔧 Elektronik',
+              renk: Colors.green,
+              sayfa: const KategoriSayfasi(kategori: 'elektronik', baslik: 'Elektronik'),
+            ),
+            _KategoriButonu(
+              etiket: '🤖 Otomasyon',
+              renk: Colors.deepOrange,
+              sayfa: const KategoriSayfasi(kategori: 'otomasyon', baslik: 'Otomasyon'),
+            ),
+
+            const SizedBox(height: 12),
+
+            Row(
+              children: [
+                Expanded(
+                  child: _KategoriButonu(
+                    etiket: '🔢 Hesaplamalar',
+                    renk: Colors.indigo,
+                    sayfa: const HesaplamalarSayfasi(),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _KategoriButonu(
+                    etiket: '📝 Quiz',
+                    renk: Colors.purple,
+                    sayfa: const QuizSayfasi(),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
-   }
   }
+}
 class _KategoriButonu extends StatelessWidget {
   final String etiket;
   final Color renk;
