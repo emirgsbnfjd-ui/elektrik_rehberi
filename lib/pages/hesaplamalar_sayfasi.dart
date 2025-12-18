@@ -7,6 +7,10 @@ import 'ev_tuketimi_sayfasi.dart';
 import 'pano_sigorta_sayfasi.dart';
 import 'motor_hesap_sayfasi.dart';
 import 'ev_sarj_sayfasi.dart';
+import 'direnc_6bant_sayfasi.dart';
+import 'kablo_sigorta_sayfasi.dart';
+import 'kisa_devre_kesme_sayfasi.dart';
+
 
 class HesaplamalarSayfasi extends StatelessWidget {
   const HesaplamalarSayfasi({super.key});
@@ -27,13 +31,31 @@ class HesaplamalarSayfasi extends StatelessWidget {
               MaterialPageRoute(builder: (_) => const GucHesabiSayfasi()),
             ),
           ),
-          _CalcTile(
-            icon: Icons.trending_down,
-            title: "Gerilim Düşümü",
-            subtitle: "Cu/Al • Tek faz/Trifaze • % düşüm",
+           _CalcTile(
+            icon: Icons.cable,
+            title: "Kablo Kesiti + Sigorta",
+            subtitle: "Tek faz/Trifaze • Cu/Al • Gerilim düşümü dahil",
             onTap: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const GerilimDusumuSayfasi()),
+              MaterialPageRoute(builder: (_) => const KabloSigortaSayfasi()),
+            ),
+          ),
+          _CalcTile(
+            icon: Icons.factory,
+            title: "Pano / Sigorta Seçimi",
+            subtitle: "Güce göre akım • Öneri sigorta",
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const PanoSigortaSayfasi()),            
+            ),
+          ),
+           _CalcTile(
+            icon: Icons.color_lens_outlined,
+            title: "Direnç Hesaplama (6 Bant)",
+            subtitle: "3 rakam • Çarpan • Tolerans • Sıcaklık katsayısı",
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const Direnc6BantSayfasi()),
             ),
           ),
           _CalcTile(
@@ -55,13 +77,13 @@ class HesaplamalarSayfasi extends StatelessWidget {
             ),
           ),
           _CalcTile(
-            icon: Icons.factory,
-            title: "Pano / Sigorta Seçimi",
-            subtitle: "Güce göre akım • Öneri sigorta",
+            icon: Icons.trending_down,
+            title: "Gerilim Düşümü",
+            subtitle: "Cu/Al • Tek faz/Trifaze • % düşüm",
             onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const PanoSigortaSayfasi()),
-            ),
+            context,
+            MaterialPageRoute(builder: (_) => const GerilimDusumuSayfasi()),
+           ),
           ),
           _CalcTile(
             icon: Icons.settings,
@@ -79,6 +101,15 @@ class HesaplamalarSayfasi extends StatelessWidget {
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const EvSarjSayfasi()),
+            ),
+          ),
+          _CalcTile(
+            icon: Icons.flash_on,
+            title: "Kısa Devre Kesme Kapasitesi",
+            subtitle: "Ik (kA) • Icn/Icu seçimi • Standart basamaklar",
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const KisaDevreKesmeSayfasi()),
             ),
           ),
         ],

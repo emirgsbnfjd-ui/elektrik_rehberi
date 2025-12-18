@@ -36,9 +36,11 @@ class _GucHesabiSayfasiState extends State<GucHesabiSayfasi> {
 
     setState(() {
       sonuc =
-          'Güç:  kW\n'
-          'cosφ: \n'
-          'Akım:  A';
+          '${trifaze ? "Trifaze" : "Monofaze"}\n'
+          'Güç: ${pKw.toStringAsFixed(2)} kW\n'
+          'Gerilim: ${v.toStringAsFixed(0)} V\n'
+          'cosφ: ${cos.toStringAsFixed(2)}\n'
+          'Akım: ${i.toStringAsFixed(2)} A';
     });
   }
 

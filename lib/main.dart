@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:share_plus/share_plus.dart';
 import 'pages/hesaplayici_sayfasi.dart';
 import 'pages/hakkinda_sayfasi.dart';
 import 'pages/gizlilik_sayfasi.dart';
 import 'pages/hesaplamalar_sayfasi.dart';
 import 'pages/quiz_sayfasi.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 final List<String> hesapGecmisi = [];
 
-void main() async {
+void main() {
   runApp(const RehberApp());
 }
 
@@ -40,12 +40,65 @@ class RehberApp extends StatefulWidget {
         useMaterial3: true,
         brightness: Brightness.light,
         scaffoldBackgroundColor: const Color(0xFFF8FAFD),
+
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.white,
+          labelStyle: const TextStyle(color: Colors.black87),
+          hintStyle: const TextStyle(color: Colors.black45),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+       ),
       ),
+
       darkTheme: ThemeData(
-      colorSchemeSeed: const Color(0xFF90CAF9),
-      useMaterial3: true,
-      brightness: Brightness.dark,
-      ),
+        colorSchemeSeed: const Color(0xFF90CAF9),
+        useMaterial3: true,
+        brightness: Brightness.dark,
+
+        scaffoldBackgroundColor: const Color(0xFF0F1115),
+        cardColor: const Color(0xFF151A21),
+
+  
+        inputDecorationTheme: InputDecorationTheme(
+         filled: true,
+         fillColor: const Color(0xFF1E1E1E),
+
+          // Label / Hint
+         labelStyle: const TextStyle(color: Colors.white70),
+         floatingLabelStyle: const TextStyle(color: Colors.white),
+         hintStyle: const TextStyle(color: Colors.white38),
+
+    
+         suffixStyle: const TextStyle(color: Colors.white),
+         prefixStyle: const TextStyle(color: Colors.white),
+
+         enabledBorder: OutlineInputBorder(
+           borderRadius: BorderRadius.circular(12),
+           borderSide: const BorderSide(color: Color(0xFF2D3642)),
+         ),
+         focusedBorder: OutlineInputBorder(
+           borderRadius: BorderRadius.circular(12),
+           borderSide: const BorderSide(color: Color(0xFF90CAF9), width: 1.5),
+         ),
+         disabledBorder: OutlineInputBorder(
+           borderRadius: BorderRadius.circular(12),
+           borderSide: const BorderSide(color: Color(0xFF2D3642)),
+         ),
+        ),
+
+        // 👇 HESAPLAMA SONUÇLARI / NORMAL TEXTLER
+        textTheme: ThemeData.dark().textTheme.apply(
+          bodyColor: Colors.white,
+          displayColor: Colors.white,
+        ),
+              
+        // İmleç & seçim
+        textSelectionTheme: const TextSelectionThemeData(
+          cursorColor: Color(0xFF90CAF9),
+          selectionColor: Color(0x3390CAF9),
+          selectionHandleColor: Color(0xFF90CAF9),
+       ),
+      ),      
       // SplashScreen'den başla, sonra AnaSayfa'ya geç
       home: SplashScreen(toggleTheme: _toggleTheme),
     );
@@ -156,15 +209,18 @@ class Makale {
   final String baslik;
   final String icerik;
   final String kategori; // elektrik | elektronik | otomasyon
-  final String? resim;   // assets yolu
-  final double? width = 100.0;
+  final String? resim;       // üst/alt için
+  final bool resimAltta;
+  final String? resimOrta;   // 👈 yeni (orta resim)
 
   const Makale({
     required this.id,
     required this.baslik,
     required this.icerik,
     required this.kategori,
-    this.resim, 
+    this.resim,
+    this.resimAltta = false,
+    this.resimOrta,
   });
 }
 
@@ -180,34 +236,217 @@ const List<Makale> tumMakaleler = [
   ),
   Makale(
     id: 'e2',
-    baslik: 'Kaçak Akım Rölesi (RCD) Seçimi',
+    baslik: 'Kaçak Akım Rölesi (RCD/RCCB) Seçimi, RCCBO ve Arıza Çözüm Rehberi',
     icerik:
-        '30mA hayat koruma, 300mA yangın koruma olarak tercih edilir. Tip A çoğu konut için uygundur. Test düğmesine aylık basıp fonksiyon kontrolü yapılmalı.',
+        'Kaçak Akım Rölesi (RCD – RCCB), insanı elektrik çarpmasına karşı ve tesisatı kaçak akım kaynaklı yangın riskine karşı korumak için kullanılır. Mantık basittir: Fazdan çıkan akım ile nötrden dönen akım eşit olmalıdır. Arada fark oluşursa (akım kaçak yaptıysa) röle çok hızlı şekilde açar.\n\n'
+        '✅ 1) RCD / RCCB NEDİR?\n'
+        'RCD (Residual Current Device) veya RCCB (Residual Current Circuit Breaker) aynı amaçla kullanılır: kaçak akımı algılar ve devreyi keser. Aşırı akım/kısa devre koruması yapmaz. Yani RCD tek başına “sigorta gibi” kabloyu korumaz; önüne MCB (otomatik sigorta) gerekir.\n\n'
+        '✅ 2) 30 mA – 300 mA NE DEMEK?\n'
+        '• 30 mA (0.03 A): Hayat koruma. Daire içi priz ve banyo/ıslak hacim devrelerinde en yaygın tercihtir.\n'
+        '• 100 mA: Bazı tesislerde ek koruma için kullanılır (tasarıma göre).\n'
+        '• 300 mA (0.3 A): Yangın koruma. İnsan koruması için değil, daha çok izolasyon kaçaklarıyla oluşan yangın riskini azaltmak için kullanılır. Genelde ana girişte/kolon hatlarında, panolarda yangın koruma amaçlı tercih edilir.\n\n'
+        '✅ 3) TİP SEÇİMİ (AC / A / F / B)\n'
+        'RCD’nin “tipi” algılayabildiği kaçak akımın şekliyle ilgilidir.\n\n'
+        '• Tip AC: Sadece sinüzoidal AC kaçakları algılar. Günümüzde birçok elektronik cihaz nedeniyle her yerde önerilmez.\n'
+        '• Tip A: AC + darbeli DC kaçakları algılar. Konutlarda en yaygın ve güvenli tercihlerden biridir. (Çamaşır makinesi, bulaşık, dimmer, SMPS adaptörler vb. için daha uygundur.)\n'
+        '• Tip F: İnverterli cihazlar/klima gibi bazı elektronik yüklerde daha stabil çalışması için tercih edilebilir.\n'
+        '• Tip B: Düz DC kaçaklarını da algılar. EV şarj, PV inverter, bazı sürücüler gibi özel uygulamalarda gerekir.\n\n'
+        '✅ 4) KAÇ KUTUP? (2P / 4P)\n'
+        '• Tek faz daire: 2 kutuplu (faz+nötr) RCD.\n'
+        '• Trifaze sistem: 4 kutuplu RCD.\n\n'
+        '✅ 5) ANMA AKIMI (40A – 63A – 80A) NASIL SEÇİLİR?\n'
+        'RCD’nin üstünde yazan 40A/63A gibi değer, üzerinden güvenle geçebilecek sürekli akımdır.\n'
+        'Kural: RCD anma akımı, önündeki/ardındaki yük ve ana sigorta değerine uygun seçilir. Örneğin ana giriş 40A ise RCD 40A ya da 63A seçilebilir. Büyük seçmek sakıncalı değil, küçük seçmek ısınma ve arıza riskini artırır.\n\n'
+        '✅ 6) SELEKTİF (S) RCD NEDİR?\n'
+        'Ana girişte kullanılan bazı RCD’ler “S – selektif/gecikmeli” olabilir. Amaç: Alttaki 30mA RCD önce atsın, ana RCD gereksiz yere tüm binayı/dairenin tamamını karartmasın. Büyük tesislerde çok faydalıdır.\n\n'
+        '✅ 7) RCCBO NEDİR? (RCD + MCB BİR ARADA)\n'
+        'RCCBO, hem kaçak akım koruması (RCD) hem de aşırı akım/kısa devre korumasını (MCB) tek cihazda birleştirir.\n\n'
+        'RCCBO’nun avantajları:\n'
+        '• Arıza olduğunda sadece ilgili hattı düşürür (ör. sadece banyo/priz hattı).\n'
+        '• Panoda daha seçici ve düzenli koruma sağlar.\n'
+        '• Kaçak akım + kısa devre koruması tek cihazda olduğu için takip kolaydır.\n\n'
+        'RCCBO ne zaman tercih edilir?\n'
+        '• Islak hacimler (banyo)\n'
+        '• Mutfak hatları\n'
+        '• Dış hatlar (bahçe, dış priz)\n'
+        '• Kritik cihaz hatları (kombi, buzdolabı gibi ayrı hatlarda)\n\n'
+        '✅ 8) TEST DÜĞMESİ (T) NE İŞE YARAR?\n'
+        'RCD üzerinde “TEST” düğmesi bulunur. Basıldığında cihazın kaçak akım algılama mekanizması kontrol edilir ve rölenin atması beklenir.\n'
+        'Öneri: Ayda 1 kez test etmek iyi bir alışkanlıktır. Teste basınca atmıyorsa cihaz arızalı olabilir veya bağlantıda sorun olabilir.\n\n'
+        '────────────────────────────\n'
+        '⚠️ 9) DAİRE/İŞYERİ TESİSATINDA EN SIK KARŞILAŞILAN ARIZALAR\n\n'
+        'A) “Sigorta atıyor” (MCB açıyor)\n'
+        '1) Kısa devre:\n'
+        '  Belirti: Sigorta anında atar.\n'
+        '  Neden: Faz-nötr temas, ezilmiş kablo, yanık duy, arızalı priz/anahtar, su girmiş buat.\n'
+        '  Çözüm (genel yaklaşım):\n'
+        '  • Hattı enerjisiz bırak.\n'
+        '  • O hattaki priz/anahtar/armatürleri sırayla devre dışı bırak.\n'
+        '  • Buat bağlantılarını kontrol et.\n'
+        '  • Arızalı elemanı değiştir.\n\n'
+        '2) Aşırı yük:\n'
+        '  Belirti: Bir süre çalışır, sonra atar.\n'
+        '  Neden: Aynı hatta çok cihaz (ısıtıcı+ütü+ketıl vb.).\n'
+        '  Çözüm:\n'
+        '  • Yükü azalt.\n'
+        '  • Yüksek güçlü cihazlara ayrı hat çek.\n'
+        '  • Kablo kesiti ve sigorta değeri projeye uygun olmalı.\n\n'
+        '3) Gevşek klemens / ısınma:\n'
+        '  Belirti: Koku, kararma, sigorta/şalter ısınıyor.\n'
+        '  Neden: Klemens gevşekliği, zayıf temas.\n'
+        '  Çözüm:\n'
+        '  • Enerjiyi kes.\n'
+        '  • Klemensleri sık.\n'
+        '  • Yanmış klemens/otomatiği değiştir.\n\n'
+        'B) “Kaçak akım atıyor” (RCD/RCCB açıyor)\n'
+        '1) Nem/su kaçakları:\n'
+        '  Belirti: Yağmurda, banyoda, dış hatta daha sık atma.\n'
+        '  Neden: Su alan buat/priz, nemli kablo.\n'
+        '  Çözüm:\n'
+        '  • Islak bölgeyi kurut.\n'
+        '  • IP korumalı ürün kullan.\n'
+        '  • Kaçak yapan hattı ayır ve arızayı bul.\n\n'
+        '2) Cihaz arızası:\n'
+        '  Belirti: Belirli bir cihaz takılınca hemen atma.\n'
+        '  Neden: Rezistans kaçakları (şofben, çamaşır, bulaşık), motor izolasyonu.\n'
+        '  Çözüm:\n'
+        '  • Cihazı prizden çek, tekrar dene.\n'
+        '  • Sorun cihazdaysa servis/onarım.\n\n'
+        '3) Nötr-Toprak karışması (çok sık!):\n'
+        '  Belirti: Bazı prizlerde “garip” davranış, RCD düzensiz atma.\n'
+        '  Neden: Buatta N ile PE temas, yanlış köprü.\n'
+        '  Çözüm:\n'
+        '  • Buat/prizlerde N ve PE ayrımını kontrol et.\n'
+        '  • RCD sonrası nötr barası ile toprak barası kesinlikle karışmamalı.\n\n'
+        '4) Çoklu kaçakların toplamı:\n'
+        '  Belirti: Tek tek cihazlar sorun çıkarmaz, hepsi aynı anda çalışınca atar.\n'
+        '  Neden: Her cihaz küçük kaçak yapar; toplam 30 mA’ı aşınca RCD açar.\n'
+        '  Çözüm:\n'
+        '  • Hatları böl.\n'
+        '  • Kritik hatlara RCCBO ile ayrı koruma yap.\n\n'
+        'C) “Elektrik var ama çalışmıyor / düşük voltaj”\n'
+        '• Gevşek nötr, yanmış klemens, zayıf bağlantı, uzun hatlarda gerilim düşümü.\n'
+        'Çözüm: Klemensler ve nötr hattı kontrol edilir, gerekiyorsa kesit artırılır.\n\n'
+        '────────────────────────────\n'
+        '✅ 10) GÜVENLİK UYARISI\n'
+        'Arıza tespiti ve pano müdahaleleri tehlikelidir. Enerjiyi kesmeden işlem yapma. Şüpheli durumlarda yetkili elektrikçiden destek al.\n\n'
+        'Bu bilgiler genel eğitim amaçlıdır; proje, kablo kesiti, topraklama kalitesi ve kullanım şartlarına göre seçimler değişebilir.',
     kategori: 'elektrik',
+    resim: 'assets/images/rcd.jpg',
   ),
   Makale(
     id: 'e3',
-    baslik: 'Kablo Kesiti Seçimi (Hızlı Rehber)',
+    baslik: 'Sigorta (MCB) Türleri ve Ev Tesisatında Kullanım Alanları',
     icerik:
-        'Uzunluk, akım ve izin verilen gerilim düşümüne göre seçilir. Konut için bakır NYA/NYM: 1,5 mm² aydınlatma (~10A), 2,5 mm² priz (~16-20A), 4 mm² tesisat fırın/klima.',
+        'Sigorta (MCB – Miniature Circuit Breaker), elektrik tesisatlarında hatları aşırı akım ve kısa devreye karşı korumak için kullanılır. Doğru sigorta seçimi hem güvenlik hem de tesisatın sağlıklı çalışması açısından kritik öneme sahiptir.\n\n'
+        '🔹 SİGORTA EĞRİLERİ (B – C – D)\n\n'
+        '• B Tipi Sigorta:\n'
+        '  Anma akımının yaklaşık 3–5 katında açma yapar. Ani kalkış akımı düşük olan rezistif yükler için uygundur. Aydınlatma hatları ve küçük ev içi devrelerde tercih edilir.\n\n'
+        '• C Tipi Sigorta:\n'
+        '  Anma akımının yaklaşık 5–10 katında açma yapar. Motorlu ve karışık yükler için idealdir. Konutlarda ve iş yerlerinde en yaygın kullanılan sigorta tipidir.\n\n'
+        '• D Tipi Sigorta:\n'
+        '  Anma akımının yaklaşık 10–20 katında açma yapar. Yüksek ilk kalkış akımı çeken sanayi motorları, kompresörler ve ağır makineler için kullanılır. Ev tesisatlarında genellikle kullanılmaz.\n\n'
+        '🔹 EV VE TESİSAT HATLARINDA YAYGIN SİGORTA DEĞERLERİ\n\n'
+        '• Aydınlatma Hattı:\n'
+        '  Genellikle B10 A veya C10 A sigorta kullanılır. LED ve klasik aydınlatma armatürleri için yeterlidir.\n\n'
+        '• Priz Hatları:\n'
+        '  Standart priz hatlarında C16 A sigorta tercih edilir. Elektrikli süpürge, ütü, mikrodalga gibi cihazlar için uygundur.\n\n'
+        '• Mutfak Priz Hattı:\n'
+        '  Yükün fazla olduğu mutfaklarda C16 A veya ayrı hat çekilmişse C20 A sigorta kullanılır.\n\n'
+        '• Çamaşır Makinesi / Bulaşık Makinesi:\n'
+        '  Ayrı hat çekilmesi önerilir. Genellikle C16 A sigorta kullanılır.\n\n'
+        '• Fırın ve Ocak Hatları:\n'
+        '  Elektrik gücüne bağlı olarak C20 A veya C25 A sigorta tercih edilir.\n\n'
+        '• Klima Hattı:\n'
+        '  Küçük klimalar için C16 A, daha yüksek kapasiteli klimalar için C20 A veya C25 A kullanılır.\n\n'
+        '• Kombi Hattı:\n'
+        '  Genellikle B10 A veya C10 A sigorta yeterlidir.\n\n'
+        '🔹 ÖNEMLİ NOTLAR\n\n'
+        '• Sigorta amperi, kablo kesiti ile uyumlu olmalıdır.\n'
+        '• Sigorta büyütmek tesisatı korumaz, aksine yangın riskini artırır.\n'
+        '• Konutlarda genellikle C tipi sigortalar tercih edilir.\n'
+        '• Kısa devre kırma kapasitesi (6 kA – 10 kA gibi) tesisat tipine göre seçilmelidir.\n\n'
+        'Doğru sigorta seçimi, elektrik tesisatının güvenli, verimli ve uzun ömürlü olmasını sağlar.',
     kategori: 'elektrik',
+    resim: 'assets/images/kablokesit.png',
+    resimAltta: false,
+    resimOrta: 'assets/images/kablo1.png',
   ),
   Makale(
-    id: 'e4',
-    baslik: 'Sigorta (MCB) Eğrileri: B-C-D',
-    icerik:
-        'B: rezistif yükler; C: motor/karışık; D: ağır kalkış akımı. Konutta genelde C tercih edilir. Seçim anma akımı + kısa devre kırma kapasitesine göre yapılır.',
-    kategori: 'elektrik',
+   id: 'e4',
+   baslik: 'Topraklama Ölçümü Adımları',
+   icerik:
+      'TOPRAKLAMA ÖLÇÜMÜ NEDİR?\n\n'
+      'Topraklama ölçümü; elektrik tesisatlarında insanların can güvenliğini sağlamak, cihazları korumak ve kaçak akımların güvenli şekilde toprağa iletilmesini doğrulamak için yapılan ölçümdür. Ölçüm sonucunda elde edilen değer “topraklama direnci (Ω)” olarak ifade edilir.\n\n'
+
+      '🔹 TOPRAKLAMA NEDEN ÖNEMLİDİR?\n\n'
+      '• Elektrik çarpmasını önler\n'
+      '• Kaçak akımların güvenli şekilde toprağa iletilmesini sağlar\n'
+      '• Elektrikli cihazların arızalanmasını önler\n'
+      '• Parafudr ve yıldırımdan korunma sistemlerinin doğru çalışmasını sağlar\n'
+      '• Yönetmeliklere uygunluk sağlar\n\n'
+
+      '🔹 YÖNETMELİĞE GÖRE TOPRAKLAMA DİRENÇ DEĞERLERİ\n\n'
+      'Topraklama direnci sınırları tesisin türüne göre değişir:\n\n'
+      '• Konut ve genel tesisler: ≤ 10 Ω\n'
+      '• Hassas elektronik cihazlar: ≤ 5 Ω\n'
+      '• Yıldırımdan korunma tesisleri: ≤ 10 Ω\n'
+      '• Trafo ve enerji tesisleri: ≤ 2 Ω\n\n'
+      'Not: Saha koşulları ve yönetmelik maddelerine göre bu değerler değişiklik gösterebilir.\n\n'
+
+      '🔹 TOPRAKLAMA ÖLÇÜMÜNDE KULLANILAN CİHAZ (MEGGER)\n\n'
+      'Topraklama ölçümleri için özel olarak üretilmiş “Topraklama Ölçüm Cihazı (Megger)” kullanılır. Bu cihaz, klasik multimetre ile ölçüm yapılamayan toprak direncini doğru şekilde ölçer.\n\n'
+      'Megger cihazı üzerinde genellikle şu bağlantılar bulunur:\n'
+      '• E (Earth)  → Toprak elektrodu\n'
+      '• P (Potential) → Potansiyel kazığı\n'
+      '• C (Current) → Akım kazığı\n\n'
+
+      '🔹 3 NOKTA METODU (EN YAYGIN ÖLÇÜM YÖNTEMİ)\n\n'
+      'Sahada en sık kullanılan yöntem “3 nokta metodu”dur. Bu yöntemde iki adet yardımcı kazık kullanılır.\n\n'
+
+      'ADIM 1 – TOPRAK ELEKTRODUNU AYIR\n'
+      'Ölçüm yapılacak topraklama elektrodu tesisattan ayrılır. Ölçüm sırasında başka topraklamalar devreye girmemelidir.\n\n'
+
+      'ADIM 2 – KAZIKLARIN ÇAKILMASI\n'
+      '• Akım kazığı (C): Toprak elektrodundan genellikle 20–30 metre uzağa çakılır\n'
+      '• Potansiyel kazığı (P): İki kazık arasının yaklaşık ortasına çakılır\n'
+      'Kazıklar nemli toprağa ve sağlam şekilde çakılmalıdır.\n\n'
+
+      'ADIM 3 – MEGGER BAĞLANTILARI\n'
+      '• E ucu → Ölçülecek toprak elektrodu\n'
+      '• P ucu → Potansiyel kazığı\n'
+      '• C ucu → Akım kazığı\n'
+      'Bağlantı kabloları düzgün, oksitsiz ve sıkı olmalıdır.\n\n'
+
+      'ADIM 4 – ÖLÇÜMÜ YAP\n'
+      'Megger cihazı çalıştırılır ve ölçüm alınır. Cihaz toprağa bir akım gönderir ve direnç değerini hesaplar.\n\n'
+
+      'ADIM 5 – DOĞRULAMA ÖLÇÜMLERİ\n'
+      'Potansiyel kazığı birkaç metre ileri ve geri alınarak ölçüm tekrarlanır. Değerler birbirine yakınsa ölçüm sağlıklıdır.\n\n'
+
+      '🔹 ÖLÇÜM SONUCU NASIL DEĞERLENDİRİLİR?\n\n'
+      '• Ölçülen değer yönetmelik sınırlarının altındaysa → Topraklama uygundur\n'
+      '• Değer yüksekse → İlave topraklama çubuğu çakılmalı veya zemin iyileştirilmelidir\n\n'
+
+      '🔹 TOPRAKLAMA DİRENCİ YÜKSEK ÇIKARSA NE YAPILIR?\n\n'
+      '• İlave bakır topraklama çubuğu eklenir\n'
+      '• Topraklama çubukları arası mesafe artırılır\n'
+      '• Nemlendirici topraklama jelleri kullanılabilir\n'
+      '• Daha iletken zeminlere yönelinir\n\n'
+           
+
+      '🔹 SIK YAPILAN HATALAR\n\n'
+      '• Topraklama elektrodu tesisata bağlıyken ölçüm yapmak\n'
+      '• Kazıkları çok yakın çakmak\n'
+      '• Oksitli ve gevşek bağlantılar\n'
+      '• Multimetre ile toprak direnci ölçmeye çalışmak\n\n'
+
+      '🔹 SONUÇ\n\n'
+      'Topraklama ölçümü, elektrik tesisatlarının en kritik güvenlik kontrollerinden biridir. Doğru cihaz, doğru yöntem ve uygun saha koşulları ile yapılan ölçümler; hem can güvenliği hem de tesis güvenliği açısından hayati öneme sahiptir.',
+  kategori: 'elektrik',
   ),
   Makale(
-    id: 'e5',
-    baslik: 'Topraklama Ölçümü Adımları',
-    icerik:
-        'Toprak direnci ≤ 10Ω (yönetmeliğe göre saha şartına bağlı). 3 nokta metodu: akım ve potansiyel kazıkları ile ölç; bağlantılar sıkı ve korozyonsuz olmalı.',
-    kategori: 'elektrik',
-  ),
-  Makale(
-  id: 'e6',
+  id: 'e5',
   baslik: 'Multimetre ile Ölçüm',
   icerik:
       'Multimetre ile Ölçüm Nedir?\n\n'
@@ -228,29 +467,293 @@ const List<Makale> tumMakaleler = [
   resim: 'assets/images/multimetre.png',
   ),
   Makale(
-    id: 'e7',
-    baslik: 'Üç Fazlı Motorlarda Yıldız–Üçgen Yol Verme',
+    id: 'e6',
+    baslik: 'Pens Ampermetre ve Diğer Ölçüm Cihazları',
     icerik:
-        'Büyük güçlü üç fazlı motorlarda direkt yol verildiğinde yüksek kalkış akımı oluşur. '
-        'Yıldız–üçgen yol vericilerde motor önce yıldız bağlı çalıştırılır, hızlandıktan sonra üçgen bağlantıya geçirilir. '
-        'Bu sayede kalkış akımı yaklaşık 1/3 oranında azaltılmış olur.',
+        'Pens Ampermetre Nedir?\n\n'
+        'Pens ampermetre, bir iletken üzerinden geçen akımı devreyi kesmeden ölçmeye yarayan ölçü aletidir. '
+        'Multimetreden farklı olarak kabloyu sökmeden, sadece tek bir iletkeni kavrayarak akım ölçümü yapılmasını sağlar. '
+        'Özellikle panolarda, motorlarda ve canlı hatlarda çok tercih edilir.\n\n'
+
+        'Pens Ampermetre ile Akım Ölçümü\n\n'
+        '🔹 Cihazın kadranını AC A (∿A) konumuna getir. (DC ölçüm yapılacaksa DC A seçilir.)\n'
+        '🔹 Ölçüm yapılacak hatta SADECE TEK FAZ iletkeni (faz veya nötr) pensin içine al.\n'
+        '❗ Faz + nötr birlikte ölçülürse değer 0 çıkar.\n'
+        '🔹 Pens tamamen kapalı olmalıdır; yarım kapalı ölçüm hatalı sonuç verir.\n'
+        '🔹 Ekrandaki değer, hat üzerinden geçen anlık akımdır.\n\n'
+
+        'Pens Ampermetre Güvenlik İpuçları\n\n'
+        '🔹 İzolasyonu hasarlı kablolar ölçülmemelidir.\n'
+        '🔹 Yüksek akımlı panolarda tek elle ölçüm yap, diğer elini metal yüzeylerden uzak tut.\n'
+        '🔹 Ölçüm sırasında pensin metal aksamı ile iletkene temas ettirilmemelidir.\n\n'
+
+        'Meger (İzolasyon Test Cihazı) Nedir?\n\n'
+        'Meger, kabloların ve motor sargılarının izolasyon direncini ölçmek için kullanılır. '
+        'Genellikle 500 V, 1000 V gibi yüksek DC test gerilimleri uygular.\n\n'
+
+        'Meger ile İzolasyon Ölçümü\n\n'
+        '🔹 Ölçüm öncesi hattın GERİLİMSİZ olduğundan emin ol.\n'
+        '🔹 Test edilecek faz ile toprak arasına probları bağla.\n'
+        '🔹 Test tuşuna bas ve ölçüm süresince problara dokunma.\n'
+        '🔹 Ölçüm sonucu genellikle Megaohm (MΩ) cinsindendir.\n'
+        '🔹 1 MΩ altı değerler izolasyon zayıflığına işaret eder.\n\n'
+
+        'Faz Kalemi Nedir?\n\n'
+        'Faz kalemi, bir hattın enerjili olup olmadığını kontrol etmek için kullanılan basit kontrol cihazıdır.\n\n'
+
+        'Faz Kalemi Kullanımı\n\n'
+        '🔹 Ucu iletken veya priz fazına dokundur.\n'
+        '🔹 Elinle faz kaleminin arka metal kısmına temas et.\n'
+        '🔹 Işık yanıyorsa hat fazdır ve enerjilidir.\n'
+        '❗ Faz kalemi ölçüm cihazı değildir; sadece kontrol amaçlı kullanılır.\n\n'
+
+        'Pano Tipi Voltmetre ve Ampermetre\n\n'
+        'Pano tipi ölçü aletleri, sürekli izleme amaçlı kullanılır.\n'
+        'Voltmetre paralel bağlanır (faz-nötr veya faz-faz).\n'
+        'Ampermetre ise genellikle akım trafosu (CT) üzerinden seri ölçüm yapar.\n\n'
+
+        'Akım Trafosu (CT) Kullanımı\n\n'
+        '🔹 Ölçülecek faz iletkeni CT içinden geçirilir.\n'
+        '🔹 CT sekonder uçları ampermetreye bağlanır.\n'
+        '❗ CT sekonderi açık bırakılmamalıdır; tehlikelidir.\n\n'
+
+        'Sahada Pratik Tavsiyeler\n\n'
+        '🔹 Akım ölçümü için önce pens ampermetre tercih edilmelidir.\n'
+        '🔹 Gerilim var/yok kontrolü için faz kalemi yeterlidir ancak kesin ölçüm için multimetre kullan.\n'
+        '🔹 İzolasyon ölçümü yapmadan önce mutlaka hattı ayır.\n'
+        '🔹 Ölçüm cihazlarının probları ve pens izolasyonları düzenli kontrol edilmelidir.\n\n'
+
+        'Bu ölçüm cihazları doğru kullanıldığında arıza tespiti hızlanır, yanlış müdahaleler ve iş kazaları önlenir.',
     kategori: 'elektrik',
+    resim: 'assets/images/pensampermetre.png',
   ),
   Makale(
-    id: 'e8',
-    baslik: 'Kompanzasyon Panosu Bakımında Dikkat Edilecekler',
-    icerik:
-        'Kondansatörlerin şişme ve ısınma durumları kontrol edilmeli, kontaktörlerin kontak yüzeyleri ve fanlar temizlenmelidir. '
-        'Reaktif oran takibi için sayaç değerleri periyodik olarak izlenmeli, cosφ hedef değeri 0.95 civarında tutulmalıdır.',
+  id: 'e7',
+  baslik: 'Üç Fazlı Motorlarda Yıldız–Üçgen Yol Verme',
+  icerik: '''
+YILDIZ–ÜÇGEN YOL VERME NEDİR?
+
+Yıldız–üçgen yol verme; üç fazlı asenkron motorlarda ilk kalkış anında oluşan yüksek akımı düşürmek amacıyla kullanılan bir yol verme yöntemidir. Özellikle orta ve büyük güçlü motorlarda, direkt yol verme ciddi akım ve gerilim düşümlerine sebep olabilir.
+
+🔹 DİREKT YOL VERMEDE OLUŞAN PROBLEM
+
+Üç fazlı motorlar direkt yol verildiğinde:
+• Kalkış akımı nominal akımın 5–7 katına çıkabilir
+• Şebekede gerilim düşümü oluşur
+• Sigorta ve şalterler zorlanır
+• Mekanik aksamda darbe meydana gelir
+
+Bu olumsuzlukları azaltmak için yıldız–üçgen yol verme yöntemi tercih edilir.
+
+- YILDIZ BAĞLANTI İLE KALKIŞ
+
+Motor ilk çalıştırıldığında **yıldız bağlantı** yapılır.
+• Sargı uçlarına düşen gerilim azalır
+• Motor daha düşük tork ile kalkış yapar
+• Kalkış akımı yaklaşık **1/3 oranında düşer**
+
+Bu aşamada motor yük altında olmamalıdır.
+
+- ÜÇGEN BAĞLANTIYA GEÇİŞ
+
+Motor belirli bir hıza ulaştıktan sonra (genellikle %80–90):
+• Yıldız bağlantı kesilir
+• Üçgen bağlantı devreye girer
+• Motor tam gerilim ve tam tork ile çalışmaya devam eder
+
+Bu geçiş işlemi **zaman rölesi** ile otomatik olarak yapılır.
+
+- MOTOR ETİKETİ VE BAĞLANTI ŞEMASI
+
+Yıldız–üçgen yol verme uygulanabilmesi için motor etiketinde genellikle:
+• 400V / 690V
+veya
+• Δ / Y
+ifadeleri bulunmalıdır.
+
+Motorun klemens kapağı içinde yıldız ve üçgen bağlantı şeması yer alır.
+
+- YILDIZ–ÜÇGEN YOL VERİCİNİN ANA ELEMANLARI
+
+• Ana kontaktör
+• Yıldız kontaktörü
+• Üçgen kontaktörü
+• Zaman rölesi
+• Termik röle
+• Sigorta veya şalter
+
+Bu elemanlar birlikte çalışarak motorun güvenli şekilde yol almasını sağlar.
+
+- AVANTAJLARI
+
+• Kalkış akımı düşer
+• Şebeke daha az zorlanır
+• Mekanik darbe azalır
+• Ekonomik ve yaygın bir çözümdür
+
+- DEZAVANTAJLARI
+
+• Kalkış torku düşüktür
+• Yük altında kalkış için uygun değildir
+• Yanlış zaman ayarı motoru zorlayabilir
+
+- NERELERDE KULLANILIR?
+
+• Pompalar
+• Fanlar
+• Kompresörler
+• Konveyör sistemleri
+• Sanayi motorları
+
+
+Yıldız–üçgen yol verme yöntemi, uygun motor ve doğru ayarlamalarla kullanıldığında hem elektriksel hem de mekanik açıdan güvenli bir çözüm sunar. Ancak motor etiket bilgileri mutlaka kontrol edilmeli ve bağlantılar doğru yapılmalıdır.
+
+⚙️ Yıldız–Üçgen Yol Verici Elemanları\n\n
+Ana kontaktör, yıldız kontaktörü, üçgen kontaktörü, termik röle ve zaman rölesinin pano içi yerleşimi aşağıda gösterilmiştir.\n\n
+Motor gücüne göre sahada en sık kullanılan yaklaşık değerler aşağıdadır.\n\n
+📊 Motor Gücüne Göre Sigorta ve Kontaktör Seçimi (Özet)\n\n
+Üç Faz – 400V için sahada sık kullanılan yaklaşık değerler:\n\n'
+0.75 kW  →  C6   Sigorta  →  9A   Kontaktör  →  1.6 – 2.5A   Termik
+
+1.1  kW  →  C6   Sigorta  →  9A   Kontaktör  →  2.5 – 4A     Termik
+
+1.5  kW  →  C10  Sigorta  →  9A   Kontaktör  →  2.5 – 4A     Termik
+
+2.2  kW  →  C16  Sigorta  →  12A  Kontaktör  →  4 – 6.3A     Termik
+
+3.0  kW  →  C16  Sigorta  →  18A  Kontaktör  →  5.5 – 8A     Termik
+
+4.0  kW  →  C20  Sigorta  →  18A  Kontaktör  →  7 – 10A      Termik
+
+5.5  kW  →  C25  Sigorta  →  25A  Kontaktör  →  9 – 13A      Termik
+
+7.5  kW  →  C32  Sigorta  →  25A  Kontaktör  →  13 – 18A     Termik
+
+
+11   kW  →  C40  Sigorta  →  32A  Kontaktör  →  18 – 25A     Termik
+
+15   kW  →  C50  Sigorta  →  40A  Kontaktör  →  24 – 32A     Termik
+
+18.5 kW  →  C63  Sigorta  →  50A  Kontaktör  →  30 – 40A     Termik
+
+22   kW  →  C63  Sigorta  →  65A  Kontaktör  →  38 – 50A     Termik
+
+30   kW  →  C80  Sigorta  →  80A  Kontaktör  →  45 – 63A     Termik
+
+37   kW  →  C100 Sigorta  →  95A  Kontaktör  →  55 – 80A     Termik
+
+45   kW  →  C125 Sigorta  →  115A Kontaktör  →  63 – 90A     Termik
+
+
+⚠️ Not: • Değerler standart asenkron motorlar için yaklaşık saha değerleridir.
+• Motor verimi, cosφ, yol verme şekli (direkt / yıldız–üçgen / soft starter) sonucu etkiler.
+• Termik röle ayarı, motorun etiket akımına göre yapılmalıdır.
+
+🔧 Yıldız–Üçgen Bağlantı Şeması\n\n
+Yıldız ve üçgen bağlantıların klemens üzerindeki gösterimi aşağıdaki gibidir.\n\n
+
+''',
+  kategori: 'elektrik',
+  resim: 'assets/images/ücgenyıldız.png',
+  resimAltta: true,
+),
+  Makale(                      
+   id: 'e8',
+   baslik: 'Kompanzasyon Panosu Bakımında Dikkat Edilecekler',
+   icerik: '''
+KOMPANZASYON PANOSU NEDİR?
+
+         Kompanzasyon panosu; işletmelerde ve büyük tesislerde reaktif gücü dengelemek, enerji verimliliğini artırmak ve reaktif ceza ödemelerini önlemek amacıyla kullanılan elektrik panosudur. Bu panolar; kondansatörler, kontaktörler, reaktif güç kontrol rölesi, sigortalar ve soğutma elemanlarından oluşur.
+
+         - KOMPANZASYON PANOSU NEDEN BAKIM GEREKTİRİR?
+
+         Kompanzasyon sistemleri sürekli devreye girip çıktığı için zamanla ekipmanlarda yıpranma oluşur. Düzenli bakım yapılmazsa:
+         • Reaktif ceza oluşur
+         • Kondansatörler zarar görür
+         • Kontaktörler yapışır
+         • Pano aşırı ısınır
+         • Enerji kalitesi bozulur
+
+         Bu nedenle kompanzasyon panoları **periyodik bakım** gerektirir.
+
+         - BAKIM ÖNCESİ GÜVENLİK ÖNLEMLERİ
+
+         Bakım işlemine başlamadan önce mutlaka:
+         • Ana şalter kapatılmalı
+         • Pano enerjisiz bırakılmalı
+         • Kondansatörlerin deşarj olduğu kontrol edilmeli
+         • Gerilim yokluğu ölçü aleti ile doğrulanmalı
+         • Kişisel koruyucu donanım (eldiven, gözlük) kullanılmalıdır
+
+         🔹 KONDANSATÖRLERİN KONTROLÜ
+
+         Kompanzasyon panosunun en önemli elemanları kondansatörlerdir. Bakım sırasında:
+         • Şişme, çatlama veya sızıntı var mı kontrol edilir
+         • Aşırı ısınma izleri incelenir
+         • Etiket değerleri okunur
+         • Devreye girip çıkma süreleri gözlemlenir
+
+         Şişmiş veya aşırı ısınan kondansatörler **kesinlikle değiştirilmelidir**.
+
+         🔹 KONTAKTÖRLERİN KONTROLÜ
+
+         Kondansatör kontaktörleri, normal kontaktörlere göre daha fazla yüke maruz kalır.
+         • Kontak yüzeylerinde yanma var mı bakılır
+         • Kontaklar yapışıyor mu kontrol edilir
+         • Bobinlerde ısınma ve ses kontrolü yapılır
+         • Aşırı gürültülü çalışan kontaktörler yenilenmelidir
+
+         🔹 REAKTİF GÜÇ KONTROL RÖLESİ (RGK)
+
+         RGK rölesi, sistemin beyni gibidir.
+         • Cosφ hedef değeri kontrol edilmelidir
+         • Genellikle hedef cosφ ≈ 0.95 seçilir
+         • Kademe sayısı ve sıralaması doğru mu incelenir
+         • Röle ayarları saha koşullarına uygun olmalıdır
+
+         Yanlış ayarlanmış röle, kompanzasyon sistemini verimsiz hale getirir.
+
+         🔹 SAYAÇ VE REAKTİF ORAN TAKİBİ
+
+         Enerji sayaçları üzerinden:
+         • Aktif enerji (kWh)
+         • Reaktif enerji (kVArh)
+         • Endüktif ve kapasitif oranlar
+         periyodik olarak takip edilmelidir.
+
+         Reaktif oran sınırlarının aşılması durumunda ceza uygulanır.
+
+         🔹 FAN VE HAVALANDIRMA SİSTEMİ
+
+         Kompanzasyon panolarında ısı ciddi bir problemdir.
+         • Fanlar çalışıyor mu kontrol edilir
+         • Fan filtreleri temizlenir
+         • Pano içi tozdan arındırılır
+         • Havalandırma menfezleri kapalı olmamalıdır
+
+         Yetersiz soğutma, kondansatör ömrünü ciddi şekilde kısaltır.
+
+         🔹 KABLO VE BAĞLANTI KONTROLLERİ
+
+         • Gevşek klemensler sıkılır
+         • Yanmış veya renk değiştirmiş kablolar kontrol edilir
+         • Bara bağlantıları gözden geçirilir
+         • İzolasyon hasarları tespit edilir
+
+         🔹 SIK YAPILAN HATALAR
+
+          • Bakım sırasında kondansatörleri deşarj etmeden müdahale etmek
+          • Yanmış kontaktörü temizleyip tekrar kullanmak
+          • Cosφ değerini aşırı yüksek ayarlamak
+          • Fanları devre dışı bırakmak
+          • Reaktif cezayı sadece fatura geldiğinde fark etmek
+
+         🔹 KISACASI
+
+         Kompanzasyon panosu bakımı; enerji maliyetlerini düşürmek, ekipman ömrünü uzatmak ve reaktif cezalardan kaçınmak için hayati öneme sahiptir. Düzenli ve bilinçli yapılan bakımlar, sistemin uzun yıllar sorunsuz çalışmasını sağlar.
+         ''',
     kategori: 'elektrik',
-  ),
-  Makale(
-    id: 'e9',
-    baslik: 'Topraklama Direncini Etkileyen Faktörler',
-    icerik:
-        'Toprak özgül direnci, topraklayıcı elektrot sayısı ve yerleşimi, nem oranı ve sıcaklık topraklama direncini etkiler. '
-        'Kuru ve taşlı zeminlerde direnç genellikle yüksektir; gerektiğinde kimyasal topraklama veya ek elektrotlar kullanılmalıdır.',
-    kategori: 'elektrik',
+    resim: 'assets/images/kompanzasyon.png',
   ),
   Makale(
     id: 'el1',
@@ -306,7 +809,7 @@ const List<Makale> tumMakaleler = [
     resim: 'assets/images/led.jpg',
   ),
   Makale(
-    id: 'el6',
+    id: '2',
     baslik: 'Breadboard (Deney Tahtası) Nedir?',
     icerik:
       'Breadboard, elektronik devreleri lehim yapmadan kurmaya yarayan delikli bir platformdur. '
@@ -552,31 +1055,25 @@ class _AnaSayfaState extends State<AnaSayfa> {
                   SizedBox(
                     height: 220,
                     child: Image.asset(
-                      'assets/images/lego12.jpg',
+                      'assets/images/lego12.png',
                       fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) =>
                           const Icon(Icons.bolt, size: 70),
                     ),
                   ),
-                  SizedBox(height: 8),
-                  Text(
-                    'Elektrik ve Elektronik için Hesaplama, Bilgi ve Pratik Rehber.',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).textTheme.bodyLarge!.color,
-                   ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    '',
+
+                  Visibility(
+                    visible: false,
+                    child: Text(
+                    'Elektrik • Elektronik • Otomasyon',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Theme.of(context).textTheme.bodyMedium!.color,
-                   ),
-                  ),
-                ],
-              ),
+                     color: Theme.of(context).textTheme.bodyMedium!.color,
+                 ),
+                ),
+               ),
+              ],
+             ),
             ),
           ),
           const SizedBox(height: 12),
@@ -717,51 +1214,87 @@ class KategoriSayfasi extends StatelessWidget {
 
 class MakaleDetay extends StatelessWidget {
   final Makale m;
+
   const MakaleDetay({super.key, required this.m});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(m.baslik),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.share),
-            onPressed: () {
-              Share.share('${m.baslik}\n\n${m.icerik}');
-            },
-          ),
-        ],
-      ),
-      body: ListView(
+        title: Text(m.baslik),    
+      ),  
+        body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-        children: [
-          if (m.resim != null)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                m.resim!,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) =>
-                    const SizedBox.shrink(),
+        children: [          
+         // 🔼 ÜST RESİM
+         if (m.resim != null && !m.resimAltta) ...[
+           ClipRRect(
+             borderRadius: BorderRadius.circular(12),
+             child: SizedBox(          
+             child: Image.asset(
+             m.resim!,
+             width: double.infinity,           
+            errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+          ),
+        ),
+      ),
+      const SizedBox(height: 12),
+    ],
+
+    // 🔤 BAŞLIK
+    Text(
+      m.baslik,
+      style: const TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w700,
+      ),
+    ),
+    const SizedBox(height: 8),
+
+    // 🟨 ORTA RESİM
+    if (m.resimOrta != null) ...[
+      ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: SizedBox(
+          child: Image.asset(
+            m.resimOrta!,
+            width: double.infinity,
+            errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+          ),
+        ),
+      ),
+      const SizedBox(height: 12),
+    ],
+
+    // 📄 İÇERİK
+    Text(
+      m.icerik,
+      style: const TextStyle(
+        fontSize: 16,
+        height: 1.4,
+      ),
+    ),
+
+    // 🔽 ALT RESİM
+    if (m.resim != null && m.resimAltta) ...[
+      const SizedBox(height: 16),
+      ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: SizedBox(
+          child: Image.asset(
+            m.resim!,
+            height: 220, //
+            width: double.infinity,
+            errorBuilder: (_, __, ___) => const SizedBox.shrink(),                 
+               ),
               ),
             ),
-          const SizedBox(height: 12),
-          Text(
-            m.baslik,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            m.icerik,
-            style: const TextStyle(fontSize: 16, height: 1.4),
-          ),
+          ],
         ],
       ),
     );
   }
 }
-
 /// Arama
 class MakaleArama extends SearchDelegate {
   final List<Makale> kaynak;
@@ -969,7 +1502,7 @@ void openOhmCalculator(BuildContext context) {
                   decoration: InputDecoration(
                     labelText: 'Gerilim (V)', hintText: 'Örn: 12',
                     border: const OutlineInputBorder(), suffixText: 'V',
-                    fillColor: hesaplananV ? Colors.grey.shade200 : null, filled: hesaplananV,
+                    fillColor: hesaplananV ? Theme.of(context).colorScheme.surfaceContainerHighest : null, filled: hesaplananV,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -980,7 +1513,7 @@ void openOhmCalculator(BuildContext context) {
                   decoration: InputDecoration(
                     labelText: 'Akım (I)', hintText: 'Örn: 2',
                     border: const OutlineInputBorder(), suffixText: 'A',
-                    fillColor: hesaplananI ? Colors.grey.shade200 : null, filled: hesaplananI,
+                    fillColor: hesaplananI ? Theme.of(context).colorScheme.surfaceContainerHighest : null, filled: hesaplananI,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -991,7 +1524,7 @@ void openOhmCalculator(BuildContext context) {
                   decoration: InputDecoration(
                     labelText: 'Direnç (R)', hintText: 'Örn: 6',
                     border: const OutlineInputBorder(), suffixText: 'Ω',
-                    fillColor: hesaplananR ? Colors.grey.shade200 : null, filled: hesaplananR,
+                    fillColor: hesaplananR ? Theme.of(context).colorScheme.surfaceContainerHighest: null, filled: hesaplananR,
                   ),
                 ),
 
@@ -1016,11 +1549,11 @@ void openOhmCalculator(BuildContext context) {
                 if (sonuc != null) ...[
                   const SizedBox(height: 12),
                   Card(
-                    color: Colors.blueGrey.shade50, elevation: 0,
+                    color: Theme.of(context).colorScheme.surface, elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     child: Padding(
                       padding: const EdgeInsets.all(14),
-                      child: Text(sonuc!, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                      child: Text(sonuc!, style: Theme.of(context).textTheme.bodyLarge!.copyWith( fontWeight: FontWeight.w700)),
                     ),
                   ),
                 ],
@@ -1124,7 +1657,7 @@ void openPowerCalculator(BuildContext context) {
                   decoration: InputDecoration(
                     labelText: 'Gerilim (V)', hintText: 'Örn: 230',
                     border: const OutlineInputBorder(), suffixText: 'V',
-                    fillColor: hesaplananV ? Colors.grey.shade200 : null, filled: hesaplananV,
+                    fillColor: hesaplananV ? Theme.of(context).colorScheme.surfaceContainerHighest : null, filled: hesaplananV,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -1135,7 +1668,7 @@ void openPowerCalculator(BuildContext context) {
                   decoration: InputDecoration(
                     labelText: 'Akım (I)', hintText: 'Örn: 2',
                     border: const OutlineInputBorder(), suffixText: 'A',
-                    fillColor: hesaplananI ? Colors.grey.shade200 : null, filled: hesaplananI,
+                    fillColor: hesaplananI ? Theme.of(context).colorScheme.surfaceContainerHighest : null, filled: hesaplananI,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -1146,7 +1679,7 @@ void openPowerCalculator(BuildContext context) {
                   decoration: InputDecoration(
                     labelText: 'Güç (P)', hintText: 'Örn: 460',
                     border: const OutlineInputBorder(), suffixText: 'W',
-                    fillColor: hesaplananP ? Colors.grey.shade200 : null, filled: hesaplananP,
+                    fillColor: hesaplananP ? Theme.of(context).colorScheme.surfaceContainerHighest : null, filled: hesaplananP,
                   ),
                 ),
 
@@ -1171,11 +1704,11 @@ void openPowerCalculator(BuildContext context) {
                 if (sonuc != null) ...[
                   const SizedBox(height: 12),
                   Card(
-                    color: Colors.blueGrey.shade50, elevation: 0,
+                    color: Theme.of(context).colorScheme.surface, elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     child: Padding(
                       padding: const EdgeInsets.all(14),
-                      child: Text(sonuc!, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                      child: Text(sonuc!, style: Theme.of(context).textTheme.bodyLarge!.copyWith( fontWeight: FontWeight.w700)),
                     ),
                   ),
                 ],
@@ -1298,11 +1831,11 @@ void openResistorColorCalc(BuildContext context) {
                 if (sonuc != null) ...[
                   const SizedBox(height: 12),
                   Card(
-                    color: Colors.blueGrey.shade50, elevation: 0,
+                    color: Theme.of(context).colorScheme.surface, elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     child: Padding(
                       padding: const EdgeInsets.all(14),
-                      child: Text(sonuc!, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                      child: Text(sonuc!, style: Theme.of(context).textTheme.bodyLarge!.copyWith( fontWeight: FontWeight.w700)),
                     ),
                   ),
                 ],
@@ -1489,3 +2022,4 @@ class IletisimSayfasi extends StatelessWidget {
     );
   }
 }
+
