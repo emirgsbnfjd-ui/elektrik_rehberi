@@ -4,7 +4,9 @@ import 'pages/hakkinda_sayfasi.dart';
 import 'pages/gizlilik_sayfasi.dart';
 import 'pages/hesaplamalar_sayfasi.dart';
 import 'pages/quiz_sayfasi.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/services.dart';
+import 'pages/ariza_teshis/ariza_teshis_ana_sayfa.dart';
+
 
 final List<String> hesapGecmisi = [];
 
@@ -172,7 +174,7 @@ class _SplashScreenState extends State<SplashScreen>
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(28),
                       child: Image.asset(
-                        'assets/images/logo.jpg',
+                        'assets/logo.png',
                         width: 120,
                         height: 120,
                         fit: BoxFit.cover,
@@ -213,6 +215,8 @@ class Makale {
   final bool resimAltta;
   final String? resimOrta;   // 👈 yeni (orta resim)
 
+  final String? ikon; 
+
   const Makale({
     required this.id,
     required this.baslik,
@@ -221,45 +225,115 @@ class Makale {
     this.resim,
     this.resimAltta = false,
     this.resimOrta,
+    this.ikon,               // ✅
   });
 }
 
 /// Örnek içerikler
 const List<Makale> tumMakaleler = [
   Makale(
-    id: 'e1',
-    baslik: 'Temel Kavramlar: Akım, Gerilim, Güç',
-    icerik:
-        'Akım (I) amper ile ölçülür ve yük taşınmasıdır. Gerilim (V)  farkıdır. Güç (P) = V × I formülüyle hesaplanır. AC’de görünür/aktif/reaktif güç ayrımına dikkat.',
-    kategori: 'elektrik',
-    resim: 'assets/images/elektrik.jpg',
+  id: 'e1',
+  baslik: 'Temel Elektrik Kavramları: Akım, Gerilim, Direnç ve Güç',
+  icerik:
+      'Elektrik; elektronların bir iletken içerisinde kontrollü şekilde hareket etmesiyle ortaya çıkan bir enerji türüdür. '
+      'Günlük hayatta aydınlatma, ısıtma, motorlar, elektronik cihazlar ve haberleşme sistemlerinin tamamı elektrik enerjisi ile çalışır.\n\n'
+
+      '🔌 ELEKTRİK NASIL OLUŞUR?\n'
+      'Bir iletkende elektronların hareket edebilmesi için iki temel şeye ihtiyaç vardır:\n'
+      '• Bir gerilim farkı (itici güç)\n'
+      '• Kapalı bir devre yolu\n'
+      'Gerilim uygulandığında elektronlar yüksek potansiyelden düşük potansiyele doğru hareket eder ve bu harekete akım denir.\n\n'
+
+      '⚡ AKIM (I) NEDİR?\n'
+      'Akım, bir iletkenden birim zamanda geçen elektrik yükü miktarıdır ve amper (A) ile ölçülür.\n'
+      'Basitçe: “Elektronların akış miktarı” olarak düşünülebilir.\n'
+      'Akımın büyüklüğü; gerilim, devrenin direnci ve yük durumuna bağlıdır.\n\n'
+
+      '🔋 GERİLİM (V) NEDİR?\n'
+      'Gerilim, iki nokta arasındaki elektriksel potansiyel farktır ve volt (V) ile ölçülür.\n'
+      'Akımı harekete geçiren itici kuvvettir.\n'
+      'Gerilim yoksa akım akmaz.\n\n'
+
+      '🧱 DİRENÇ (R) NEDİR?\n'
+      'Direnç, bir iletkenin akıma karşı gösterdiği zorluktur ve ohm (Ω) ile ölçülür.\n'
+      'Direnç arttıkça akım azalır.\n'
+      'Kablo kesiti, uzunluk ve malzeme direnci etkiler.\n\n'
+
+      '📐 OHM KANUNU\n'
+      'Elektrik hesaplamalarının temelidir.\n'
+      'Formül:\n'
+      'V = I × R\n'
+      'I = V / R\n'
+      'R = V / I\n'
+      'Bu kanun sayesinde bir devrede akım, gerilim veya direnç kolayca hesaplanabilir.\n\n'
+
+      '⚙️ GÜÇ (P) NEDİR?\n'
+      'Güç, bir devrede harcanan veya üretilen enerji miktarını ifade eder ve watt (W) ile ölçülür.\n'
+      'Temel formül:\n'
+      'P = V × I\n'
+      'Alternatif olarak:\n'
+      'P = I² × R\n'
+      'P = V² / R\n\n'
+
+      '🔄 AC VE DC AKIM\n'
+      '• DC (Doğru Akım): Akım tek yönde akar. (Pil, batarya, adaptör çıkışları)\n'
+      '• AC (Alternatif Akım): Akım yönü sürekli değişir. (Ev ve sanayi elektriği)\n'
+      'Türkiye’de şebeke gerilimi 230V – 50Hz AC’dir.\n\n'
+
+      '📊 AC GÜÇ TÜRLERİ\n'
+      'Alternatif akımda üç farklı güç kavramı vardır:\n'
+      '• Aktif Güç (kW): İş yapan gerçek güç\n'
+      '• Reaktif Güç (kVAr): Manyetik/kapasitif alan oluşturan güç\n'
+      '• Görünür Güç (kVA): Sistemin toplam yükü\n'
+      'Aralarındaki ilişki cosφ (güç faktörü) ile ifade edilir.\n\n'
+
+      '🎯 ELEKTRİĞİN AMACI VE KULLANIM ALANLARI\n'
+      'Elektrik enerjisi;\n'
+      '• Aydınlatma\n'
+      '• Isıtma ve soğutma\n'
+      '• Motor ve makineler\n'
+      '• Elektronik ve otomasyon sistemleri\n'
+      '• Haberleşme ve bilişim\n'
+      'gibi birçok alanda kullanılır.\n\n'
+
+      '🛠 NEDEN BU TEMEL BİLGİLER ÖNEMLİ?\n'
+      'Bu kavramlar bilinmeden;\n'
+      '• Kablo kesiti seçilemez\n'
+      '• Sigorta doğru seçilemez\n'
+      '• Arıza teşhisi yapılamaz\n'
+      '• Güvenli tesisat kurulamaz\n\n'
+
+      'Bu nedenle elektrikle çalışan herkesin (kullanıcı, tekniker, elektrikçi, mühendis) '
+      'bu temel kavramları iyi anlaması gerekir.',
+  kategori: 'elektrik',
+  resim: 'assets/images/elektrik.png',
   ),
   Makale(
     id: 'e2',
     baslik: 'Kaçak Akım Rölesi (RCD/RCCB) Seçimi, RCCBO ve Arıza Çözüm Rehberi',
     icerik:
         'Kaçak Akım Rölesi (RCD – RCCB), insanı elektrik çarpmasına karşı ve tesisatı kaçak akım kaynaklı yangın riskine karşı korumak için kullanılır. Mantık basittir: Fazdan çıkan akım ile nötrden dönen akım eşit olmalıdır. Arada fark oluşursa (akım kaçak yaptıysa) röle çok hızlı şekilde açar.\n\n'
-        '✅ 1) RCD / RCCB NEDİR?\n'
+        ' 1) RCD / RCCB NEDİR?\n'
         'RCD (Residual Current Device) veya RCCB (Residual Current Circuit Breaker) aynı amaçla kullanılır: kaçak akımı algılar ve devreyi keser. Aşırı akım/kısa devre koruması yapmaz. Yani RCD tek başına “sigorta gibi” kabloyu korumaz; önüne MCB (otomatik sigorta) gerekir.\n\n'
-        '✅ 2) 30 mA – 300 mA NE DEMEK?\n'
+        ' 2) 30 mA – 300 mA NE DEMEK?\n'
         '• 30 mA (0.03 A): Hayat koruma. Daire içi priz ve banyo/ıslak hacim devrelerinde en yaygın tercihtir.\n'
         '• 100 mA: Bazı tesislerde ek koruma için kullanılır (tasarıma göre).\n'
         '• 300 mA (0.3 A): Yangın koruma. İnsan koruması için değil, daha çok izolasyon kaçaklarıyla oluşan yangın riskini azaltmak için kullanılır. Genelde ana girişte/kolon hatlarında, panolarda yangın koruma amaçlı tercih edilir.\n\n'
-        '✅ 3) TİP SEÇİMİ (AC / A / F / B)\n'
+        ' 3) TİP SEÇİMİ (AC / A / F / B)\n'
         'RCD’nin “tipi” algılayabildiği kaçak akımın şekliyle ilgilidir.\n\n'
         '• Tip AC: Sadece sinüzoidal AC kaçakları algılar. Günümüzde birçok elektronik cihaz nedeniyle her yerde önerilmez.\n'
         '• Tip A: AC + darbeli DC kaçakları algılar. Konutlarda en yaygın ve güvenli tercihlerden biridir. (Çamaşır makinesi, bulaşık, dimmer, SMPS adaptörler vb. için daha uygundur.)\n'
         '• Tip F: İnverterli cihazlar/klima gibi bazı elektronik yüklerde daha stabil çalışması için tercih edilebilir.\n'
         '• Tip B: Düz DC kaçaklarını da algılar. EV şarj, PV inverter, bazı sürücüler gibi özel uygulamalarda gerekir.\n\n'
-        '✅ 4) KAÇ KUTUP? (2P / 4P)\n'
+        ' 4) KAÇ KUTUP? (2P / 4P)\n'
         '• Tek faz daire: 2 kutuplu (faz+nötr) RCD.\n'
         '• Trifaze sistem: 4 kutuplu RCD.\n\n'
-        '✅ 5) ANMA AKIMI (40A – 63A – 80A) NASIL SEÇİLİR?\n'
+        ' 5) ANMA AKIMI (40A – 63A – 80A) NASIL SEÇİLİR?\n'
         'RCD’nin üstünde yazan 40A/63A gibi değer, üzerinden güvenle geçebilecek sürekli akımdır.\n'
         'Kural: RCD anma akımı, önündeki/ardındaki yük ve ana sigorta değerine uygun seçilir. Örneğin ana giriş 40A ise RCD 40A ya da 63A seçilebilir. Büyük seçmek sakıncalı değil, küçük seçmek ısınma ve arıza riskini artırır.\n\n'
-        '✅ 6) SELEKTİF (S) RCD NEDİR?\n'
+        ' 6) SELEKTİF (S) RCD NEDİR?\n'
         'Ana girişte kullanılan bazı RCD’ler “S – selektif/gecikmeli” olabilir. Amaç: Alttaki 30mA RCD önce atsın, ana RCD gereksiz yere tüm binayı/dairenin tamamını karartmasın. Büyük tesislerde çok faydalıdır.\n\n'
-        '✅ 7) RCCBO NEDİR? (RCD + MCB BİR ARADA)\n'
+        ' 7) RCCBO NEDİR? (RCD + MCB BİR ARADA)\n'
         'RCCBO, hem kaçak akım koruması (RCD) hem de aşırı akım/kısa devre korumasını (MCB) tek cihazda birleştirir.\n\n'
         'RCCBO’nun avantajları:\n'
         '• Arıza olduğunda sadece ilgili hattı düşürür (ör. sadece banyo/priz hattı).\n'
@@ -270,7 +344,7 @@ const List<Makale> tumMakaleler = [
         '• Mutfak hatları\n'
         '• Dış hatlar (bahçe, dış priz)\n'
         '• Kritik cihaz hatları (kombi, buzdolabı gibi ayrı hatlarda)\n\n'
-        '✅ 8) TEST DÜĞMESİ (T) NE İŞE YARAR?\n'
+        ' 8) TEST DÜĞMESİ (T) NE İŞE YARAR?\n'
         'RCD üzerinde “TEST” düğmesi bulunur. Basıldığında cihazın kaçak akım algılama mekanizması kontrol edilir ve rölenin atması beklenir.\n'
         'Öneri: Ayda 1 kez test etmek iyi bir alışkanlıktır. Teste basınca atmıyorsa cihaz arızalı olabilir veya bağlantıda sorun olabilir.\n\n'
         '────────────────────────────\n'
@@ -328,7 +402,7 @@ const List<Makale> tumMakaleler = [
         '• Gevşek nötr, yanmış klemens, zayıf bağlantı, uzun hatlarda gerilim düşümü.\n'
         'Çözüm: Klemensler ve nötr hattı kontrol edilir, gerekiyorsa kesit artırılır.\n\n'
         '────────────────────────────\n'
-        '✅ 10) GÜVENLİK UYARISI\n'
+        ' 10) GÜVENLİK UYARISI\n'
         'Arıza tespiti ve pano müdahaleleri tehlikelidir. Enerjiyi kesmeden işlem yapma. Şüpheli durumlarda yetkili elektrikçiden destek al.\n\n'
         'Bu bilgiler genel eğitim amaçlıdır; proje, kablo kesiti, topraklama kalitesi ve kullanım şartlarına göre seçimler değişebilir.',
     kategori: 'elektrik',
@@ -444,6 +518,7 @@ const List<Makale> tumMakaleler = [
       '🔹 SONUÇ\n\n'
       'Topraklama ölçümü, elektrik tesisatlarının en kritik güvenlik kontrollerinden biridir. Doğru cihaz, doğru yöntem ve uygun saha koşulları ile yapılan ölçümler; hem can güvenliği hem de tesis güvenliği açısından hayati öneme sahiptir.',
   kategori: 'elektrik',
+  ikon: 'assets/images/topraklama_icon.png', // ✅ küçük ikon
   ),
   Makale(
   id: 'e5',
@@ -756,13 +831,61 @@ KOMPANZASYON PANOSU NEDİR?
     resim: 'assets/images/kompanzasyon.png',
   ),
   Makale(
-    id: 'el1',
-    baslik: 'Direnç-Kapasitör-Endüktans',
-    icerik:
-        'Direnç ısıya, kapasitör elektrik alanına, bobin manyetik alana enerji depolar. '
-        'RC devrelerinde zaman sabiti τ = R×C, RL devrelerinde τ = L/R.',
-    kategori: 'elektronik',
-    resim: 'assets/images/elektronik.jpg',
+  id: 'el1',
+  baslik: 'Direnç – Kapasitör – Endüktans (RCL) ve Direnç Renk Kodları',
+  icerik:
+      '🔹 ELEKTRONİK DEVRELERİN TEMEL ELEMANLARI\n\n'
+
+      '🔸 Direnç (R):\n'
+      'Elektrik akımına karşı zorluk gösteren devre elemanıdır. '
+      'Üzerinden geçen elektrik enerjisini ısı enerjisine dönüştürür. '
+      'Akımı sınırlamak, gerilim bölmek ve devreyi korumak amacıyla kullanılır.\n\n'
+
+      '🔸 Kapasitör (C):\n'
+      'Elektrik enerjisini elektrik alanında depolayan elemandır. '
+      'Ani gerilim değişimlerine karşı dengeleme yapar. '
+      'Filtreleme, zamanlama ve enerji depolama devrelerinde yaygın olarak kullanılır.\n\n'
+
+      '🔸 Endüktans / Bobin (L):\n'
+      'Elektrik enerjisini manyetik alan şeklinde depolar. '
+      'Akım değişimine karşı koyar. '
+      'Motor sürücüleri, filtre devreleri ve güç elektroniğinde sıkça kullanılır.\n\n'
+
+      '📐 ZAMAN SABİTİ (τ):\n'
+      '• RC devrelerinde: τ = R × C\n'
+      '• RL devrelerinde: τ = L / R\n'
+      'Zaman sabiti, devrenin %63 seviyesine ulaşma süresini ifade eder.\n\n'
+
+      '────────────────────────\n'
+      '🎨 DİRENÇ RENK KODLARI\n\n'
+
+      'Dirençlerin üzerindeki renk halkaları, direnç değerini ve toleransını gösterir. '
+      'Bu sayede ölçüm cihazı olmadan direnç değeri okunabilir.\n\n'
+
+      '📌 ÖRNEK OKUMA:\n'
+      'Kahverengi (1) – Siyah (0) – Kırmızı (×100)\n'
+      '→ 10 × 100 = 1.000 Ω = 1 kΩ\n\n'
+
+      '🟡 Tolerans Halkası:\n'
+      'Altın: ±5%\n'
+      'Gümüş: ±10%\n\n'
+
+      '🎨 RENK – SAYI KARŞILIĞI:\n'
+      'Siyah: 0\n'
+      'Kahverengi: 1\n'
+      'Kırmızı: 2\n'
+      'Turuncu: 3\n'
+      'Sarı: 4\n'
+      'Yeşil: 5\n'
+      'Mavi: 6\n'
+      'Mor: 7\n'
+      'Gri: 8\n'
+      'Beyaz: 9\n\n'
+
+      'Bu renk kodlama sistemi sayesinde elektronik devrelerde hızlı tanımlama yapılır '
+      've özellikle sahada çalışan teknikerler için büyük kolaylık sağlar.',
+  kategori: 'elektronik',
+  resim: 'assets/images/direnc.webp',
   ),
   Makale(
     id: 'el2',
@@ -787,14 +910,96 @@ KOMPANZASYON PANOSU NEDİR?
     resim: 'assets/images/kondansator.jpg',   
   ),
   Makale(
-    id: 'el4',
-    baslik: 'Diyot ve Uygulama Alanları',
-    icerik:
-      'Diyot, akımı sadece bir yönde geçiren yarı iletken devre elemanıdır. Anot (+) ve Katot (–) uçlarından oluşur. '
-      'Doğru yönde düşük direnç, ters yönde yüksek direnç gösterir. '
-      'Doğrultma devrelerinde, sinyal ayırıcı ve koruma devrelerinde sıkça kullanılır.',
-    kategori: 'elektronik',
-    resim: 'assets/images/diyot.jpg',
+  id: 'el4',
+  baslik: 'Diyot Rehberi: Tipler, Zener, Köprü Doğrultucu ve Uygulamalar',
+  icerik:
+      'Diyot, akımı temelde tek yönde ileten yarı iletken bir devre elemanıdır. '
+      'Elektronikte doğrultma, koruma, regülasyon ve anahtarlama gibi çok kritik görevlerde kullanılır.\n\n'
+
+      '────────────────────────────\n'
+      '1) DİYOTUN UÇLARI: ANOT / KATOT\n'
+      '• Anot (A): Akımın giriş ucu gibi düşünebilirsin.\n'
+      '• Katot (K): Akımın çıkış ucu. Diyot üzerinde genelde çizgi/bant olan taraf katottur.\n\n'
+
+      '2) DOĞRU POLARİZASYON / TERS POLARİZASYON\n'
+      '• Doğru polarizasyon (iletim): Anot (+), Katot (–) olduğunda diyot iletir.\n'
+      '  Tipik iletim gerilimi (Vf):\n'
+      '  - Silikon diyot: ~0.6–0.8V\n'
+      '  - Schottky diyot: ~0.2–0.4V (daha düşük kayıp)\n'
+      '• Ters polarizasyon (kesim): Anot (–), Katot (+) olduğunda diyot idealde keser.\n'
+      '  Çok az “ters kaçak akım” oluşabilir (normaldir).\n\n'
+
+      '3) EN ÇOK KULLANILAN DİYOT TİPLERİ\n'
+      'A) Doğrultucu Diyot (1N4007 gibi)\n'
+      '• Adaptör/power supply doğrultmada yaygın.\n'
+      '• Yavaştır (yüksek frekansta uygun değil).\n\n'
+      'B) Hızlı (Fast/Ultrafast) Diyot (UF4007, FR serileri)\n'
+      '• SMPS, inverter, yüksek frekanslı anahtarlamada kullanılır.\n\n'
+      'C) Schottky Diyot (SS14, 1N5819 vb.)\n'
+      '• Düşük Vf → daha az ısınma, daha verimli.\n'
+      '• Ters dayanımı bazı modellerde daha düşüktür (etikete bak).\n\n'
+      'D) LED (Işık Yayan Diyot)\n'
+      '• İletimde ışık üretir.\n'
+      '• Mutlaka seri direnç/akım sınırlama gerekir.\n\n'
+      'E) TVS Diyot (Transient Voltage Suppressor)\n'
+      '• Darbe/ani gerilim yükselmelerine karşı koruma (ESD, şebeke darbeleri).\n\n'
+
+      '────────────────────────────\n'
+      '4) ZENER DİYOT NEDİR? NE İŞE YARAR?\n'
+      'Zener diyot ters yönde belirli bir gerilimde “kontrollü” iletime geçer ve bu gerilimi sabitlemeye yardımcı olur.\n'
+      '• Örn: 5.1V zener, ters yönde yaklaşık 5.1V civarında gerilimi sınırlar.\n\n'
+      'Zener’in en yaygın kullanım alanları:\n'
+      '• Basit gerilim referansı / regülasyon\n'
+      '• Aşırı gerilim sınırlama (clamp)\n'
+      '• Opamp/ADC giriş koruması (uygun seri dirençle)\n\n'
+      'ZENERLİ BASİT REGÜLATÖR (Örnek Mantık)\n'
+      '• Besleme → Seri direnç → (Zener + Yük paralel)\n'
+      '• Seri direnç, zener akımını sınırlar.\n\n'
+      'Not: Zener’in gücü önemlidir (0.5W, 1W vb.). Gücü düşük zener ısınır/bozulur.\n\n'
+
+      '────────────────────────────\n'
+      '5) KÖPRÜ DOĞRULTUCU (BRIDGE) NEDİR?\n'
+      'Köprü doğrultucu, 4 diyotla AC gerilimi DC’ye çeviren en yaygın devredir.\n'
+      '• 2 diyot her yarım periyotta iletimde olur.\n'
+      '• Çıkış DC olur ama dalgalıdır (ripple).\n\n'
+      'KÖPRÜ DOĞRULTUCUDA NEDEN 2×Vf KAYBI VAR?\n'
+      'Aynı anda iki diyot seri iletimde olduğundan yaklaşık:\n'
+      '• Silikon diyotlarda ~1.2–1.6V toplam düşüm\n'
+      '• Schottky kullanılırsa kayıp daha az olabilir.\n\n'
+      'FİLTRE KONDANSATÖRÜ (DC’Yİ DÜZELTME)\n'
+      'Doğrultma sonrası büyük elektrolitik kondansatör eklenirse dalgalanma azalır.\n'
+      'Kondansatör değeri büyüdükçe ripple azalır ama ilk kalkış akımı artabilir.\n\n'
+
+      '────────────────────────────\n'
+      '6) DİYOT SEÇERKEN BAKILACAK 3 KRİTİK PARAMETRE\n'
+      '1) Maksimum ters gerilim (VRRM): Diyotun ters yönde dayanacağı gerilim.\n'
+      '2) Ortalama iletim akımı (IF): Sürekli taşıyabileceği akım.\n'
+      '3) Güç/ısı: Diyot ısınırsa soğutma veya daha güçlü model gerekebilir.\n'
+      'Ek: Hız (reverse recovery) → SMPS/inverter gibi işlerde kritik.\n\n'
+
+      '────────────────────────────\n'
+      '7) PRATİK ARIZA / TEST (MULTİMETRE DİYOT MODU)\n'
+      '• Multimetre “diyot test” modunda:\n'
+      '  - Doğru yönde ~0.5–0.8V (silikon) görürsün.\n'
+      '  - Ters yönde genelde OL / sonsuz görürsün.\n'
+      '• İki yönde de 0V’a yakınsa → kısa devre arızası.\n'
+      '• İki yönde de OL ise → açık devre arızası.\n\n'
+      'Zener ölçümü: Normal multimetreyle zener gerilimi doğru ölçülemez; besleme + seri direnç ile test gerekir.\n\n'
+
+      '────────────────────────────\n'
+      '8) EN YAYGIN UYGULAMALAR (SAHADA ÇOK ÇIKAR)\n'
+      '• Adaptör doğrultma (köprü + kondansatör)\n'
+      '• Motor bobini/role bobini “flyback” diyotu (ters EMK sönümleme)\n'
+      '• Ters kutup koruması (girişte seri diyot veya daha verimli MOSFET çözümü)\n'
+      '• Zener ile giriş sınırlama / referans\n'
+      '• TVS ile darbe koruma\n\n'
+
+      '────────────────────────────\n'
+      '9) ÖNEMLİ UYARI\n'
+      'Yanlış diyot yönü (katot/anot karışması) devreyi çalıştırmaz, hatta kısa devre/ısınma yapabilir. '
+      'Özellikle güç devrelerinde diyot seçimini VRRM/IF değerlerine göre yap.\n',
+  kategori: 'elektronik',
+  resim: 'assets/images/diyot.jpg',
   ),
   Makale(
     id: 'el5',
@@ -845,29 +1050,6 @@ KOMPANZASYON PANOSU NEDİR?
   ),
   Makale(
     id: 'el9',
-    baslik: 'Ohm Kanunu ve Güç Hesaplaması',
-    icerik:
-      'Ohm Kanunu: V = I × R formülüyle gerilim (V), akım (I) ve direnç (R) arasındaki ilişkiyi açıklar. '
-      'Güç hesabı için: P = V × I veya P = I² × R formülleri kullanılır. '
-      'Uygulama: 12V devrede 6Ω direnç varsa, akım = 12 / 6 = 2A olur. Güç = 12 × 2 = 24W. '
-      'Bu hesaplamalar elektronik devre tasarımında bileşen seçimi için temel önemdedir.',
-    kategori: 'elektronik',
-    resim: 'assets/images/ohm.jpg',
-  ),
-  Makale(
-    id: 'el10',
-    baslik: 'Direnç Renk Kodları ve Değer Hesaplama',
-    icerik:
-      'Dirençler üzerindeki renk halkaları değerini gösterir. '
-      'Örneğin: Kahverengi (1), Siyah (0), Kırmızı (×100) → 10 × 100 = 1.000Ω yani 1kΩ. '
-      'Altın halka ±5% toleransı temsil eder. '
-      'Renk sırası: Siyah(0), Kahverengi(1), Kırmızı(2), Turuncu(3), Sarı(4), Yeşil(5), Mavi(6), Mor(7), Gri(8), Beyaz(9). '
-      'Bu sistem, dirençleri ölçüm cihazı olmadan tanımlamayı sağlar.',
-    kategori: 'elektronik',
-    resim: 'assets/images/direnc.webp',
-  ),
-  Makale(
-    id: 'el11',
     baslik: 'Seri ve Paralel Devre Farkı',
     icerik:
       'Seri devrede akım sabittir, gerilim dirençler arasında paylaştırılır: Vt = V1 + V2 + V3. '
@@ -878,21 +1060,21 @@ KOMPANZASYON PANOSU NEDİR?
     resim: 'assets/images/seri_paralel.jpg',
   ),
   Makale(
-    id: 'el12',
+    id: 'el10',
     baslik: 'Op-Amp (Operation Amplifier) Temel Devreleri',
     icerik:
         'Op-amp, çok yüksek kazançlı bir fark kuvvetlendiricisidir. En sık kullanılan yapılar: eviren, evirmeyen ve toplayıcı kuvvetlendiriciler. Eviren yapıda giriş sinyali terslenerek çıkışa taşınır, kazanç -Rf/Rin ile belirlenir. Besleme gerilimi ±12V veya ±15V olabilir.',
     kategori: 'elektronik',
   ),
   Makale(
-    id: 'el13',
+    id: 'el11',
     baslik: 'ADC ve DAC Nedir?',
     icerik:
         'ADC (Analog-Dijital Dönüştürücü), analog gerilimi sayısal veriye çevirir. Mikrodenetleyicilerde sensör okuma için kullanılır. DAC (Dijital-Analog Dönüştürücü) ise sayısal veriden analog sinyal üretir. Çözünürlük (örneğin 10 bit, 12 bit) ve örnekleme hızı en kritik parametrelerdir.',
     kategori: 'elektronik',
   ),
   Makale(
-    id: 'el14',
+    id: 'el12',
     baslik: 'Filtre Devreleri: Alçak, Yüksek ve Bant Geçiren',
     icerik:
         'RC ve RLC devreleri kullanılarak alçak geçiren, yüksek geçiren ve bant geçiren filtreler yapılabilir. '
@@ -901,15 +1083,7 @@ KOMPANZASYON PANOSU NEDİR?
     kategori: 'elektronik',
   ),
   Makale(
-    id: 'el15',
-    baslik: 'Zener Diyot ile Gerilim Regülasyonu',
-    icerik:
-        'Zener diyot, ters polarmada belirli bir gerilimde iletime geçerek sabit çıkış gerilimi sağlar. '
-        'Basit regülatör devrelerinde seri direnç ile birlikte kullanılır. Yük akımı değişse bile zener gerilimi büyük oranda sabit kalır.',
-    kategori: 'elektronik',
-  ),
-  Makale(
-    id: 'el16',
+    id: 'el13',
     baslik: 'Pull-up ve Pull-down Dirençleri',
     icerik:
         'Mikrodenetleyici giriş pinlerinin kararsız (floating) kalmaması için pull-up veya pull-down dirençleri kullanılır. '
@@ -1002,9 +1176,7 @@ class _AnaSayfaState extends State<AnaSayfa> {
 
     @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: true,
-      child: Scaffold(
+    return Scaffold(      
         appBar: AppBar(
           title: Text(sayfaBasligi),
           actions: [
@@ -1027,16 +1199,15 @@ class _AnaSayfaState extends State<AnaSayfa> {
             ),
             IconButton(
               icon: const Icon(Icons.history),
-              onPressed: () => openHistoryPanel(context),
-            ),
-            IconButton(
-              icon: const Icon(Icons.electrical_services),
-              onPressed: () => openVoltageDropCalculator(context),
+              onPressed: () => openHistoryPanel(context),           
             ),
           ],
         ),
         drawer: const _YanMenu(),
-        body: ListView(
+        body: SafeArea(
+         top: false,    // AppBar zaten üstü hallediyor
+         bottom: true,  // iPhone home indicator için
+         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
           children: [
             Card(
@@ -1107,14 +1278,21 @@ class _AnaSayfaState extends State<AnaSayfa> {
                     renk: Colors.purple,
                     sayfa: const QuizSayfasi(),
                   ),
-                ),
+                ),                
               ],
             ),
-          ],
+              const SizedBox(height: 12),
+                                        
+              _KategoriButonu(
+                  etiket: '🧯 Arıza Teşhis',
+                  renk: const Color(0xFFC62828),
+                  sayfa: const ArizaTeshiAnaSayfa(),                 
+               ), 
+             ],
+          ),
         ),
-      ),
-    );
-  }
+      );
+   }
 }
 class _KategoriButonu extends StatelessWidget {
   final String etiket;
@@ -1179,14 +1357,19 @@ class KategoriSayfasi extends StatelessWidget {
               width: 54,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: m.resim != null
-                    ? Image.asset(
-                        m.resim!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            const Icon(Icons.article_outlined),
-                      )
-                    : const Icon(Icons.article_outlined),
+                child: m.ikon != null
+        ? Image.asset(
+            m.ikon!,
+            fit: BoxFit.contain, // küçük ikonlar için daha iyi
+            errorBuilder: (_, __, ___) => const Icon(Icons.article_outlined),
+          )
+        : (m.resim != null
+            ? Image.asset(
+                m.resim!,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => const Icon(Icons.article_outlined),
+              )
+            : const Icon(Icons.article_outlined)),
               ),
             ),
             title: Text(
@@ -1353,7 +1536,7 @@ class MakaleArama extends SearchDelegate {
           children: [
             ListTile(
               leading: const CircleAvatar(
-                backgroundImage: AssetImage('assets/images/appicon.jpg'),
+                backgroundImage: AssetImage('assets/images/logo1.png'),
               ),
               title: const Text('Elektrik Elektronik Rehberi'),
               subtitle: const Text(''),
@@ -1494,35 +1677,59 @@ void openOhmCalculator(BuildContext context) {
 
                 const SizedBox(height: 8),
                 TextField(
-                  controller: vCtrl,
-                  keyboardType: TextInputType.number,
-                  enabled: !hesaplananV,
-                  decoration: InputDecoration(
-                    labelText: 'Gerilim (V)', hintText: 'Örn: 12',
-                    border: const OutlineInputBorder(), suffixText: 'V',
-                    fillColor: hesaplananV ? Theme.of(context).colorScheme.surfaceContainerHighest : null, filled: hesaplananV,
+                 controller: vCtrl,
+                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                 inputFormatters: [
+                   FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+                ],
+                enabled: !hesaplananV,
+                decoration: InputDecoration(
+                 labelText: 'Gerilim (V)',
+                 hintText: 'Örn: 12',
+                 border: const OutlineInputBorder(),
+                 suffixText: 'V',
+                 fillColor: hesaplananV
+                     ? Theme.of(context).colorScheme.surfaceContainerHighest
+                     : null,
+                     filled: hesaplananV, 
                   ),
                 ),
                 const SizedBox(height: 10),
                 TextField(
-                  controller: iCtrl,
-                  keyboardType: TextInputType.number,
-                  enabled: !hesaplananI,
-                  decoration: InputDecoration(
-                    labelText: 'Akım (I)', hintText: 'Örn: 2',
-                    border: const OutlineInputBorder(), suffixText: 'A',
-                    fillColor: hesaplananI ? Theme.of(context).colorScheme.surfaceContainerHighest : null, filled: hesaplananI,
+                 controller: iCtrl,
+                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                 inputFormatters: [
+                   FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+                 ],
+                 enabled: !hesaplananI,
+                 decoration: InputDecoration(
+                  labelText: 'Akım (I)',
+                  hintText: 'Örn: 2',
+                  border: const OutlineInputBorder(),
+                  suffixText: 'A',
+                  fillColor: hesaplananI
+                      ? Theme.of(context).colorScheme.surfaceContainerHighest
+                      : null,
+                      filled: hesaplananI,
                   ),
                 ),
                 const SizedBox(height: 10),
-                TextField(
-                  controller: rCtrl,
-                  keyboardType: TextInputType.number,
-                  enabled: !hesaplananR,
-                  decoration: InputDecoration(
-                    labelText: 'Direnç (R)', hintText: 'Örn: 6',
-                    border: const OutlineInputBorder(), suffixText: 'Ω',
-                    fillColor: hesaplananR ? Theme.of(context).colorScheme.surfaceContainerHighest: null, filled: hesaplananR,
+TextField(
+  controller: rCtrl,
+  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+  inputFormatters: [
+    FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+  ],
+  enabled: !hesaplananR,
+  decoration: InputDecoration(
+    labelText: 'Direnç (R)',
+    hintText: 'Örn: 6',
+    border: const OutlineInputBorder(),
+    suffixText: 'Ω',
+    fillColor: hesaplananR
+        ? Theme.of(context).colorScheme.surfaceContainerHighest
+        : null,
+    filled: hesaplananR,
                   ),
                 ),
 
@@ -1648,39 +1855,62 @@ void openPowerCalculator(BuildContext context) {
                 ),
 
                 const SizedBox(height: 8),
-                TextField(
-                  controller: vCtrl,
-                  keyboardType: TextInputType.number,
-                  enabled: !hesaplananV,
-                  decoration: InputDecoration(
-                    labelText: 'Gerilim (V)', hintText: 'Örn: 230',
-                    border: const OutlineInputBorder(), suffixText: 'V',
-                    fillColor: hesaplananV ? Theme.of(context).colorScheme.surfaceContainerHighest : null, filled: hesaplananV,
+TextField(
+  controller: vCtrl,
+  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+  inputFormatters: [
+    FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+  ],
+  enabled: !hesaplananV,
+  decoration: InputDecoration(
+    labelText: 'Gerilim (V)',
+    hintText: 'Örn: 230',
+    border: const OutlineInputBorder(),
+    suffixText: 'V',
+    fillColor: hesaplananV
+        ? Theme.of(context).colorScheme.surfaceContainerHighest
+        : null,
+    filled: hesaplananV,
                   ),
                 ),
                 const SizedBox(height: 10),
-                TextField(
-                  controller: iCtrl,
-                  keyboardType: TextInputType.number,
-                  enabled: !hesaplananI,
-                  decoration: InputDecoration(
-                    labelText: 'Akım (I)', hintText: 'Örn: 2',
-                    border: const OutlineInputBorder(), suffixText: 'A',
-                    fillColor: hesaplananI ? Theme.of(context).colorScheme.surfaceContainerHighest : null, filled: hesaplananI,
+TextField(
+  controller: iCtrl,
+  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+  inputFormatters: [
+    FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+  ],
+  enabled: !hesaplananI,
+  decoration: InputDecoration(
+    labelText: 'Akım (I)',
+    hintText: 'Örn: 2',
+    border: const OutlineInputBorder(),
+    suffixText: 'A',
+    fillColor: hesaplananI
+        ? Theme.of(context).colorScheme.surfaceContainerHighest
+        : null,
+    filled: hesaplananI,
                   ),
                 ),
                 const SizedBox(height: 10),
-                TextField(
-                  controller: pCtrl,
-                  keyboardType: TextInputType.number,
-                  enabled: !hesaplananP,
-                  decoration: InputDecoration(
-                    labelText: 'Güç (P)', hintText: 'Örn: 460',
-                    border: const OutlineInputBorder(), suffixText: 'W',
-                    fillColor: hesaplananP ? Theme.of(context).colorScheme.surfaceContainerHighest : null, filled: hesaplananP,
-                  ),
+TextField(
+  controller: pCtrl,
+  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+  inputFormatters: [
+    FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+  ],
+  enabled: !hesaplananP,
+  decoration: InputDecoration(
+    labelText: 'Güç (P)',
+    hintText: 'Örn: 460',
+    border: const OutlineInputBorder(),
+    suffixText: 'W',
+    fillColor: hesaplananP
+        ? Theme.of(context).colorScheme.surfaceContainerHighest
+        : null,
+    filled: hesaplananP,
                 ),
-
+              ),
                 const SizedBox(height: 12),
                 Row(
                   children: [
@@ -2020,4 +2250,3 @@ class IletisimSayfasi extends StatelessWidget {
     );
   }
 }
-

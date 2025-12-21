@@ -8,11 +8,14 @@ class EvTuketimiSayfasi extends StatefulWidget {
 }
 
 class _EvTuketimiSayfasiState extends State<EvTuketimiSayfasi> {
-  // Güç artık kW
-  final _gucKw = TextEditingController(text: '1'); // kW
-  final _saat = TextEditingController(text: '5'); // saat/gün
-  final _gun = TextEditingController(text: '30'); // gün/ay
+  // Güç kW
+  final _gucKw = TextEditingController(text: '0.30'); // örn buzdolabı etiketi 300W -> 0.30 kW
+  final _saat = TextEditingController(text: '24');    // buzdolabı için genelde 24 yazılır
+  final _gun = TextEditingController(text: '30');     // gün/ay
   final _birimFiyat = TextEditingController(text: '2.5'); // TL/kWh
+
+  // ✅ yeni: çalışma oranı (%)
+  final _calismaOrani = TextEditingController(text: '30'); // %30 tipik olabilir
 
   String sonuc = '';
 
@@ -24,8 +27,9 @@ class _EvTuketimiSayfasiState extends State<EvTuketimiSayfasi> {
     final saatGun = _d(_saat);
     final gunAy = _d(_gun);
     final fiyat = _d(_birimFiyat);
+    final oran = _d(_calismaOrani);
 
-    if ([gucKw, saatGun, gunAy, fiyat].any((e) => e == null)) {
+    if ([gucKw, saatGun, gunAy, fiyat, oran].any((e) => e == null)) {
       setState(() => sonuc = 'Lütfen tüm alanları doldur.');
       return;
     }
@@ -35,24 +39,35 @@ class _EvTuketimiSayfasiState extends State<EvTuketimiSayfasi> {
       return;
     }
 
-    // Hesaplar (kW direkt giriliyor)
-    final gunlukKwh = gucKw * saatGun;
+    if (oran! <= 0 || oran > 100) {
+      setState(() => sonuc = 'Çalışma oranı 1 ile 100 arasında olmalı.');
+      return;
+    }
+
+    // ✅ çalışma oranı dahil
+    final duty = oran / 100.0;
+
+    final gunlukKwh = gucKw * saatGun * duty;
     final aylikKwh = gunlukKwh * gunAy;
     final aylikTl = aylikKwh * fiyat;
 
+    // ekstra: gerçek çalışma saati gibi gösterelim
+    final efektifSaat = saatGun * duty;
+
     setState(() {
       sonuc =
-          '✅ EV TÜKETİM HESABI ✅\n'
-          'Cihaz Gücü      : ${gucKw.toStringAsFixed(2)} kW\n'
-          'Günlük Kullanım : ${saatGun.toStringAsFixed(1)} saat\n'
-          'Aylık Gün       : ${gunAy.toStringAsFixed(0)} gün\n\n'
-          'Günlük Tüketim  : ${gunlukKwh.toStringAsFixed(2)} kWh\n'
-          'Aylık Tüketim   : ${aylikKwh.toStringAsFixed(2)} kWh\n\n'
-          'Birim Fiyat     : ${fiyat.toStringAsFixed(2)} TL / kWh\n'
-          'Aylık Maliyet   : ${aylikTl.toStringAsFixed(2)} TL\n\n'
+          '- EV TÜKETİM HESABI -\n'
+          'Cihaz Gücü        : ${gucKw.toStringAsFixed(2)} kW\n'
+          'Günlük Süre       : ${saatGun.toStringAsFixed(1)} saat\n'
+          'Çalışma Oranı     : %${oran.toStringAsFixed(0)}\n'
+          'Efektif Çalışma   : ${efektifSaat.toStringAsFixed(1)} saat/gün\n\n'
+          'Günlük Tüketim    : ${gunlukKwh.toStringAsFixed(2)} kWh\n'
+          'Aylık Tüketim     : ${aylikKwh.toStringAsFixed(2)} kWh\n\n'
+          'Birim Fiyat       : ${fiyat.toStringAsFixed(2)} TL / kWh\n'
+          'Aylık Maliyet     : ${aylikTl.toStringAsFixed(2)} TL\n\n'
           'Not:\n'
-          '- Bu değerler ortalama kullanım içindir.\n'
-          '- Aynı anda çalışan cihazlar toplamı faturayı büyütür.\n'
+          '- Buzdolabı/klima gibi termostatlı cihazlarda “çalışma oranı” çok önemlidir.\n'
+          '- Ortam sıcaklığı arttıkça çalışma oranı yükselir.\n'
           '- Kademeli tarife varsa sonuç değişebilir.';
     });
   }
@@ -63,6 +78,7 @@ class _EvTuketimiSayfasiState extends State<EvTuketimiSayfasi> {
     _saat.dispose();
     _gun.dispose();
     _birimFiyat.dispose();
+    _calismaOrani.dispose();
     super.dispose();
   }
 
@@ -74,7 +90,8 @@ class _EvTuketimiSayfasiState extends State<EvTuketimiSayfasi> {
         padding: const EdgeInsets.all(16),
         children: [
           _input('Cihaz Gücü (kW)', _gucKw, 'Örn: 0.1 = 100W'),
-          _input('Günlük Kullanım (saat)', _saat, 'Örn: 5'),
+          _input('Günlük Kullanım (saat)', _saat, 'Buzdolabı için genelde 24'),
+          _input('Çalışma Oranı (%)', _calismaOrani, 'Örn: 30 (buzdolabı), 50 (klima)'),
           _input('Ayda Kaç Gün', _gun, 'Örn: 30'),
           _input('Elektrik Birim Fiyatı (TL/kWh)', _birimFiyat, 'Örn: 2.5'),
           const SizedBox(height: 12),
@@ -86,36 +103,51 @@ class _EvTuketimiSayfasiState extends State<EvTuketimiSayfasi> {
 
           const SizedBox(height: 12),
 
-          // 🔹 SONUÇ KARTI
           Card(
             child: Padding(
               padding: const EdgeInsets.all(12),
-              child: Text(
-                sonuc.isEmpty ? 'Sonuç burada görünecek.' : sonuc,
-              ),
+              child: Text(sonuc.isEmpty ? 'Sonuç burada görünecek.' : sonuc),
             ),
           ),
 
           const SizedBox(height: 10),
 
-          // 🔹 BİLGİLENDİRME NOTU (HER ZAMAN GÖRÜNÜR)
           Card(
             color: Theme.of(context).colorScheme.surfaceVariant,
-            child: Padding(
-              padding: const EdgeInsets.all(12),
+            child: const Padding(
+              padding: EdgeInsets.all(12),
               child: Text(
-                'Bilgilendirme:\n'
-                '- Cihaz gücü kiloWatt (kW) cinsinden girilmelidir.\n'
-                '- Watt (W) değeri varsa 1000’e bölerek kW’a çevirin.\n\n'
-                'Örnek:\n'
-                '• 100 W → 0.10 kW\n'
-                '• 300 W (Buzdolabı) → 0.30 kW\n'
-                '• 1000 W → 1.00 kW',
-                style: TextStyle(
-                  fontSize: 13,
-                  height: 1.4,
-                  color: Colors.grey,
-                ),
+                'Bilgi:\n'
+'- Termostatlı cihazlarda (buzdolabı, klima, derin dondurucu, kombi vb.) cihaz fişte olsa bile '
+'elektrik motoru veya ısıtıcı **sürekli çalışmaz**.\n'
+'- Bu cihazlar ortam sıcaklığına göre **aç-kapa (devreye girip çıkma)** yapar.\n'
+'- Bu nedenle etiket üzerinde yazan güç değeri, cihazın **her an çektiği güç anlamına gelmez**.\n\n'
+
+'Çalışma Oranı (%):\n'
+'- Bir cihazın gün içerisindeki ''gerçek çalışma süresinin yüzdesini'' ifade eder.\n'
+'- Örneğin %30 çalışma oranı, cihazın günün yaklaşık ''%30’unda aktif çalıştığı'' anlamına gelir.\n'
+'- Bu değer mevsime, ortam sıcaklığına, kullanım alışkanlığına ve cihazın verimliliğine göre değişir.\n\n'
+
+'Mini Örnek (Buzdolabı):\n'
+'- Etiket Gücü: 0.30 kW (300 W)\n'
+'- Günlük Süre: 24 saat\n'
+'- Çalışma Oranı: %30\n'
+'- Günlük Tüketim = 0.30 × 24 × 0.30 = **2.16 kWh / gün\n'
+'- Aylık Tüketim ≈ 2.16 × 30 = **64.8 kWh / ay\n\n'
+
+'Tipik Çalışma Oranları:\n'
+'- Buzdolabı: %25 – %40\n'
+'- Derin Dondurucu: %30 – %45\n'
+'- Klima (inverter): %30 – %60\n'
+'- Kombi: %10 – %40\n'
+'- Televizyon / Aydınlatma: %80 – %100\n\n'
+
+'Önemli Notlar:\n'
+'- Ortam sıcaklığı arttıkça çalışma oranı yükselir ve tüketim artar.\n'
+'- Kapı sık açılan buzdolapları daha fazla enerji harcar.\n'
+'- Aynı anda çalışan cihaz sayısı toplam faturayı yükseltir.\n'
+'- Kademeli elektrik tarifelerinde toplam maliyet farklı çıkabilir.',
+style: TextStyle(fontSize: 13, height: 1.4),
               ),
             ),
           ),

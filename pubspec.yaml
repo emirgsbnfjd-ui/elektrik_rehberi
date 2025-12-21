@@ -17,7 +17,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
 
-version: 1.0.3+10
+version: 1.0.4+11
+
 
 
 environment:
@@ -62,7 +63,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true 
   assets:
-    - assets/images/logo.jpg
+    - assets/logo.png
     - assets/images/direnc.webp
     - assets/images/diyot.jpg
     - assets/images/kondansator.jpg
@@ -71,7 +72,7 @@ flutter:
     - assets/images/osiloskop.jpg
     - assets/images/transıstor.jpg
     - assets/images/appicon.jpg
-    - assets/logo.png
+    - assets/images/logo1.png
     - assets/images/lego12.png
     - assets/images/kompanzasyon.png
     - assets/images/ücgenyıldız.png
@@ -80,8 +81,8 @@ flutter:
     - assets/images/rcd.jpg
     - assets/images/direnc6.png
     - assets/images/pensampermetre.png
-    
-
+    - assets/images/elektrik.png
+    - assets/images/topraklama_icon.png
 flutter_launcher_icons:
   android: true
   ios: true

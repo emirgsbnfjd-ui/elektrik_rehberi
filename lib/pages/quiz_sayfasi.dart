@@ -148,7 +148,7 @@ class _QuizSayfasiState extends State<QuizSayfasi> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Soru: ${index + 1} / $toplam'),
+                  Text('Karışık Soru: ${index + 1} / $toplam'),
                   Text('✅ $dogru  ❌ $yanlis'),
                 ],
               ),

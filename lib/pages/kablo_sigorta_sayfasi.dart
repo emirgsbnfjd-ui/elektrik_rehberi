@@ -1,5 +1,6 @@
 ﻿import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class KabloSigortaSayfasi extends StatefulWidget {
   const KabloSigortaSayfasi({super.key});
@@ -9,9 +10,9 @@ class KabloSigortaSayfasi extends StatefulWidget {
 }
 
 class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
-  final powerCtrl = TextEditingController();   // kW
+  final powerCtrl = TextEditingController(); // kW
   final currentCtrl = TextEditingController(); // A
-  final lengthCtrl = TextEditingController();  // m
+  final lengthCtrl = TextEditingController(); // m
 
   bool voltajDusumuAktif = false; // 🔘 Hat uzunluğu aç/kapa (ΔV hesabı)
 
@@ -19,6 +20,8 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
   String girisTuru = 'Güç (kW)'; // veya Akım (A)
   String gerilim = '230 V';
   String malzeme = 'Bakır (Cu)';
+
+  // ✅ Yük tipi varsayılan (isteğe bağlı seçilecek, Gelişmiş'te)
   String yukTipi = 'Genel (Priz)';
 
   double cosPhi = 0.95;
@@ -30,50 +33,45 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
   String? sonucGerilimDusumu;
   String? uyari;
 
-  // Kesitleri String tutalım (en stabil yöntem)
-  final List<String> kesitler = const [
-    '1.5','2.5','4','6','10','16','25','35','50','70','95'
-  ];
+  // Kesitleri String tutalım
+  final List<String> kesitler = const ['1.5', '2.5', '4', '6', '10', '16', '25', '35', '50', '70', '95'];
 
   // Yaklaşık taşıma akımları (A) — saha tahmini
   final Map<String, double> ampCu = const {
     '1.5': 16,
     '2.5': 25,
-    '4'  : 32,
-    '6'  : 40,
-    '10' : 63,
-    '16' : 80,
-    '25' : 100,
-    '35' : 125,
-    '50' : 160,
-    '70' : 200,
-    '95' : 250,
+    '4': 32,
+    '6': 40,
+    '10': 63,
+    '16': 80,
+    '25': 100,
+    '35': 125,
+    '50': 160,
+    '70': 200,
+    '95': 250,
   };
 
   final Map<String, double> ampAl = const {
     '2.5': 20,
-    '4'  : 25,
-    '6'  : 32,
-    '10' : 50,
-    '16' : 63,
-    '25' : 80,
-    '35' : 100,
-    '50' : 125,
-    '70' : 160,
-    '95' : 200,
+    '4': 25,
+    '6': 32,
+    '10': 50,
+    '16': 63,
+    '25': 80,
+    '35': 100,
+    '50': 125,
+    '70': 160,
+    '95': 200,
   };
 
-  final List<int> sigortalar = const [
-    6, 10, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125, 160, 200, 250
-  ];
+  final List<int> sigortalar = const [6, 10, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125, 160, 200, 250];
 
   double _parseCtrl(TextEditingController c) =>
-      double.tryParse(c.text.replaceAll(',', '.')) ?? double.nan;
+      double.tryParse(c.text.replaceAll(',', '.').trim()) ?? double.nan;
 
   double _Vnom() => gerilim.startsWith('230') ? 230.0 : 400.0;
 
-  double _rho() =>
-      malzeme.startsWith('Bakır') ? 0.018 : 0.028; // Ω·mm²/m (yaklaşık)
+  double _rho() => malzeme.startsWith('Bakır') ? 0.018 : 0.028; // Ω·mm²/m (yaklaşık)
 
   double _akimHesaplaKw(double kw) {
     final V = _Vnom();
@@ -98,6 +96,7 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
   }
 
   double _hedefDusumYuzde() {
+    // Aydınlatmada genelde %3 tavsiye edilir, diğerleri %5
     if (yukTipi.startsWith('Aydınlatma')) return 3.0;
     return 5.0;
   }
@@ -242,6 +241,12 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
       sonucAkim = null;
       sonucGerilimDusumu = null;
       uyari = null;
+
+      // İstersen temizleyince de varsayılana dönsün:
+      yukTipi = 'Genel (Priz)';
+      cosPhi = 0.95;
+      verim = 0.90;
+      voltajDusumuAktif = false;
     });
   }
 
@@ -265,18 +270,13 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
           Card(
             elevation: 0,
             color: surface,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             child: Padding(
               padding: const EdgeInsets.all(14),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Giriş',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
-                  ),
+                  const Text('Giriş', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
                   const SizedBox(height: 12),
 
                   Row(
@@ -284,19 +284,10 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
                       Expanded(
                         child: DropdownButtonFormField<String>(
                           value: faz,
-                          decoration: const InputDecoration(
-                            labelText: 'Faz',
-                            border: OutlineInputBorder(),
-                          ),
+                          decoration: const InputDecoration(labelText: 'Faz', border: OutlineInputBorder()),
                           items: const [
-                            DropdownMenuItem(
-                              value: 'Tek Faz',
-                              child: Text('Tek Faz'),
-                            ),
-                            DropdownMenuItem(
-                              value: 'Trifaze',
-                              child: Text('Trifaze'),
-                            ),
+                            DropdownMenuItem(value: 'Tek Faz', child: Text('Tek Faz')),
+                            DropdownMenuItem(value: 'Trifaze', child: Text('Trifaze')),
                           ],
                           onChanged: (v) => setState(() => faz = v!),
                         ),
@@ -305,10 +296,7 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
                       Expanded(
                         child: DropdownButtonFormField<String>(
                           value: gerilim,
-                          decoration: const InputDecoration(
-                            labelText: 'Gerilim',
-                            border: OutlineInputBorder(),
-                          ),
+                          decoration: const InputDecoration(labelText: 'Gerilim', border: OutlineInputBorder()),
                           items: const [
                             DropdownMenuItem(value: '230 V', child: Text('230 V')),
                             DropdownMenuItem(value: '400 V', child: Text('400 V')),
@@ -320,12 +308,10 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
                   ),
 
                   const SizedBox(height: 10),
+
                   DropdownButtonFormField<String>(
                     value: girisTuru,
-                    decoration: const InputDecoration(
-                      labelText: 'Giriş türü',
-                      border: OutlineInputBorder(),
-                    ),
+                    decoration: const InputDecoration(labelText: 'Giriş türü', border: OutlineInputBorder()),
                     items: const [
                       DropdownMenuItem(value: 'Güç (kW)', child: Text('Güç (kW)')),
                       DropdownMenuItem(value: 'Akım (A)', child: Text('Akım (A)')),
@@ -337,10 +323,12 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
                   ),
 
                   const SizedBox(height: 10),
+
                   if (girisTuru.startsWith('Güç'))
                     TextField(
                       controller: powerCtrl,
-                      keyboardType: TextInputType.number,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
                       decoration: const InputDecoration(
                         labelText: 'Güç (kW)',
                         hintText: 'Örn: 5.5',
@@ -350,7 +338,8 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
                   else
                     TextField(
                       controller: currentCtrl,
-                      keyboardType: TextInputType.number,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
                       decoration: const InputDecoration(
                         labelText: 'Akım (A)',
                         hintText: 'Örn: 18',
@@ -394,10 +383,11 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
                             padding: const EdgeInsets.only(top: 10),
                             child: TextField(
                               controller: lengthCtrl,
-                              keyboardType: TextInputType.number,
+                              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
                               decoration: const InputDecoration(
                                 labelText: 'Hat uzunluğu (m)',
-                                hintText: 'Örn: 25',
+                                hintText: 'Örn: 25,5 veya 25.5',
                                 border: OutlineInputBorder(),
                               ),
                             ),
@@ -405,54 +395,53 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
                   ),
 
                   const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: DropdownButtonFormField<String>(
-                          isExpanded: true,
-                          value: malzeme,
-                          decoration: const InputDecoration(
-                            labelText: 'Kablo',
-                            border: OutlineInputBorder(),
-                          ),
-                          items: const [
-                            DropdownMenuItem(value: 'Bakır (Cu)', child: Text('Bakır (Cu)')),
-                            DropdownMenuItem(value: 'Alüminyum (Al)', child: Text('Alüminyum (Al)')),
-                          ],
-                          onChanged: (v) => setState(() => malzeme = v!),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: DropdownButtonFormField<String>(
-                          isExpanded: true,
-                          value: yukTipi,
-                          decoration: const InputDecoration(
-                            labelText: 'Yük tipi',
-                            border: OutlineInputBorder(),
-                          ),
-                          items: const [
-                            DropdownMenuItem(value: 'Genel (Priz)', child: Text('Genel (Priz)')),
-                            DropdownMenuItem(value: 'Aydınlatma', child: Text('Aydınlatma')),
-                            DropdownMenuItem(value: 'Motor', child: Text('Motor')),
-                          ],
-                          onChanged: (v) => setState(() => yukTipi = v!),
-                        ),
-                      ),
+
+                  DropdownButtonFormField<String>(
+                    isExpanded: true,
+                    value: malzeme,
+                    decoration: const InputDecoration(labelText: 'Kablo', border: OutlineInputBorder()),
+                    items: const [
+                      DropdownMenuItem(value: 'Bakır (Cu)', child: Text('Bakır (Cu)')),
+                      DropdownMenuItem(value: 'Alüminyum (Al)', child: Text('Alüminyum (Al)')),
                     ],
+                    onChanged: (v) => setState(() => malzeme = v!),
                   ),
 
                   const SizedBox(height: 12),
+
+                  // ✅ Yük tipi + cosφ + verim artık burada (isteğe bağlı)
                   ExpansionTile(
                     tilePadding: EdgeInsets.zero,
-                    title: const Text('Gelişmiş (cosφ, verim)'),
+                    title: const Text('Gelişmiş (Yük tipi, cosφ, verim)'),
                     children: [
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
+
+                      DropdownButtonFormField<String>(
+                        isExpanded: true,
+                        value: yukTipi,
+                        decoration: const InputDecoration(
+                          labelText: 'Yük tipi (isteğe bağlı)',
+                          border: OutlineInputBorder(),
+                        ),
+                        items: const [
+                          DropdownMenuItem(value: 'Genel (Priz)', child: Text('Genel (Priz)')),
+                          DropdownMenuItem(value: 'Aydınlatma', child: Text('Aydınlatma')),
+                          DropdownMenuItem(value: 'Motor', child: Text('Motor')),
+                        ],
+                        onChanged: (v) => setState(() {
+                          yukTipi = v!;
+                          // seçim değişince sonuçları sıfırlamak daha iyi hissettirir
+                          sonucKablo = sonucSigorta = sonucAkim = sonucGerilimDusumu = uyari = null;
+                        }),
+                      ),
+
+                      const SizedBox(height: 10),
+
                       Row(
                         children: [
                           Expanded(
                             child: TextField(
-                              keyboardType: TextInputType.number,
+                              keyboardType: const TextInputType.numberWithOptions(decimal: true),
                               decoration: const InputDecoration(
                                 labelText: 'cosφ',
                                 hintText: 'Örn: 0.95',
@@ -467,7 +456,7 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: TextField(
-                              keyboardType: TextInputType.number,
+                              keyboardType: const TextInputType.numberWithOptions(decimal: true),
                               decoration: const InputDecoration(
                                 labelText: 'Verim (η)',
                                 hintText: 'Örn: 0.90',
@@ -481,16 +470,22 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
                           ),
                         ],
                       ),
+
                       const SizedBox(height: 10),
+
                       Text(
-                        'Not: cosφ ve verim girmezsen varsayılan cosφ=0.95, η=0.90 alınır.',
+                        'Not: Bu bölüm isteğe bağlıdır.\n'
+                        '- Yük tipi: sigorta eğrisi (B/C/D) ve ΔV hedefini etkiler.\n'
+                        '- cosφ ve verim girmezsen varsayılan cosφ=0.95, η=0.90 alınır.',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
+
                       const SizedBox(height: 6),
                     ],
                   ),
 
                   const SizedBox(height: 12),
+
                   Row(
                     children: [
                       Expanded(
@@ -526,10 +521,7 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Sonuç',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
-                    ),
+                    const Text('Sonuç', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
                     const SizedBox(height: 10),
                     if (sonucAkim != null) _line(Icons.electric_bolt, sonucAkim!),
                     if (sonucKablo != null) _line(Icons.cable, sonucKablo!),
