@@ -6,7 +6,7 @@ import 'pages/hesaplamalar_sayfasi.dart';
 import 'pages/quiz_sayfasi.dart';
 import 'package:flutter/services.dart';
 import 'pages/ariza_teshis/ariza_teshis_ana_sayfa.dart';
-import 'pages/destek_ol_sayfasi.dart';
+
 
 
 final List<String> hesapGecmisi = [];
@@ -1788,19 +1788,7 @@ class MakaleArama extends SearchDelegate {
                   MaterialPageRoute(builder: (_) => const GizlilikSayfasi()),
                 );
               },
-            ),   
-            ListTile(
-             leading: const Icon(Icons.star_outline),
-             title: const Text("Geliştiriciye Destek Ol"),
-             subtitle: const Text("Uygulamanın gelişimine katkı"),
-             onTap: () {
-                Navigator.pop(context); // Drawer kapansın
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const DestekOlSayfasi()),
-                );
-              },
-            ),  
+            ),               
           ],
         ),
       ),

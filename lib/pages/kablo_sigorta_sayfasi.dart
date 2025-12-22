@@ -174,7 +174,7 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
   }
 
   void _hesapla() {
-  // Eski sonuçları temizle
+  // Önce eski sonuçları temizle
   setState(() {
     sonucKablo = null;
     sonucSigorta = null;
@@ -183,8 +183,9 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
     uyari = null;
   });
 
-  // 1) Akım (I) hesapla
+  // 1) Akım (I) hesapla / al
   double I;
+
   if (girisTuru.startsWith('Güç')) {
     final kw = _parseCtrl(powerCtrl);
     if (kw.isNaN || kw <= 0) {
@@ -201,32 +202,14 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
     I = a;
   }
 
-  // 1.1) AŞIRI DEĞER KONTROLÜ (abartı hesapları engelle)
-  // Seçili malzemeye göre mevcut tablondaki maksimum taşıma akımı
-  final ampMap = malzeme.startsWith('Bakır') ? ampCu : ampAl;
-  final maxTekKabloA = ampMap.values.isEmpty
-      ? 0.0
-      : ampMap.values.reduce((a, b) => a > b ? a : b);
-
-  // Uygulama güvenlik limiti (istersen değiştir)
-  const hardLimitA = 1000.0;
-
-  if (I > hardLimitA) {
+  // 1.1) Abartı değer filtresi (tek kablo için mantıksız akım)
+  const double maxTekKabloAkim = 1000.0; // istersen 800/1250 yaparız
+  if (I > maxTekKabloAkim) {
     setState(() {
+      sonucAkim = 'Akım ≈ ${I.toStringAsFixed(2)} A';
       uyari =
-          '⚠️ Girilen akım çok yüksek (${I.toStringAsFixed(0)} A).\n'
-          'Bu hesap “tek kablo” mantığı içindir. Böyle akımlar için paralel kablo, bara/busbar veya farklı tasarım gerekir.\n'
-          'Lütfen daha gerçekçi bir değer gir.';
-    });
-    return;
-  }
-
-  if (maxTekKabloA > 0 && I > maxTekKabloA) {
-    setState(() {
-      uyari =
-          '⚠️ Akım ${I.toStringAsFixed(0)} A, seçili tabloya göre tek kablonun maksimum taşıma değerini aşıyor '
-          '(maks ~${maxTekKabloA.toStringAsFixed(0)} A).\n'
-          'Çözüm: Paralel kablo (ör. 2x/3x), bara/busbar veya proje hesabı gerekir.';
+          '⚠️ Çok büyük akım! (>${maxTekKabloAkim.toStringAsFixed(0)} A)\n'
+          'Bu hesap “tek kablo/tek hat” içindir. Bu seviyelerde genelde paralel kablo, bara (busbar), özel şalt/sigorta seçimi gerekir.';
     });
     return;
   }
@@ -242,14 +225,29 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
     L = lVal;
   }
 
-  // 3) Kesit + Sigorta
+  // 3) Kesit seç
   final secKesitKey = _kesitSec(I: I, L: L);
   final secKesit = _kesitToDouble(secKesitKey);
 
+  final tasima = _ampLimit(secKesitKey);
+
+  // 3.1) Seçilen kesit bile akımı taşımıyorsa: “tek kablo yetmez” uyarısı
+  if (tasima <= 0 || tasima < I) {
+    setState(() {
+      sonucAkim = 'Akım ≈ ${I.toStringAsFixed(2)} A';
+      uyari =
+          '⚠️ Bu akım için tek kablo yeterli görünmüyor.\n'
+          'Seçilebilen en büyük kesitte bile taşıma akımı yetersiz. '
+          'Paralel kablo / farklı döşeme / bara sistemi düşünülmeli.';
+    });
+    return;
+  }
+
+  // 4) Sigorta seç
   final sig = _sigortaSec(I);
   final egri = _egriOner();
 
-  // 4) ΔV metni
+  // 5) ΔV metni
   String? dvText;
   String ekstra = '';
   if (voltajDusumuAktif && L != null) {
@@ -258,22 +256,22 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
     final hedef = _hedefDusumYuzde();
 
     dvText =
-        'Gerilim düşümü: ΔV ≈ ${dv.toStringAsFixed(2)} V  (${percent.toStringAsFixed(2)}%)'
-        '  • Hedef ≤ ${hedef.toStringAsFixed(0)}%';
+        'Gerilim düşümü: ΔV ≈ ${dv.toStringAsFixed(2)} V (${percent.toStringAsFixed(2)}%)'
+        ' • Hedef ≤ ${hedef.toStringAsFixed(0)}%';
 
     if (percent > hedef) {
-      ekstra = 'Gerilim düşümü hedefi aşıyor, kesiti büyütmek gerekebilir.';
+      ekstra = 'Gerilim düşümü hedefi aşıyor; kesiti büyütmek gerekebilir.';
     } else if (percent > hedef * 0.8) {
       ekstra = 'Sınırda: uzun hatlarda 1 kademe büyük kesit daha konforlu olur.';
     }
   }
 
-  // 5) Sonuçları yaz
+  // 6) Sonuçları yaz
   setState(() {
     sonucAkim = 'Akım ≈ ${I.toStringAsFixed(2)} A';
     sonucKablo =
         'Öneri kesit: ${secKesit.toStringAsFixed(1)} mm² (${malzeme.startsWith('Bakır') ? 'Cu' : 'Al'})'
-        '  • Taşıma ~${_ampLimit(secKesitKey).toStringAsFixed(0)} A';
+        ' • Taşıma ~${tasima.toStringAsFixed(0)} A';
     sonucSigorta = 'Öneri sigorta: $egri $sig (yaklaşık)';
     sonucGerilimDusumu = dvText;
 
