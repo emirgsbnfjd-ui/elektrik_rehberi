@@ -10,66 +10,64 @@ class KabloSigortaSayfasi extends StatefulWidget {
 }
 
 class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
-  final powerCtrl = TextEditingController(); // kW
+  final powerCtrl = TextEditingController();   // kW
   final currentCtrl = TextEditingController(); // A
-  final lengthCtrl = TextEditingController(); // m
+  final lengthCtrl = TextEditingController();  // m
 
-  bool voltajDusumuAktif = false; // 🔘 Hat uzunluğu aç/kapa (ΔV hesabı)
+  // Seçimler
+  String faz = 'Tek Faz';          // Tek Faz / Trifaze
+  String gerilim = '230 V';        // Tek Faz: 230, Trifaze: 400 (kilitli)
+  String girisTuru = 'Güç (kW)';   // Güç (kW) / Akım (A)
+  String malzeme = 'Bakır (Cu)';   // Bakır / Alüminyum
+  String yukTipi = 'Genel (Priz)'; // Genel / Aydınlatma / Motor
 
-  String faz = 'Tek Faz';
-  String girisTuru = 'Güç (kW)'; // veya Akım (A)
-  String gerilim = '230 V';
-  String malzeme = 'Bakır (Cu)';
-
-  // ✅ Yük tipi varsayılan (isteğe bağlı seçilecek, Gelişmiş'te)
-  String yukTipi = 'Genel (Priz)';
+  bool voltajDusumuAktif = false;
 
   double cosPhi = 0.95;
   double verim = 0.90;
 
+  // Sonuçlar
+  String? sonucAkim;
   String? sonucKablo;
   String? sonucSigorta;
-  String? sonucAkim;
   String? sonucGerilimDusumu;
   String? uyari;
 
-  // Kesitleri String tutalım
-  final List<String> kesitler = const ['1.5', '2.5', '4', '6', '10', '16', '25', '35', '50', '70', '95'];
+  // Kesit listesi
+  final List<String> kesitler = const [
+    '1.5','2.5','4','6','10','16','25','35','50','70','95',
+    '120','150','185','240''300','400','500','630'
+  ];
 
   // Yaklaşık taşıma akımları (A) — saha tahmini
   final Map<String, double> ampCu = const {
-    '1.5': 16,
-    '2.5': 25,
-    '4': 32,
-    '6': 40,
-    '10': 63,
-    '16': 80,
-    '25': 100,
-    '35': 125,
-    '50': 160,
-    '70': 200,
-    '95': 250,
+    '1.5': 16, '2.5': 25, '4': 32, '6': 40, '10': 63, '16': 80,
+    '25': 100, '35': 125, '50': 160, '70': 200, '95': 250,'120': 290,'150': 330,'185': 380,'240': 460,
+    '300': 520, '400': 650, '500': 760, '630': 900,
   };
 
   final Map<String, double> ampAl = const {
-    '2.5': 20,
-    '4': 25,
-    '6': 32,
-    '10': 50,
-    '16': 63,
-    '25': 80,
-    '35': 100,
-    '50': 125,
-    '70': 160,
-    '95': 200,
+    '2.5': 20, '4': 25, '6': 32, '10': 50, '16': 63,
+    '25': 80, '35': 100, '50': 125, '70': 160, '95': 200,'120': 230,'150': 260,'185': 300,'240': 360,
+    '300': 410, '400': 520, '500': 610, '630': 720,
   };
 
-  final List<int> sigortalar = const [6, 10, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125, 160, 200, 250];
+  final List<int> sigortalar = const [
+    6,10,16,20,25,32,40,50,63,80,100,125,160,200,250,
+    315,400,500,630,800,1000
+  ];
 
-  double _parseCtrl(TextEditingController c) =>
-      double.tryParse(c.text.replaceAll(',', '.').trim()) ?? double.nan;
+  // --- Yardımcılar ---
 
-  double _Vnom() => gerilim.startsWith('230') ? 230.0 : 400.0;
+  // Virgül/nokta fark etmez
+  double _parseNum(String s) {
+    final t = s.replaceAll(',', '.').trim();
+    return double.tryParse(t) ?? double.nan;
+  }
+
+  double _parseCtrl(TextEditingController c) => _parseNum(c.text);
+
+  double _Vnom() => (faz == 'Tek Faz') ? 230.0 : 400.0;
 
   double _rho() => malzeme.startsWith('Bakır') ? 0.018 : 0.028; // Ω·mm²/m (yaklaşık)
 
@@ -82,11 +80,7 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
     }
   }
 
-  double _gerilimDusumuVolt({
-    required double I,
-    required double L,
-    required double S,
-  }) {
+  double _gerilimDusumuVolt({required double I, required double L, required double S}) {
     final rho = _rho();
     if (faz == 'Tek Faz') {
       return 2.0 * I * L * rho / S;
@@ -96,7 +90,6 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
   }
 
   double _hedefDusumYuzde() {
-    // Aydınlatmada genelde %3 tavsiye edilir, diğerleri %5
     if (yukTipi.startsWith('Aydınlatma')) return 3.0;
     return 5.0;
   }
@@ -108,19 +101,19 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
 
   double _kesitToDouble(String k) => double.tryParse(k) ?? 0;
 
-  // ΔV açıkken: akım + gerilim düşümüne göre kesit seçer
-  // ΔV kapalıyken: sadece taşıma akımına göre kesit seçer
   String _kesitSec({required double I, double? L}) {
     final V = _Vnom();
     final hedef = _hedefDusumYuzde();
 
     final uygunKesitler = kesitler.where((k) {
-      if (!malzeme.startsWith('Bakır') && k == '1.5') return false;
-      if (!malzeme.startsWith('Bakır') && !ampAl.containsKey(k)) return false;
+      if (!malzeme.startsWith('Bakır')) {
+        if (k == '1.5') return false;
+        if (!ampAl.containsKey(k)) return false;
+      }
       return true;
     }).toList();
 
-    // 1) akıma göre minimum kesit
+    // 1) Akıma göre minimum kesit
     String secilen = uygunKesitler.first;
     for (final k in uygunKesitler) {
       if (_ampLimit(k) >= I) {
@@ -148,7 +141,7 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
   }
 
   int _sigortaSec(double I) {
-    final hedef = I * 1.25; // pay
+    final hedef = I * 1.25;
     for (final s in sigortalar) {
       if (s >= hedef) return s;
     }
@@ -161,73 +154,132 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
     return 'C';
   }
 
-  void _hesapla() {
-    // ✅ Akım hesapla
-    double I;
-    if (girisTuru.startsWith('Güç')) {
-      final kw = _parseCtrl(powerCtrl);
-      if (kw.isNaN || kw <= 0) {
-        setState(() => uyari = 'Güç (kW) gir.');
-        return;
-      }
-      I = _akimHesaplaKw(kw);
-    } else {
-      final a = _parseCtrl(currentCtrl);
-      if (a.isNaN || a <= 0) {
-        setState(() => uyari = 'Akım (A) gir.');
-        return;
-      }
-      I = a;
-    }
+  void _sifirlaSonuclar() {
+    sonucAkim = null;
+    sonucKablo = null;
+    sonucSigorta = null;
+    sonucGerilimDusumu = null;
+    uyari = null;
+  }
 
-    // ✅ Uzunluk sadece ΔV açıksa zorunlu
-    double? L;
-    if (voltajDusumuAktif) {
-      final lVal = _parseCtrl(lengthCtrl);
-      if (lVal.isNaN || lVal <= 0) {
-        setState(() => uyari = 'Hat uzunluğu (m) gir.');
-        return;
-      }
-      L = lVal;
-    }
-
-    // ✅ Kesit seç
-    final secKesitKey = _kesitSec(I: I, L: L);
-    final secKesit = _kesitToDouble(secKesitKey);
-
-    // ✅ Sigorta
-    final sig = _sigortaSec(I);
-    final egri = _egriOner();
-
-    // ✅ ΔV (aktifse hesapla)
-    String? dvText;
-    String ekstra = '';
-    if (voltajDusumuAktif && L != null) {
-      final dv = _gerilimDusumuVolt(I: I, L: L, S: secKesit);
-      final percent = (dv / _Vnom()) * 100.0;
-      final hedef = _hedefDusumYuzde();
-
-      dvText =
-          'Gerilim düşümü: ΔV ≈ ${dv.toStringAsFixed(2)} V  (${percent.toStringAsFixed(2)}%)'
-          '  • Hedef ≤ ${hedef.toStringAsFixed(0)}%';
-
-      if (percent > hedef) {
-        ekstra = 'Gerilim düşümü hedefi aşıyor, kesiti büyütmek gerekebilir.';
-      } else if (percent > hedef * 0.8) {
-        ekstra = 'Sınırda: uzun hatlarda 1 kademe büyük kesit daha konforlu olur.';
-      }
-    }
-
+  void _fazDegisti(String yeni) {
     setState(() {
-      sonucAkim = 'Akım ≈ ${I.toStringAsFixed(2)} A';
-      sonucKablo =
-          'Öneri kesit: ${secKesit.toStringAsFixed(1)} mm² (${malzeme.startsWith('Bakır') ? 'Cu' : 'Al'})'
-          '  • Taşıma ~${_ampLimit(secKesitKey).toStringAsFixed(0)} A';
-      sonucSigorta = 'Öneri sigorta: $egri $sig (yaklaşık)';
-      sonucGerilimDusumu = dvText;
-      uyari = ekstra.isEmpty
-          ? 'Not: Değerler yaklaşık saha hesabıdır; döşeme şekli/ısı/grup kablo sonucu değiştirir.'
-          : '⚠️ $ekstra';
+      faz = yeni;
+
+      // ✅ Faz seçimine göre gerilimi kilitle
+      gerilim = (faz == 'Tek Faz') ? '230 V' : '400 V';
+
+      _sifirlaSonuclar();
+    });
+  }
+
+  void _hesapla() {
+  // Eski sonuçları temizle
+  setState(() {
+    sonucKablo = null;
+    sonucSigorta = null;
+    sonucAkim = null;
+    sonucGerilimDusumu = null;
+    uyari = null;
+  });
+
+  // 1) Akım (I) hesapla
+  double I;
+  if (girisTuru.startsWith('Güç')) {
+    final kw = _parseCtrl(powerCtrl);
+    if (kw.isNaN || kw <= 0) {
+      setState(() => uyari = 'Güç (kW) gir.');
+      return;
+    }
+    I = _akimHesaplaKw(kw);
+  } else {
+    final a = _parseCtrl(currentCtrl);
+    if (a.isNaN || a <= 0) {
+      setState(() => uyari = 'Akım (A) gir.');
+      return;
+    }
+    I = a;
+  }
+
+  // 1.1) AŞIRI DEĞER KONTROLÜ (abartı hesapları engelle)
+  // Seçili malzemeye göre mevcut tablondaki maksimum taşıma akımı
+  final ampMap = malzeme.startsWith('Bakır') ? ampCu : ampAl;
+  final maxTekKabloA = ampMap.values.isEmpty
+      ? 0.0
+      : ampMap.values.reduce((a, b) => a > b ? a : b);
+
+  // Uygulama güvenlik limiti (istersen değiştir)
+  const hardLimitA = 1000.0;
+
+  if (I > hardLimitA) {
+    setState(() {
+      uyari =
+          '⚠️ Girilen akım çok yüksek (${I.toStringAsFixed(0)} A).\n'
+          'Bu hesap “tek kablo” mantığı içindir. Böyle akımlar için paralel kablo, bara/busbar veya farklı tasarım gerekir.\n'
+          'Lütfen daha gerçekçi bir değer gir.';
+    });
+    return;
+  }
+
+  if (maxTekKabloA > 0 && I > maxTekKabloA) {
+    setState(() {
+      uyari =
+          '⚠️ Akım ${I.toStringAsFixed(0)} A, seçili tabloya göre tek kablonun maksimum taşıma değerini aşıyor '
+          '(maks ~${maxTekKabloA.toStringAsFixed(0)} A).\n'
+          'Çözüm: Paralel kablo (ör. 2x/3x), bara/busbar veya proje hesabı gerekir.';
+    });
+    return;
+  }
+
+  // 2) Uzunluk (ΔV açıksa)
+  double? L;
+  if (voltajDusumuAktif) {
+    final lVal = _parseCtrl(lengthCtrl);
+    if (lVal.isNaN || lVal <= 0) {
+      setState(() => uyari = 'Hat uzunluğu (m) gir.');
+      return;
+    }
+    L = lVal;
+  }
+
+  // 3) Kesit + Sigorta
+  final secKesitKey = _kesitSec(I: I, L: L);
+  final secKesit = _kesitToDouble(secKesitKey);
+
+  final sig = _sigortaSec(I);
+  final egri = _egriOner();
+
+  // 4) ΔV metni
+  String? dvText;
+  String ekstra = '';
+  if (voltajDusumuAktif && L != null) {
+    final dv = _gerilimDusumuVolt(I: I, L: L, S: secKesit);
+    final percent = (dv / _Vnom()) * 100.0;
+    final hedef = _hedefDusumYuzde();
+
+    dvText =
+        'Gerilim düşümü: ΔV ≈ ${dv.toStringAsFixed(2)} V  (${percent.toStringAsFixed(2)}%)'
+        '  • Hedef ≤ ${hedef.toStringAsFixed(0)}%';
+
+    if (percent > hedef) {
+      ekstra = 'Gerilim düşümü hedefi aşıyor, kesiti büyütmek gerekebilir.';
+    } else if (percent > hedef * 0.8) {
+      ekstra = 'Sınırda: uzun hatlarda 1 kademe büyük kesit daha konforlu olur.';
+    }
+  }
+
+  // 5) Sonuçları yaz
+  setState(() {
+    sonucAkim = 'Akım ≈ ${I.toStringAsFixed(2)} A';
+    sonucKablo =
+        'Öneri kesit: ${secKesit.toStringAsFixed(1)} mm² (${malzeme.startsWith('Bakır') ? 'Cu' : 'Al'})'
+        '  • Taşıma ~${_ampLimit(secKesitKey).toStringAsFixed(0)} A';
+    sonucSigorta = 'Öneri sigorta: $egri $sig (yaklaşık)';
+    sonucGerilimDusumu = dvText;
+
+    uyari = ekstra.isEmpty
+        ? 'Not: Değerler yaklaşık saha hesabıdır; döşeme şekli/ısı/grup kablo sonucu değiştirir.'
+        : '⚠️ $ekstra';
     });
   }
 
@@ -235,18 +287,17 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
     powerCtrl.clear();
     currentCtrl.clear();
     lengthCtrl.clear();
-    setState(() {
-      sonucKablo = null;
-      sonucSigorta = null;
-      sonucAkim = null;
-      sonucGerilimDusumu = null;
-      uyari = null;
 
-      // İstersen temizleyince de varsayılana dönsün:
+    setState(() {
+      faz = 'Tek Faz';
+      gerilim = '230 V';
+      girisTuru = 'Güç (kW)';
+      malzeme = 'Bakır (Cu)';
       yukTipi = 'Genel (Priz)';
       cosPhi = 0.95;
       verim = 0.90;
       voltajDusumuAktif = false;
+      _sifirlaSonuclar();
     });
   }
 
@@ -261,6 +312,15 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
   @override
   Widget build(BuildContext context) {
     final surface = Theme.of(context).colorScheme.surface;
+
+    // ✅ Faz’a göre sadece tek gerilim göster
+    final gerilimItems = (faz == 'Tek Faz')
+        ? const [DropdownMenuItem(value: '230 V', child: Text('230 V'))]
+        : const [DropdownMenuItem(value: '400 V', child: Text('400 V'))];
+
+    // (emin olmak için)
+    if (faz == 'Tek Faz' && gerilim != '230 V') gerilim = '230 V';
+    if (faz == 'Trifaze' && gerilim != '400 V') gerilim = '400 V';
 
     return Scaffold(
       appBar: AppBar(title: const Text('Kablo Kesiti + Sigorta')),
@@ -289,7 +349,10 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
                             DropdownMenuItem(value: 'Tek Faz', child: Text('Tek Faz')),
                             DropdownMenuItem(value: 'Trifaze', child: Text('Trifaze')),
                           ],
-                          onChanged: (v) => setState(() => faz = v!),
+                          onChanged: (v) {
+                            if (v == null) return;
+                            _fazDegisti(v);
+                          },
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -297,11 +360,8 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
                         child: DropdownButtonFormField<String>(
                           value: gerilim,
                           decoration: const InputDecoration(labelText: 'Gerilim', border: OutlineInputBorder()),
-                          items: const [
-                            DropdownMenuItem(value: '230 V', child: Text('230 V')),
-                            DropdownMenuItem(value: '400 V', child: Text('400 V')),
-                          ],
-                          onChanged: (v) => setState(() => gerilim = v!),
+                          items: gerilimItems,
+                          onChanged: null, // ✅ kilitli (faz neyse o)
                         ),
                       ),
                     ],
@@ -317,8 +377,9 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
                       DropdownMenuItem(value: 'Akım (A)', child: Text('Akım (A)')),
                     ],
                     onChanged: (v) => setState(() {
-                      girisTuru = v!;
-                      sonucKablo = sonucSigorta = sonucAkim = sonucGerilimDusumu = uyari = null;
+                      if (v == null) return;
+                      girisTuru = v;
+                      _sifirlaSonuclar();
                     }),
                   ),
 
@@ -331,7 +392,7 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
                       inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
                       decoration: const InputDecoration(
                         labelText: 'Güç (kW)',
-                        hintText: 'Örn: 5.5',
+                        hintText: 'Örn: 5,5 veya 5.5',
                         border: OutlineInputBorder(),
                       ),
                     )
@@ -349,25 +410,17 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
 
                   const SizedBox(height: 10),
 
-                  // 🔘 ΔV aç/kapa
                   Row(
                     children: [
                       Expanded(
-                        child: Text(
-                          'Gerilim düşümü hesabı (ΔV)',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
+                        child: Text('Gerilim düşümü hesabı (ΔV)', style: Theme.of(context).textTheme.bodyMedium),
                       ),
                       Switch(
                         value: voltajDusumuAktif,
                         onChanged: (v) {
                           setState(() {
                             voltajDusumuAktif = v;
-                            sonucKablo = null;
-                            sonucSigorta = null;
-                            sonucAkim = null;
-                            sonucGerilimDusumu = null;
-                            uyari = null;
+                            _sifirlaSonuclar();
                             if (!v) lengthCtrl.clear();
                           });
                         },
@@ -404,12 +457,15 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
                       DropdownMenuItem(value: 'Bakır (Cu)', child: Text('Bakır (Cu)')),
                       DropdownMenuItem(value: 'Alüminyum (Al)', child: Text('Alüminyum (Al)')),
                     ],
-                    onChanged: (v) => setState(() => malzeme = v!),
+                    onChanged: (v) => setState(() {
+                      if (v == null) return;
+                      malzeme = v;
+                      _sifirlaSonuclar();
+                    }),
                   ),
 
                   const SizedBox(height: 12),
 
-                  // ✅ Yük tipi + cosφ + verim artık burada (isteğe bağlı)
                   ExpansionTile(
                     tilePadding: EdgeInsets.zero,
                     title: const Text('Gelişmiş (Yük tipi, cosφ, verim)'),
@@ -419,19 +475,16 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
                       DropdownButtonFormField<String>(
                         isExpanded: true,
                         value: yukTipi,
-                        decoration: const InputDecoration(
-                          labelText: 'Yük tipi (isteğe bağlı)',
-                          border: OutlineInputBorder(),
-                        ),
+                        decoration: const InputDecoration(labelText: 'Yük tipi (isteğe bağlı)', border: OutlineInputBorder()),
                         items: const [
                           DropdownMenuItem(value: 'Genel (Priz)', child: Text('Genel (Priz)')),
                           DropdownMenuItem(value: 'Aydınlatma', child: Text('Aydınlatma')),
                           DropdownMenuItem(value: 'Motor', child: Text('Motor')),
                         ],
                         onChanged: (v) => setState(() {
-                          yukTipi = v!;
-                          // seçim değişince sonuçları sıfırlamak daha iyi hissettirir
-                          sonucKablo = sonucSigorta = sonucAkim = sonucGerilimDusumu = uyari = null;
+                          if (v == null) return;
+                          yukTipi = v;
+                          _sifirlaSonuclar();
                         }),
                       ),
 
@@ -442,14 +495,15 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
                           Expanded(
                             child: TextField(
                               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                              decoration: const InputDecoration(
+                              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
+                              decoration: InputDecoration(
                                 labelText: 'cosφ',
-                                hintText: 'Örn: 0.95',
-                                border: OutlineInputBorder(),
+                                hintText: 'Örn: ${cosPhi.toStringAsFixed(2)}',
+                                border: const OutlineInputBorder(),
                               ),
                               onChanged: (v) {
-                                final x = double.tryParse(v.replaceAll(',', '.'));
-                                if (x != null && x > 0 && x <= 1) setState(() => cosPhi = x);
+                                final x = _parseNum(v);
+                                if (!x.isNaN && x > 0 && x <= 1) setState(() => cosPhi = x);
                               },
                             ),
                           ),
@@ -457,14 +511,15 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
                           Expanded(
                             child: TextField(
                               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                              decoration: const InputDecoration(
+                              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
+                              decoration: InputDecoration(
                                 labelText: 'Verim (η)',
-                                hintText: 'Örn: 0.90',
-                                border: OutlineInputBorder(),
+                                hintText: 'Örn: ${verim.toStringAsFixed(2)}',
+                                border: const OutlineInputBorder(),
                               ),
                               onChanged: (v) {
-                                final x = double.tryParse(v.replaceAll(',', '.'));
-                                if (x != null && x > 0 && x <= 1) setState(() => verim = x);
+                                final x = _parseNum(v);
+                                if (!x.isNaN && x > 0 && x <= 1) setState(() => verim = x);
                               },
                             ),
                           ),
@@ -479,7 +534,6 @@ class _KabloSigortaSayfasiState extends State<KabloSigortaSayfasi> {
                         '- cosφ ve verim girmezsen varsayılan cosφ=0.95, η=0.90 alınır.',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
-
                       const SizedBox(height: 6),
                     ],
                   ),

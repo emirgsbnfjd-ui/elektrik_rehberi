@@ -6,6 +6,7 @@ import 'pages/hesaplamalar_sayfasi.dart';
 import 'pages/quiz_sayfasi.dart';
 import 'package:flutter/services.dart';
 import 'pages/ariza_teshis/ariza_teshis_ana_sayfa.dart';
+import 'pages/destek_ol_sayfasi.dart';
 
 
 final List<String> hesapGecmisi = [];
@@ -211,21 +212,25 @@ class Makale {
   final String baslik;
   final String icerik;
   final String kategori; // elektrik | elektronik | otomasyon
-  final String? resim;       // üst/alt için
+
+  final IconData? ikonData;     // Material icon (Icons.xxx)
+  final String? ikonAsset;    // 🔹 PNG / SVG ikon
+
+  final String? resim;     // yeni     // üst/alt için      
   final bool resimAltta;
   final String? resimOrta;   // 👈 yeni (orta resim)
 
-  final String? ikon; 
 
   const Makale({
     required this.id,
     required this.baslik,
     required this.icerik,
     required this.kategori,
+    this.ikonData,
+    this.ikonAsset,
     this.resim,
     this.resimAltta = false,
     this.resimOrta,
-    this.ikon,               // ✅
   });
 }
 
@@ -518,7 +523,7 @@ const List<Makale> tumMakaleler = [
       '🔹 SONUÇ\n\n'
       'Topraklama ölçümü, elektrik tesisatlarının en kritik güvenlik kontrollerinden biridir. Doğru cihaz, doğru yöntem ve uygun saha koşulları ile yapılan ölçümler; hem can güvenliği hem de tesis güvenliği açısından hayati öneme sahiptir.',
   kategori: 'elektrik',
-  ikon: 'assets/images/topraklama_icon.png', // ✅ küçük ikon
+  ikonAsset: 'assets/images/topraklama_icon.png', // ✅ küçük ikon
   ),
   Makale(
   id: 'e5',
@@ -686,51 +691,19 @@ Yıldız–üçgen yol verme yöntemi, uygun motor ve doğru ayarlamalarla kulla
 ⚙️ Yıldız–Üçgen Yol Verici Elemanları\n\n
 Ana kontaktör, yıldız kontaktörü, üçgen kontaktörü, termik röle ve zaman rölesinin pano içi yerleşimi aşağıda gösterilmiştir.\n\n
 Motor gücüne göre sahada en sık kullanılan yaklaşık değerler aşağıdadır.\n\n
-📊 Motor Gücüne Göre Sigorta ve Kontaktör Seçimi (Özet)\n\n
-Üç Faz – 400V için sahada sık kullanılan yaklaşık değerler:\n\n'
-0.75 kW  →  C6   Sigorta  →  9A   Kontaktör  →  1.6 – 2.5A   Termik
-
-1.1  kW  →  C6   Sigorta  →  9A   Kontaktör  →  2.5 – 4A     Termik
-
-1.5  kW  →  C10  Sigorta  →  9A   Kontaktör  →  2.5 – 4A     Termik
-
-2.2  kW  →  C16  Sigorta  →  12A  Kontaktör  →  4 – 6.3A     Termik
-
-3.0  kW  →  C16  Sigorta  →  18A  Kontaktör  →  5.5 – 8A     Termik
-
-4.0  kW  →  C20  Sigorta  →  18A  Kontaktör  →  7 – 10A      Termik
-
-5.5  kW  →  C25  Sigorta  →  25A  Kontaktör  →  9 – 13A      Termik
-
-7.5  kW  →  C32  Sigorta  →  25A  Kontaktör  →  13 – 18A     Termik
-
-
-11   kW  →  C40  Sigorta  →  32A  Kontaktör  →  18 – 25A     Termik
-
-15   kW  →  C50  Sigorta  →  40A  Kontaktör  →  24 – 32A     Termik
-
-18.5 kW  →  C63  Sigorta  →  50A  Kontaktör  →  30 – 40A     Termik
-
-22   kW  →  C63  Sigorta  →  65A  Kontaktör  →  38 – 50A     Termik
-
-30   kW  →  C80  Sigorta  →  80A  Kontaktör  →  45 – 63A     Termik
-
-37   kW  →  C100 Sigorta  →  95A  Kontaktör  →  55 – 80A     Termik
-
-45   kW  →  C125 Sigorta  →  115A Kontaktör  →  63 – 90A     Termik
 
 
 ⚠️ Not: • Değerler standart asenkron motorlar için yaklaşık saha değerleridir.
 • Motor verimi, cosφ, yol verme şekli (direkt / yıldız–üçgen / soft starter) sonucu etkiler.
 • Termik röle ayarı, motorun etiket akımına göre yapılmalıdır.
 
-🔧 Yıldız–Üçgen Bağlantı Şeması\n\n
-Yıldız ve üçgen bağlantıların klemens üzerindeki gösterimi aşağıdaki gibidir.\n\n
+🔧 Motor Akımına Uygun Termik, Kontaktör ve Sigorta Seçimi
 
 ''',
   kategori: 'elektrik',
-  resim: 'assets/images/ücgenyıldız.png',
+  resim: 'assets/images/Motorsema.png',
   resimAltta: true,
+  resimOrta: 'assets/images/ücgenyıldız.png',
 ),
   Makale(                      
    id: 'e8',
@@ -1002,31 +975,52 @@ KOMPANZASYON PANOSU NEDİR?
   resim: 'assets/images/diyot.jpg',
   ),
   Makale(
-    id: 'el5',
-    baslik: 'LED (Işık Yayan Diyot) Çalışma Prensibi',
-    icerik:
-      'LED (Light Emitting Diode), üzerinden akım geçtiğinde ışık yayan yarı iletken bir elemandır. '
-      'Pn birleşiminde elektronlar ile deliklerin birleşmesi sonucunda enerji foton olarak açığa çıkar. '
-      'Farklı malzemeler kullanılarak kırmızı, yeşil, mavi gibi farklı renkler elde edilir. '
-      'Avantajları: düşük güç tüketimi, uzun ömür, hızlı tepki süresi ve kompakt yapı. '
-      'Kullanım alanları: aydınlatma, göstergeler, sensörler ve optik iletişim sistemleri.',
-    kategori: 'elektronik',
-    resim: 'assets/images/led.jpg',
+  id: 'el5',
+  baslik: 'LED ve Breadboard (Deney Tahtası) Temel Kullanımı',
+  icerik:
+      'LED (Light Emitting Diode – Işık Yayan Diyot), üzerinden doğru yönde akım geçtiğinde '
+      'ışık yayan yarı iletken bir elektronik elemandır. '
+      'LED\'in çalışması, PN birleşiminde elektronlar ile deliklerin birleşmesi sonucu '
+      'enerjinin foton (ışık) olarak açığa çıkmasına dayanır.\n\n'
+
+      '🔹 LED\'in Yapısı ve Çalışma Prensibi:\n'
+      'LED\'ler anot (+) ve katot (–) olmak üzere iki uca sahiptir. '
+      'Anot ucu daha uzun, katot ucu genellikle daha kısadır. '
+      'LED ters bağlanırsa iletime geçmez ve ışık vermez.\n\n'
+
+      'Farklı yarı iletken malzemeler kullanılarak kırmızı, yeşil, mavi, beyaz gibi '
+      'farklı LED renkleri elde edilir. '
+      'LED\'lerin en önemli avantajları düşük güç tüketimi, uzun ömür, '
+      'hızlı tepki süresi ve kompakt yapıya sahip olmalarıdır.\n\n'
+
+      '🔹 LED Kullanım Alanları:\n'
+      'LED\'ler aydınlatma sistemleri, elektronik göstergeler, sensörler, '
+      'otomotiv uygulamaları ve optik iletişim sistemlerinde yaygın olarak kullanılır.\n\n'
+
+      '🔹 Breadboard (Deney Tahtası) Nedir?\n'
+      'Breadboard, elektronik devrelerin lehim yapılmadan kurulmasını sağlayan '
+      'delikli bir deney platformudur. '
+      'Öğrenciler, teknisyenler ve mühendisler tarafından prototip devreler '
+      'oluşturmak için sıkça tercih edilir.\n\n'
+
+      'Breadboard içerisinde yatay ve dikey metal iletken hatlar bulunur. '
+      'Genellikle kenarlardaki hatlar besleme (+ ve –), '
+      'orta kısımdaki hatlar ise devre elemanlarının bağlanması için kullanılır.\n\n'
+
+      '🔹 LED ve Breadboard Birlikte Kullanımı:\n'
+      'LED\'ler breadboard üzerinde seri bir direnç ile birlikte kullanılır. '
+      'Direnç, LED üzerinden geçen akımı sınırlandırarak LED\'in yanmasını önler. '
+      'Bu yöntem, temel elektronik deneylerinin en yaygın uygulamasıdır.\n\n'
+
+      '🔹 Önemli Uyarılar:\n'
+      'Breadboard üzerinde yüksek akım veya yüksek gerilim devreleri denenmemelidir. '
+      'Breadboard, düşük güçlü deney ve eğitim amaçlı kullanımlar için uygundur.',
+  kategori: 'elektronik',
+  resim: 'assets/images/led.png',
+  ikonAsset: 'assets/images/ledicon.png',
   ),
   Makale(
-    id: '2',
-    baslik: 'Breadboard (Deney Tahtası) Nedir?',
-    icerik:
-      'Breadboard, elektronik devreleri lehim yapmadan kurmaya yarayan delikli bir platformdur. '
-      'İçinde metal iletken hatlar bulunur; yatay ve dikey hatlar bağlantı noktalarını oluşturur. '
-      'Besleme hatları genellikle + ve – olarak ayrılır. '
-      'Öğrenciler ve teknisyenler için hızlı prototipleme imkânı sağlar. '
-      'En önemli kural: yüksek akım devreleri breadboard’da denenmemelidir.',
-    kategori: 'elektronik',
-    resim: 'assets/images/breadboard.jpg',
-  ),
-  Makale(
-    id: 'el7',
+    id: 'el6',
     baslik: 'Osiloskop Nedir ve Ne İşe Yarar?',
     icerik:
       'Osiloskop, elektrik sinyallerini zamana bağlı olarak ekranda dalga formu şeklinde gösteren ölçü cihazıdır. '
@@ -1038,7 +1032,7 @@ KOMPANZASYON PANOSU NEDİR?
     resim: 'assets/images/osiloskop.jpg',
   ),
   Makale(
-    id: 'el8',
+    id: 'el7',
     baslik: 'Mikrodenetleyici Nedir?',
     icerik:
       'Mikrodenetleyici, bir çip içinde işlemci (CPU), bellek (RAM/Flash) ve giriş-çıkış birimleri (GPIO) barındıran küçük bir bilgisayardır. '
@@ -1049,55 +1043,272 @@ KOMPANZASYON PANOSU NEDİR?
     resim: 'assets/images/mikrodenetleyici.png',
   ),
   Makale(
-    id: 'el9',
-    baslik: 'Seri ve Paralel Devre Farkı',
-    icerik:
-      'Seri devrede akım sabittir, gerilim dirençler arasında paylaştırılır: Vt = V1 + V2 + V3. '
-      'Paralel devrede gerilim sabittir, akım dallara bölünür: It = I1 + I2 + I3. '
-      'Eşdeğer direnç formülleri: Seri → Rt = R1 + R2 + R3, Paralel → 1/Rt = 1/R1 + 1/R2 + 1/R3. '
-      'Bu kurallar devre tasarımının temelini oluşturur.',
-    kategori: 'elektronik',
-    resim: 'assets/images/seri_paralel.jpg',
+  id: 'el8',
+  baslik: 'Seri ve Paralel Devre Farkı (Detaylı Anlatım)',
+  icerik:
+      'Elektrik devrelerinde elemanlar seri veya paralel bağlanabilir. '
+      'Bağlantı şekli; akımın, gerilimin ve eşdeğer direncin nasıl değişeceğini belirler.\n\n'
+
+      '- Seri Devre:\n'
+      'Seri devrede devre elemanları uç uca bağlanır ve devreden geçen akım her noktada aynıdır. '
+      'Toplam gerilim, elemanlar üzerinde paylaştırılır.\n'
+      'Formüller:\n'
+      'Toplam Gerilim: Vt = V1 + V2 + V3\n'
+      'Eşdeğer Direnç: Rt = R1 + R2 + R3\n\n'
+
+      'Seri devrede herhangi bir eleman koparsa tüm devre çalışmaz. '
+      'Bu nedenle seri devreler genellikle basit ve düşük maliyetli uygulamalarda kullanılır.\n\n'
+
+      '- Paralel Devre:\n'
+      'Paralel devrede tüm elemanlar aynı gerilime bağlıdır. '
+      'Toplam akım, dallara ayrılarak akar.\n'
+      'Formüller:\n'
+      'Toplam Akım: It = I1 + I2 + I3\n'
+      'Eşdeğer Direnç: 1/Rt = 1/R1 + 1/R2 + 1/R3\n\n'
+
+      'Paralel devrede bir kol kopsa bile diğer kollar çalışmaya devam eder. '
+      'Ev tesisatları ve endüstriyel uygulamalarda bu yüzden paralel bağlantı tercih edilir.\n\n'
+
+      '- Seri ve Paralel Devrelerin Karşılaştırılması:\n'
+      'Seri devrelerde akım sabittir, paralel devrelerde gerilim sabittir. '
+      'Seri devrede eşdeğer direnç büyürken, paralel devrede eşdeğer direnç küçülür.\n\n'
+
+      '- Kullanım Alanları:\n'
+      'Seri devreler LED dizileri ve ölçüm devrelerinde, '
+      'paralel devreler ise priz tesisatları, aydınlatma sistemleri ve güç dağıtımında kullanılır.\n\n'
+
+      'Bu kurallar, elektrik-elektronik devre tasarımının temelini oluşturur ve '
+      'tüm mühendislik uygulamalarında bilinmesi zorunludur.',
+  kategori: 'elektronik',
+  resim: 'assets/images/seriparalel.jpg',
+),
+  Makale(
+  id: 'el9',
+  baslik: 'Op-Amp (Operation Amplifier) Temel Devreleri',
+  icerik:
+      'Op-Amp (Operational Amplifier), iki giriş arasındaki gerilim farkını yüksek kazançla yükselten elektronik bir devre elemanıdır. '
+      'İdeal bir op-amp; sonsuz kazanç, sonsuz giriş direnci ve sıfır çıkış direncine sahiptir. '
+      'Gerçek op-amp\'larda bu değerler sınırlıdır ancak uygulamalar için yeterlidir.\n\n'
+
+      '- Op-Amp Giriş ve Çıkışları:\n'
+      'Op-amp\'ın iki girişi vardır: eviren (-) ve evirmeyen (+). '
+      'Çıkış gerilimi, bu iki giriş arasındaki farkın kazanç ile çarpılması sonucu oluşur.\n\n'
+
+      '- Eviren Kuvvetlendirici:\n'
+      'Eviren devrede giriş sinyali (-) girişine uygulanır. '
+      'Çıkış sinyali girişe göre 180° faz terslidir. '
+      'Kazanç formülü: A = -Rf / Rin şeklindedir.\n\n'
+
+      '- Evirmeyen Kuvvetlendirici:\n'
+      'Evirmeyen devrede giriş sinyali (+) girişine uygulanır. '
+      'Çıkış sinyali girişle aynı fazdadır. '
+      'Kazanç formülü: A = 1 + (Rf / Rin) olarak hesaplanır.\n\n'
+
+      '- Toplayıcı (Summing) Kuvvetlendirici:\n'
+      'Birden fazla giriş sinyalinin toplanarak tek bir çıkışta elde edilmesini sağlar. '
+      'Ses mikserleri ve analog sinyal işleme devrelerinde sıkça kullanılır.\n\n'
+
+      '- İntegratör ve Diferansiyatör Devreleri:\n'
+      'İntegratör devresi giriş sinyalinin zamanla integralini alır. '
+      'Diferansiyatör devresi ise giriş sinyalinin türevini üretir. '
+      'Bu devreler sinyal şekillendirme ve kontrol uygulamalarında kullanılır.\n\n'
+
+      '- Besleme Gerilimi:\n'
+      'Op-amp\'lar genellikle çift kutuplu besleme ile çalışır (±12V, ±15V). '
+      'Bazı op-amp türleri tek besleme (0–5V, 0–12V) ile de çalışabilir.\n\n'
+
+      '- Kullanım Alanları:\n'
+      'Op-amp\'lar sensör sinyal kuvvetlendirme, filtre devreleri, ses yükselteçleri, '
+      'karşılaştırıcılar (comparator) ve ölçüm sistemlerinde yaygın olarak kullanılır.',
+  kategori: 'elektronik',
+  resim: 'assets/images/opamp.png',
   ),
   Makale(
-    id: 'el10',
-    baslik: 'Op-Amp (Operation Amplifier) Temel Devreleri',
-    icerik:
-        'Op-amp, çok yüksek kazançlı bir fark kuvvetlendiricisidir. En sık kullanılan yapılar: eviren, evirmeyen ve toplayıcı kuvvetlendiriciler. Eviren yapıda giriş sinyali terslenerek çıkışa taşınır, kazanç -Rf/Rin ile belirlenir. Besleme gerilimi ±12V veya ±15V olabilir.',
-    kategori: 'elektronik',
+  id: 'el10',
+  baslik: 'ADC ve DAC Nedir? (Detaylı Anlatım)',
+  icerik:
+      'ADC (Analog–Dijital Dönüştürücü), analog gerilim veya akım sinyallerini dijital verilere çeviren devrelerdir. '
+      'Mikrodenetleyicilerde sensörlerden (sıcaklık, ışık, potansiyometre vb.) veri okumak için kullanılır.\n\n'
+
+      'DAC (Dijital–Analog Dönüştürücü) ise dijital verileri tekrar analog sinyale dönüştürür. '
+      'Ses sistemleri, motor sürücüleri ve analog kontrol devrelerinde yaygın olarak kullanılır.\n\n'
+
+      '-ADC ve DAC Türleri:\n'
+      'ADC türleri arasında Flash ADC (çok hızlı), SAR ADC (mikrodenetleyicilerde en yaygın), '
+      'Sigma-Delta ADC (yüksek çözünürlük) ve Pipeline ADC bulunur.\n'
+      'DAC türleri ise R-2R merdiven DAC, ağırlıklı direnç DAC ve PWM tabanlı DAC olarak sınıflandırılır.\n\n'
+
+      'Çözünürlük (Bit Sayısı):\n'
+      'ADC çözünürlüğü, ölçüm hassasiyetini belirler. '
+      'Örneğin 8 bit ADC = 256 seviye, 10 bit ADC = 1024 seviye, 12 bit ADC = 4096 seviye anlamına gelir.\n\n'
+
+      '-Örnekleme Hızı ve Nyquist Kuralı:\n'
+      'Örnekleme hızı, saniyede alınan ölçüm sayısını ifade eder. '
+      'Nyquist kuralına göre örnekleme frekansı, sinyal frekansının en az iki katı olmalıdır. '
+      'Aksi halde aliasing (örtüşme) hataları meydana gelir.\n\n'
+
+      '-Kullanım Alanları:\n'
+      'ADC; sensör okuma, ölçüm cihazları, veri toplama ve otomasyon sistemlerinde kullanılır. '
+      'DAC ise ses çıkışı, analog kontrol, motor hız ayarı ve endüstriyel uygulamalarda tercih edilir.\n\n'
+
+      'Mikrodenetleyicilerde ADC genellikle dahili olarak bulunurken, DAC çoğu zaman harici entegreler ile sağlanır.',
+  kategori: 'elektronik',
+  resim: 'assets/images/adc_dac_full.png',
+  ikonAsset: 'assets/images/dacicon.png',
   ),
   Makale(
-    id: 'el11',
-    baslik: 'ADC ve DAC Nedir?',
-    icerik:
-        'ADC (Analog-Dijital Dönüştürücü), analog gerilimi sayısal veriye çevirir. Mikrodenetleyicilerde sensör okuma için kullanılır. DAC (Dijital-Analog Dönüştürücü) ise sayısal veriden analog sinyal üretir. Çözünürlük (örneğin 10 bit, 12 bit) ve örnekleme hızı en kritik parametrelerdir.',
-    kategori: 'elektronik',
+  id: 'el11',
+  baslik: 'Filtre Devreleri: Alçak, Yüksek ve Bant Geçiren', 
+  icerik:
+      'Filtre devreleri, elektrik ve elektronik devrelerde belirli frekanstaki sinyalleri geçirmek, '
+      'istenmeyen frekansları ise zayıflatmak veya engellemek için kullanılır. Filtreleme işlemi, '
+      'sinyalin genliğine değil frekansına göre yapılır.\n\n'
+
+      '- Alçak Geçiren Filtre (Low Pass Filter):\n'
+      'Alçak geçiren filtre, belirlenen kesim frekansının altındaki düşük frekanslı sinyalleri geçirir, '
+      'yüksek frekanslı sinyalleri ise zayıflatır. Genellikle RC devreleri ile yapılır. '
+      'Güç kaynaklarında dalgalanmayı (ripple) azaltmak, ses sistemlerinde parazitleri bastırmak için kullanılır.\n\n'
+
+      '- Yüksek Geçiren Filtre (High Pass Filter):\n'
+      'Yüksek geçiren filtre, kesim frekansının üzerindeki yüksek frekanslı sinyalleri geçirirken '
+      'düşük frekanslı sinyalleri ve DC bileşeni engeller. '
+      'Ses giriş devrelerinde, mikrofon ve amplifikatör girişlerinde yaygın olarak kullanılır.\n\n'
+
+      '- Bant Geçiren Filtre (Band Pass Filter):\n'
+      'Bant geçiren filtre, sadece belirli bir frekans aralığını geçirir; bu aralığın altındaki ve '
+      'üstündeki frekansları zayıflatır. Genellikle RLC devreleri ile oluşturulur. '
+      'Radyo alıcılarında, haberleşme sistemlerinde ve sensör uygulamalarında kullanılır.\n\n'
+
+      '🔧 RC ve RLC Filtreler:\n'
+      'RC filtreler direnç ve kondansatörden oluşur, yapıları basit ve maliyetleri düşüktür. '
+      'RLC filtreler ise direnç, bobin ve kondansatör içerir; daha keskin ve seçici filtreleme sağlar.\n\n'
+
+      '✂️ Kesim Frekansı:\n'
+      'Filtrenin sinyali zayıflatmaya başladığı frekansa kesim frekansı denir. '
+      'RC devrelerinde kesim frekansı fc = 1 / (2πRC) formülü ile hesaplanır.\n\n'
+
+      '🧰 Tekniker Notu:\n'
+      'Güç kaynaklarında alçak geçiren filtre, çıkıştaki AC dalgalanmayı azaltmak için; '
+      'ses ve haberleşme devrelerinde ise istenmeyen parazitleri bastırmak için kullanılır.',
+  kategori: 'elektronik',
+  ikonAsset: 'assets/images/filtreicon.png',
+),
+  Makale(
+  id: 'el12',
+  baslik: 'Televizyon Nasıl Çalışır? (Uydu, Headend ve Bağlantı Sistemleri)',
+  icerik:
+      'Televizyonlar, kaynaktan gelen görüntü ve ses sinyallerini işleyerek ekranda görüntü, '
+      'hoparlörde ses oluşturan cihazlardır. Türkiye’de televizyon yayınlarının büyük bölümü '
+      'uydu sistemi üzerinden alınır.\n\n'
+
+      '- Türkiye’de TV Yayın Sistemi:\n'
+      'Ülkemizde en yaygın yayın türü uydu yayınıdır. '
+      'Yer istasyonlarından uydulara gönderilen yayınlar, çanak antenler aracılığıyla alınır. '
+      'Bu sinyaller LNB üzerinden alıcıya iletilir.\n\n'
+
+      '- Çanak Anten ve LNB Görevi:\n'
+      'Çanak anten, uydu sinyallerini odaklayarak LNB (Low Noise Block) üzerine düşürür. '
+      'LNB, yüksek frekanslı uydu sinyalini daha düşük frekansa çevirerek koaksiyel kablo ile '
+      'taşınmasını sağlar.\n\n'
+
+      '- Koaksiyel Kablo ve F Konnektör:\n'
+      'Uydu sistemlerinde sinyal iletimi için koaksiyel kablo kullanılır. '
+      'F konnektörler, koaksiyel kablonun LNB, uydu alıcısı ve headend sistemlerine '
+      'sağlam ve düşük kayıplı şekilde bağlanmasını sağlar.\n\n'
+
+      'Erkek F konnektör kablo ucuna takılırken, dişi F konnektör prizlerde ve cihaz girişlerinde bulunur. '
+      'Vidalı yapı sayesinde sinyal zayıflaması ve temas problemleri minimuma indirilir.\n\n'
+
+      '- Uydu Alıcısı (Receiver):\n'
+      'Uydu alıcısı, LNB’den gelen sinyali çözer ve televizyonun anlayabileceği '
+      'ses ve görüntü formatına dönüştürür. '
+      'Günümüzde birçok televizyonda uydu alıcısı dahili olarak bulunmaktadır.\n\n'
+
+      '- Headend Sistemi Nedir?\n'
+      'Headend sistemi, birden fazla uydu yayınının merkezi bir noktada alınarak '
+      'işlenmesi ve bina içi dağıtıma uygun hale getirilmesini sağlayan profesyonel '
+      'televizyon yayın sistemidir.\n\n'
+
+      'Oteller, hastaneler, siteler, yurtlar ve büyük iş merkezlerinde '
+      'her daireye ayrı uydu alıcısı koymak yerine headend sistemi kullanılır. '
+      'Bu sistem sayesinde tüm yayınlar tek merkezden kontrol edilir.\n\n'
+
+      '- Headend Sisteminin Çalışma Prensibi:\n'
+      'Çanak antenlerden gelen uydu sinyalleri headend cihazına girer. '
+      'Bu cihaz sinyalleri çözer, filtreler ve yeniden modüle eder. '
+      'Sonrasında yayınlar, bina içi koaksiyel kablo altyapısı üzerinden '
+      'tüm dairelere veya odalara dağıtılır.\n\n'
+
+      '- Headend Sisteminin Avantajları:\n'
+      'Merkezi yönetim imkanı sağlar, bakım maliyeti düşüktür ve '
+      'her kullanıcı için ayrı uydu alıcısı gerektirmez. '
+      'Kanal listesi merkezi olarak ayarlanabilir ve '
+      'görüntü kalitesi tüm noktalarda sabit olur.\n\n'
+
+      '- Headend ile Multiswitch Farkı:\n'
+      'Multiswitch sistemleri yalnızca uydu sinyalini dağıtırken, '
+      'headend sistemleri sinyali işleyerek RF veya IP formatında dağıtım yapar. '
+      'Bu nedenle headend sistemleri daha profesyonel ve kapsamlıdır.\n\n'
+
+      '- Özet:\n'
+      'Türkiye’de televizyon yayınları; çanak anten, LNB, koaksiyel kablo, '
+      'F konnektör, uydu alıcısı ve büyük yapılarda headend sistemleri '
+      'kullanılarak dağıtılır. '
+      'Doğru sistem seçimi, görüntü kalitesi ve işletme maliyetini doğrudan etkiler.',
+  kategori: 'elektronik',
+  resim: 'assets/images/tv.jpg',
+  resimOrta: 'assets/images/tvorta.jpg',
   ),
   Makale(
-    id: 'el12',
-    baslik: 'Filtre Devreleri: Alçak, Yüksek ve Bant Geçiren',
-    icerik:
-        'RC ve RLC devreleri kullanılarak alçak geçiren, yüksek geçiren ve bant geçiren filtreler yapılabilir. '
-        'Alçak geçiren filtre, belirli bir kesim frekansının altındaki sinyalleri geçirip üstünü zayıflatır. '
-        'Ses, güç kaynakları ve sinyal işleme devrelerinde sık kullanılır.',
-    kategori: 'elektronik',
-  ),
-  Makale(
-    id: 'el13',
-    baslik: 'Pull-up ve Pull-down Dirençleri',
-    icerik:
-        'Mikrodenetleyici giriş pinlerinin kararsız (floating) kalmaması için pull-up veya pull-down dirençleri kullanılır. '
-        'Pull-up direnç pin ile besleme arasına, pull-down direnç ise pin ile GND arasına bağlanarak kararlı lojik seviye sağlanır.',
-    kategori: 'elektronik',
-  ),
-  Makale(
-    id: 'o1',
-    baslik: 'PLC Giriş/Çıkış Türleri',
-    icerik:
-        'Dijital giriş/çıkış, analog giriş/çıkış, hızlı sayaç ve PWM kanalları. Sensör beslemeleri ve topraklama düzeni gürültüden korunmada kritiktir.',
-    kategori: 'otomasyon',
-    resim: 'assets/images/otomasyon.jpg',
-  ),
+  id: 'o1',
+  baslik: 'PLC Giriş / Çıkış (I/O) Türleri',
+  icerik:
+      'PLC (Programmable Logic Controller) sistemlerinde giriş ve çıkışlar, '
+      'sahadaki sensörlerden ve butonlardan bilgi almak, motor, valf ve röle gibi '
+      'elemanları kontrol etmek için kullanılır. PLC giriş/çıkış yapısının doğru '
+      'seçilmesi, sistemin güvenilir ve kararlı çalışması açısından kritik öneme sahiptir.\n\n'
+
+      '• Dijital Girişler (Digital Input):\n'
+      'Dijital girişler yalnızca iki durumu algılar: 0 veya 1 (Açık / Kapalı). '
+      'Butonlar, limit switchler, proximity sensörler ve fotoseller dijital girişlere '
+      'bağlanır. Genellikle 24V DC veya 220V AC seviyelerinde çalışırlar.\n\n'
+
+      '• Dijital Çıkışlar (Digital Output):\n'
+      'Dijital çıkışlar PLC tarafından kontrol edilen elemanları sürmek için kullanılır. '
+      'Röle, kontaktör, ikaz lambası ve solenoid valfler dijital çıkışlara bağlanır. '
+      'Röle çıkışlı, transistor çıkışlı ve triac çıkışlı tipleri bulunur.\n\n'
+
+      '• Analog Girişler (Analog Input):\n'
+      'Analog girişler sürekli değişen değerleri algılar. '
+      'Sıcaklık, basınç, seviye ve hız sensörleri analog girişlere bağlanır. '
+      'Yaygın sinyal tipleri 0–10V, 4–20mA ve ±10V’tur.\n\n'
+
+      '• Analog Çıkışlar (Analog Output):\n'
+      'Analog çıkışlar, sürücü, inverter ve oransal valf gibi cihazlara '
+      'değişken kontrol sinyali göndermek için kullanılır. '
+      'Motor hız kontrolü ve proses ayarlamaları bu çıkışlar üzerinden yapılır.\n\n'
+
+      '• Hızlı Sayaç Girişleri (High Speed Counter):\n'
+      'Hızlı sayaç girişleri, encoder ve yüksek frekanslı sensörlerden gelen '
+      'darbeleri kaçırmadan saymak için kullanılır. '
+      'Konum, hız ve adım kontrolü uygulamalarında önemlidir.\n\n'
+
+      '• PWM Çıkışları (Pulse Width Modulation):\n'
+      'PWM çıkışları, darbe genişliğini değiştirerek motor hızı, '
+      'LED parlaklığı veya güç kontrolü sağlar. '
+      'DC motor ve basit hız kontrol uygulamalarında yaygın olarak kullanılır.\n\n'
+
+      '⚠️ Topraklama ve Gürültü Önlemleri:\n'
+      'PLC sistemlerinde analog sinyaller gürültüye karşı hassastır. '
+      'Sensör beslemeleri doğru topraklanmalı, ekranlı kablolar tek noktadan '
+      'toprağa bağlanmalı ve güç kabloları sinyal kablolarından ayrı taşınmalıdır.\n\n'
+
+      '🧰 Tekniker Notu:\n'
+      'Analog girişlerde 4–20mA sinyal kullanımı, uzun mesafelerde ve '
+      'endüstriyel ortamlarda gürültüye karşı daha güvenilirdir.',
+  kategori: 'otomasyon',
+  ikonAsset: 'assets/images/otomasyonicon.png',
+),
   Makale(
     id: 'o2',
     baslik: 'Kontaktör ve Role Farkları',
@@ -1357,9 +1568,9 @@ class KategoriSayfasi extends StatelessWidget {
               width: 54,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: m.ikon != null
+                child: m.ikonAsset != null
         ? Image.asset(
-            m.ikon!,
+            m.ikonAsset!,
             fit: BoxFit.contain, // küçük ikonlar için daha iyi
             errorBuilder: (_, __, ___) => const Icon(Icons.article_outlined),
           )
@@ -1458,15 +1669,17 @@ class MakaleDetay extends StatelessWidget {
 
     // 🔽 ALT RESİM
     if (m.resim != null && m.resimAltta) ...[
-      const SizedBox(height: 16),
-      ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: SizedBox(
-          child: Image.asset(
-            m.resim!,
-            height: 220, //
-            width: double.infinity,
-            errorBuilder: (_, __, ___) => const SizedBox.shrink(),                 
+  const SizedBox(height: 16),
+  ClipRRect(
+    borderRadius: BorderRadius.circular(12),
+    child: InteractiveViewer(
+      minScale: 1,
+      maxScale: 4,
+      child: Image.asset(
+        m.resim!,
+        width: double.infinity,
+        fit: BoxFit.contain, // 🔥 tablo/şema için şart
+        errorBuilder: (_, __, ___) => const SizedBox.shrink(),               
                ),
               ),
             ),
@@ -1575,7 +1788,19 @@ class MakaleArama extends SearchDelegate {
                   MaterialPageRoute(builder: (_) => const GizlilikSayfasi()),
                 );
               },
-            ),     
+            ),   
+            ListTile(
+             leading: const Icon(Icons.star_outline),
+             title: const Text("Geliştiriciye Destek Ol"),
+             subtitle: const Text("Uygulamanın gelişimine katkı"),
+             onTap: () {
+                Navigator.pop(context); // Drawer kapansın
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const DestekOlSayfasi()),
+                );
+              },
+            ),  
           ],
         ),
       ),
