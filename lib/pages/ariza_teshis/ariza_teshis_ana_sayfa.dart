@@ -4,6 +4,9 @@ import 'ariza_rcd_atiyor.dart';
 import 'ariza_prizde_elektrik_yok.dart';
 import 'ariza_isik_zayif_sayfa.dart';
 import 'ariza_topraklama_sorunu.dart';
+import 'ariza_motor_calismiyor_sayfa.dart';
+import 'ariza_ups_surekli_bipliyor.dart';
+
 
 // Elektronik sayfaların
 import 'elektronik_cihaz_acilmiyor.dart';
@@ -59,6 +62,21 @@ class ArizaTeshiAnaSayfa extends StatelessWidget {
             page: ArizaTopraklamaSorunuSayfa(),
             color: Color(0xFF6A1B9A),
           ),
+          _ArizaKart(
+            icon: Icons.settings,
+            title: 'Motor Çalışmıyor',
+            subtitle: 'Kontaktör • Termik • Faz eksikliği',
+            page: ArizaMotorCalismiyorSayfa(),
+            color: Color(0xFF455A64),
+          ),
+          _ArizaKart(
+            icon: Icons.battery_alert,
+            title: 'UPS Sürekli Bipliyor',
+            subtitle: 'Akü zayıf • Aşırı yük • Şebeke sorunu',
+            page: ArizaUpsSurekliBipliyorSayfa(),
+           color: Color(0xFF2E7D32),
+          ),
+          
        
           const SizedBox(height: 24),
 

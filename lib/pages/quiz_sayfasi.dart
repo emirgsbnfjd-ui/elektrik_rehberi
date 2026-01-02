@@ -243,6 +243,663 @@ const List<_Soru> _sorular100 = [
     dogruIndex: 1,
   ),
   _Soru(
+    soru: 'Elektrik yükünün birimi hangisidir?',
+    secenekler: ['Volt (V)', 'Ohm (Ω)', 'Watt (W)', 'Coulomb (C)'],
+    dogruIndex: 3,
+  ),
+  _Soru(
+    soru: 'Akım birimi hangisidir?',
+    secenekler: ['Watt (W)', 'Amper (A)', 'Volt (V)', 'Henry (H)'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: 'Gerilim birimi hangisidir?',
+    secenekler: ['Farad (F)', 'Watt (W)', 'Amper (A)', 'Volt (V)'],
+    dogruIndex: 3,
+  ),
+  _Soru(
+    soru: 'Frekans birimi hangisidir?',
+    secenekler: ['Ohm (Ω)', 'Watt (W)', 'Hertz (Hz)', 'Tesla (T)'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: 'Güç faktörü cosφ hangi aralıkta olur?',
+    secenekler: ['0 ile 1 arasında', '-1 ile 0 arasında', '0 ile 100 arasında', '1 ile 2 arasında'],
+    dogruIndex: 0,
+  ),
+  _Soru(
+    soru: 'Kısa devre akımı artınca koruma elemanının temel amacı nedir?',
+    secenekler: ['Cosφ’yi düzeltmek', 'Frekansı artırmak', 'Devreyi hızlıca açmak', 'Gerilimi yükseltmek'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: '230 V şebeke gerilimi genelde hangi değeri ifade eder?',
+    secenekler: ['Ortalama değer', 'Tepe değer', 'RMS (etkili) değer', 'Anlık değer'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: 'Sinüzoidal AC’de tepe değer ile RMS değeri arasındaki ilişki yaklaşık nasıldır?',
+    secenekler: ['Vtepe ≈ Vrms', 'Vtepe ≈ 0.707 · Vrms', 'Vtepe ≈ 2 · Vrms', 'Vtepe ≈ 1.414 · Vrms'],
+    dogruIndex: 3,
+  ),
+  _Soru(
+    soru: '50 Hz şebekede bir periyot süresi yaklaşık kaç ms’dir?',
+    secenekler: ['10 ms', '50 ms', '20 ms', '2 ms'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: 'kWh en iyi hangi büyüklüğü ifade eder?',
+    secenekler: ['Anlık gücü', 'Direnci', 'Akımı', 'Enerji tüketimini'],
+    dogruIndex: 3,
+  ),
+  _Soru(
+    soru: 'Bir cihazın etiketi 1000 W ise bu neyi belirtir?',
+    secenekler: ['Direncini', 'Topraklama değerini', 'Çalışırken çektiği yaklaşık gücü', 'Ürettiği gerilimi'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: 'Güç üçgeninde aktif güç genelde hangi harfle gösterilir?',
+    secenekler: ['P', 'Q', 'S', 'Z'],
+    dogruIndex: 0,
+  ),
+  _Soru(
+    soru: 'Güç üçgeninde reaktif güç genelde hangi harfle gösterilir?',
+    secenekler: ['R', 'Q', 'P', 'S'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: 'Güç üçgeninde görünür güç genelde hangi harfle gösterilir?',
+    secenekler: ['S', 'I', 'P', 'Q'],
+    dogruIndex: 0,
+  ),
+  _Soru(
+    soru: 'Trafo primer ve sekonder arasında ne sağlayabilir?',
+    secenekler: ['Galvanik izolasyon', 'Topraklamayı yok etme', 'Sigorta görevi', 'Faz sayısını artırma'],
+    dogruIndex: 0,
+  ),
+  _Soru(
+    soru: 'Trafolarda gerilim dönüşüm oranı en çok neye bağlıdır?',
+    secenekler: ['Toprak direncine', 'Sigorta tipine', 'Kablo rengine', 'Sargı (sarım) sayısı oranına'],
+    dogruIndex: 3,
+  ),
+  _Soru(
+    soru: 'İzolasyon trafosu en çok hangi amaçla kullanılır?',
+    secenekler: ['Elektriksel izolasyon ve güvenlik', 'Gerilimi 400 V yapmak', 'Frekansı 60 Hz yapmak', 'Reaktif gücü artırmak'],
+    dogruIndex: 0,
+  ),
+  _Soru(
+    soru: 'Oto trafo ile izolasyon trafosu arasındaki temel fark nedir?',
+    secenekler: ['Oto trafoda frekans değişir', 'Oto trafoda ortak sargı bulunur', 'Oto trafoda yalnızca 24 V çıkar', 'İzolasyon trafosu DC üretir'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: 'Eşpotansiyel bara temel olarak neyi sağlar?',
+    secenekler: ['Akımı sıfırlar', 'Potansiyel farklarını azaltır', 'Frekansı artırır', 'Gerilimi yükseltir'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: 'Topraklama direncinin düşük olması neyi iyileştirir?',
+    secenekler: ['Korumanın doğru çalışmasını ve güvenliği', 'Gerilimi yükseltmeyi', 'Kablo kesitini büyütmeyi', 'Harmonikleri artırmayı'],
+    dogruIndex: 0,
+  ),
+  _Soru(
+    soru: 'PE iletkeninin ana görevi nedir?',
+    secenekler: ['Gövde kaçaklarını toprağa iletmek', 'Frekansı ayarlamak', 'Cosφ’yi ölçmek', 'Yüke enerji vermek'],
+    dogruIndex: 0,
+  ),
+  _Soru(
+    soru: 'Nötr ile toprak aynı şey midir?',
+    secenekler: ['Sadece trifazede aynıdır', 'Evet, her zaman aynıdır', 'Hayır, görevleri farklıdır', 'Sadece DC’de aynıdır'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: 'TT sistemde koruma topraklaması genelde ne ile sağlanır?',
+    secenekler: ['Tesisin kendi toprak elektrodu ile', 'Nötr üzerinden', 'Faz üzerinden', 'Sadece SPD ile'],
+    dogruIndex: 0,
+  ),
+  _Soru(
+    soru: 'RCD ile MCB’nin temel farkı nedir?',
+    secenekler: ['İkisi de sadece gerilime bakar', 'MCB sadece kaçak akıma bakar', 'RCD sadece frekansa bakar', 'RCD kaçak akıma, MCB aşırı akım/kısa devreye bakar'],
+    dogruIndex: 3,
+  ),
+  _Soru(
+    soru: 'RCD’nin test (T) butonu ne amaçla kullanılır?',
+    secenekler: ['Cosφ’yi artırmak', 'Sigortayı büyütmek', 'Açma mekanizmasını kontrol etmek', 'Topraklamayı iptal etmek'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: 'Selektivite (seçicilik) ne demektir?',
+    secenekler: ['Gerilimin sabit kalması', 'Arızaya en yakın korumanın önce açması', 'Frekansın yükselmesi', 'Tüm korumaların aynı anda açması'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: 'Termik rölede \'trip class\' (ör. 10/20) neyi ifade eder?',
+    secenekler: ['Kablo rengini', 'Aşırı yükte açma süresi karakteristiğini', 'Gerilim seviyesini', 'Frekansı'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: 'Bir kesicinin kA değeri neyi ifade eder?',
+    secenekler: ['Çalışma frekansını', 'Kablo kesitini', 'Kısa devre kesme kapasitesini', 'Toprak direncini'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: 'Kablo kesiti seçerken en kritik kriterlerden biri hangisidir?',
+    secenekler: ['Taşıyacağı akım ve ısınma', 'Etiket yazısı', 'Kablo rengi', 'Klemensin markası'],
+    dogruIndex: 0,
+  ),
+  _Soru(
+    soru: 'Kablo uzunluğu arttıkça en çok hangi sorun büyür?',
+    secenekler: ['Frekans artışı', 'Cosφ artışı', 'Topraklama renginin değişmesi', 'Gerilim düşümü'],
+    dogruIndex: 3,
+  ),
+  _Soru(
+    soru: 'Klemenslerde gevşek bağlantı en çok neye yol açar?',
+    secenekler: ['Cosφ’nin artmasına', 'Gerilimin sabitlenmesine', 'Isınma ve ark riski', 'Frekansın düşmesine'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: 'Nötr kopması hangi riski doğurabilir?',
+    secenekler: ['Dengesiz yüklerde aşırı/az gerilim', 'Harmonikleri yok eder', 'Kısa devreyi azaltır', 'Topraklamayı güçlendirir'],
+    dogruIndex: 0,
+  ),
+  _Soru(
+    soru: 'Kablo ekranı (shield) en çok neyi azaltmaya yardım eder?',
+    secenekler: ['EMI/parazit etkilerini', 'Akımı artırmayı', 'Gerilimi yükseltmeyi', 'Toprak direncini yükseltmeyi'],
+    dogruIndex: 0,
+  ),
+  _Soru(
+    soru: 'Pens ampermetre en çok hangi ölçüm için pratik bir araçtır?',
+    secenekler: ['Direnç ölçümü', 'Kapasite ölçümü', 'Toprak direnci ölçümü', 'Akım ölçümü'],
+    dogruIndex: 3,
+  ),
+  _Soru(
+    soru: 'Megger (izolasyon ölçer) en çok neyi ölçer?',
+    secenekler: ['Kısa devre akımını', 'İzolasyon direncini (MΩ)', 'Frekansı', 'Cosφ’yi'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: 'Faz sırası ölçer cihazı ne işe yarar?',
+    secenekler: ['Toprak direncini artırır', 'Sigortayı büyütür', 'Kaçak akımı ölçer', 'Motorun dönüş yönünü belirlemeye yardım eder'],
+    dogruIndex: 3,
+  ),
+  _Soru(
+    soru: 'Asenkron motorlarda \'kayma (slip)\' neyi ifade eder?',
+    secenekler: ['Toprak direnci farkını', 'Kablo kesiti farkını', 'Senkron hız ile rotor hızı farkını', 'Sigorta akımı farkını'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: 'Motor termiği çok yüksek ayarlanırsa risk nedir?',
+    secenekler: ['RCD’nin iptal olması', 'Frekansın sabitlenmesi', 'Gerilim düşümünün azalması', 'Aşırı yükte motorun zarar görmesi'],
+    dogruIndex: 3,
+  ),
+  _Soru(
+    soru: 'Kontaktör yardımcı kontağı (13-14) en çok ne için kullanılır?',
+    secenekler: ['Kaçak akım koruması', 'Kısa devre koruması', 'Mühürleme/geri bildirim', 'Gerilim regülasyonu'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: 'Harmonikler en çok hangi tür yüklerle artar?',
+    secenekler: ['Sadece motorlarla', 'Doğrultucu/SMPS gibi doğrusal olmayan yüklerle', 'Saf dirençli ısıtıcılarla', 'Toprak elektroduyla'],
+    dogruIndex: 1,
+  ),
+   _Soru(
+    soru: 'RJ45 konnektör en çok hangi kablo türüyle kullanılır?',
+    secenekler: ['Koaksiyel kablo', 'Fiber optik kablo', 'Bükümlü çift (UTP)', 'Tek damarlı bakır'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: 'RJ11 konnektör genellikle hangi sistemde kullanılır?',
+    secenekler: ['Ethernet ağı', 'Telefon hattı', 'Uydu sistemi', 'Kamera sistemi'],
+    dogruIndex: 1,
+  ),
+
+  _Soru(
+    soru: 'RJ45 T568B standardında 1. ve 2. pinler hangi renktedir?',
+    secenekler: ['Turuncu-beyaz / Turuncu', 'Yeşil-beyaz / Yeşil', 'Mavi-beyaz / Mavi', 'Kahverengi-beyaz / Kahverengi'],
+    dogruIndex: 0,
+  ),
+
+  _Soru(
+    soru: 'IP kameralar görüntüyü hangi altyapı üzerinden iletir?',
+    secenekler: ['RF sinyali', 'Telefon hattı', 'Network (Ethernet)', 'Uydu'],
+    dogruIndex: 2,
+  ),
+
+  _Soru(
+    soru: 'Analog kameralar görüntüyü genellikle hangi kabloyla iletir?',
+    secenekler: ['UTP kablo', 'Fiber kablo', 'Koaksiyel kablo', 'Telefon kablosu'],
+    dogruIndex: 2,
+  ),
+
+  _Soru(
+    soru: 'PoE (Power over Ethernet) ne işe yarar?',
+    secenekler: [
+      'Sadece veri iletir',
+      'Sadece görüntü kalitesini artırır',
+      'Ağ kablosu üzerinden enerji ve veri iletir',
+      'Kablosuz bağlantı sağlar'
+    ],
+    dogruIndex: 2,
+  ),
+
+  _Soru(
+    soru: 'Bir IP kameranın IP adresi ne işe yarar?',
+    secenekler: [
+      'Görüntü çözünürlüğünü belirler',
+      'Kameranın ağ üzerindeki kimliğidir',
+      'Enerji tüketimini ölçer',
+      'Kayıt süresini uzatır'
+    ],
+    dogruIndex: 1,
+  ),
+
+  _Soru(
+    soru: 'Analog kamera sistemlerinde kayıt cihazına ne ad verilir?',
+    secenekler: ['NVR', 'Router', 'DVR', 'Switch'],
+    dogruIndex: 2,
+  ),
+
+  _Soru(
+    soru: 'IP kamera sistemlerinde kullanılan kayıt cihazı hangisidir?',
+    secenekler: ['DVR', 'Splitter', 'NVR', 'Modem'],
+    dogruIndex: 2,
+  ),
+
+  _Soru(
+    soru: 'CAT6 kablo CAT5e’ye göre ne avantaj sağlar?',
+    secenekler: [
+      'Daha kısa mesafe',
+      'Daha düşük hız',
+      'Daha yüksek bant genişliği',
+      'Sadece telefon hattı uyumu'
+    ],
+    dogruIndex: 2,
+  ),
+
+  _Soru(
+    soru: 'Koaksiyel kabloda sinyal kaybını azaltan en önemli parça hangisidir?',
+    secenekler: ['İzole bant', 'F konnektör', 'Anahtar', 'Sigorta'],
+    dogruIndex: 1,
+  ),
+
+  _Soru(
+    soru: 'TV yayınlarında uydu sinyalini alan parça hangisidir?',
+    secenekler: ['Multiswitch', 'LNB', 'Receiver', 'HDMI kablo'],
+    dogruIndex: 1,
+  ),
+
+  _Soru(
+    soru: 'Bir televizyonda dahili uydu alıcısı varsa ekstra neye gerek kalmaz?',
+    secenekler: ['LNB', 'Çanak anten', 'Receiver', 'Koaksiyel kablo'],
+    dogruIndex: 2,
+  ),
+
+  _Soru(
+    soru: 'RJ45 konnektörde toplam kaç pin bulunur?',
+    secenekler: ['4', '6', '8', '10'],
+    dogruIndex: 2,
+  ),
+
+  _Soru(
+    soru: 'RJ11 konnektörde genellikle kaç pin kullanılır?',
+    secenekler: ['2 veya 4', '8', '10', '12'],
+    dogruIndex: 0,
+  ),
+
+  _Soru(
+    soru: 'IP kameralar uzaktan izlenirken genellikle hangi protokol kullanılır?',
+    secenekler: ['FTP', 'HTTP/HTTPS', 'SMTP', 'SNMP'],
+    dogruIndex: 1,
+  ),
+
+  _Soru(
+    soru: 'Analog kamerada görüntü var ama renk yoksa en muhtemel sebep nedir?',
+    secenekler: [
+      'Kamera arızalı',
+      'Yanlış video standardı (PAL/NTSC)',
+      'Harddisk dolu',
+      'IP adresi çakışması'
+    ],
+    dogruIndex: 1,
+  ),
+
+  _Soru(
+    soru: 'PoE switch kullanılmasının avantajı nedir?',
+    secenekler: [
+      'Daha fazla kanal kaydı',
+      'Kameralar için ayrı adaptör gerektirmez',
+      'Görüntü çözünürlüğünü artırır',
+      'Kablosuz bağlantı sağlar'
+    ],
+    dogruIndex: 1,
+  ),
+
+  _Soru(
+    soru: 'TV headend sistemleri en çok nerelerde kullanılır?',
+    secenekler: [
+      'Müstakil evlerde',
+      'Araç içi sistemlerde',
+      'Oteller ve sitelerde',
+      'Cep telefonlarında'
+    ],
+    dogruIndex: 2,
+  ),
+
+  _Soru(
+    soru: 'IP kamera ile analog kamera arasındaki temel fark nedir?',
+    secenekler: [
+      'Biri kablosuz diğeri kablolu',
+      'Biri ağ üzerinden veri iletir',
+      'Biri sadece gece çalışır',
+      'Biri sadece TV’ye bağlanır'
+    ],
+    dogruIndex: 1,
+  ),
+
+  _Soru(
+    soru: 'CAT kablolarda maksimum önerilen mesafe kaç metredir?',
+    secenekler: ['50 m', '75 m', '100 m', '200 m'],
+    dogruIndex: 2,
+  ),
+
+  _Soru(
+    soru: 'Bir IP kamera görüntü vermiyor ama ışıkları yanıyorsa ilk ne kontrol edilir?',
+    secenekler: [
+      'LNB ayarı',
+      'IP adresi ve ağ bağlantısı',
+      'HDMI kablosu',
+      'Uydu frekansı'
+    ],
+    dogruIndex: 1,
+  ),
+
+  _Soru(
+    soru: 'Analog kamera sistemlerinde BNC konnektör ne için kullanılır?',
+    secenekler: [
+      'Enerji beslemesi',
+      'Ses iletimi',
+      'Video sinyal iletimi',
+      'Network bağlantısı'
+    ],
+    dogruIndex: 2,
+  ),
+
+  _Soru(
+    soru: 'Bir TV’de “sinyal yok” uyarısı varsa ilk hangi hat kontrol edilir?',
+    secenekler: [
+      'HDMI kablosu',
+      'Uydu kablosu (koaksiyel)',
+      'Ethernet kablosu',
+      'USB kablosu'
+    ],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: 'Harmoniklerin olası etkilerinden biri hangisidir?',
+    secenekler: ['Frekansın 0 olması', 'Nötr akımının artması ve ısınma', 'Topraklamanın yok olması', 'Gerilimin sonsuza çıkması'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: 'Kompanzasyonun yanlış ayarı hangi probleme yol açabilir?',
+    secenekler: ['Gerilimin 690 V olması', 'Rezonans ve harmonik büyümesi', 'Nötrün kaybolması', 'Frekansın 0 olması'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: '12 V gerilim uygulanan 12 Ω dirençten geçen akım yaklaşık kaç A’dır?',
+    secenekler: ['1.00 A', '2.00 A', '1.50 A', '0.50 A'],
+    dogruIndex: 0,
+  ),
+  _Soru(
+    soru: '24 V gerilim uygulanan 8 Ω dirençten geçen akım yaklaşık kaç A’dır?',
+    secenekler: ['6.00 A', '1.50 A', '3.00 A', '4.50 A'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: '48 V gerilim uygulanan 33 Ω dirençten geçen akım yaklaşık kaç A’dır?',
+    secenekler: ['0.73 A', '1.45 A', '2.91 A', '2.18 A'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: '48 V gerilim uygulanan 47 Ω dirençten geçen akım yaklaşık kaç A’dır?',
+    secenekler: ['2.04 A', '1.53 A', '0.51 A', '1.02 A'],
+    dogruIndex: 3,
+  ),
+  _Soru(
+    soru: '110 V gerilim uygulanan 5 Ω dirençten geçen akım yaklaşık kaç A’dır?',
+    secenekler: ['33.00 A', '22.00 A', '11.00 A', '44.00 A'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: '230 V gerilim uygulanan 47 Ω dirençten geçen akım yaklaşık kaç A’dır?',
+    secenekler: ['7.34 A', '4.89 A', '9.79 A', '2.45 A'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: '100 W’lık bir cihaz 2 saat çalışırsa yaklaşık kaç kWh tüketir?',
+    secenekler: ['0.30 kWh', '0.10 kWh', '0.50 kWh', '0.20 kWh'],
+    dogruIndex: 3,
+  ),
+  _Soru(
+    soru: '500 W’lık bir cihaz 1 saat çalışırsa yaklaşık kaç kWh tüketir?',
+    secenekler: ['0.75 kWh', '0.50 kWh', '0.80 kWh', '0.25 kWh'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: '1500 W’lık bir cihaz 6 saat çalışırsa yaklaşık kaç kWh tüketir?',
+    secenekler: ['13.50 kWh', '9.30 kWh', '9.00 kWh', '4.50 kWh'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: '2000 W’lık bir cihaz 3 saat çalışırsa yaklaşık kaç kWh tüketir?',
+    secenekler: ['6.30 kWh', '6.00 kWh', '3.00 kWh', '9.00 kWh'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: 'PEN iletkeni hangi sistemlerde görülür?',
+    secenekler: ['TT', 'Sadece DC sistemleri', 'IT', 'TN-C / TN-C-S'],
+    dogruIndex: 3,
+  ),
+  _Soru(
+    soru: 'TN-C sistemde N ve PE nasıl kullanılır?',
+    secenekler: ['Hiç kullanılmaz', 'Ayrı ayrı', 'Birleşik (PEN) iletken olarak', 'Sadece aydınlatmada'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: 'IT sistemin tipik özelliği hangisidir?',
+    secenekler: ['Sadece DC’de kullanılması', 'İlk izolasyon arızasında sistemin hemen kapanmaması', 'Kısa devre akımının sıfır olması', 'Nötrün hiç olmaması'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: 'Sigorta atıyorsa ilk yapılacak en güvenli adım hangisidir?',
+    secenekler: ['Sigorta değerini büyütmek', 'RCD’yi iptal etmek', 'Topraklamayı sökmek', 'Yük/hat üzerinde arıza ihtimalini kontrol etmek'],
+    dogruIndex: 3,
+  ),
+  _Soru(
+    soru: 'Motor ters dönüyorsa en pratik düzeltme hangisidir?',
+    secenekler: ['Kablo kesitini küçültmek', 'SPD eklemek', 'İki fazın yerini değiştirmek', 'RCD hassasiyetini artırmak'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: 'Üç faz + nötr sistemde nötr akımı ne zaman artar?',
+    secenekler: ['Topraklama çok iyi olduğunda', 'IP sınıfı yüksek olduğunda', 'Yükler dengesiz olduğunda', 'Yükler tamamen dengeli olduğunda'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: 'Bir devrede akım iki katına çıkarsa I²R kaybı ne olur?',
+    secenekler: ['Yarıya iner', '2 katına çıkar', '4 katına çıkar', 'Değişmez'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: 'Sigortanın \'gG\' tipi genelde neyi ifade eder?',
+    secenekler: ['Sadece motor koruma', 'Sadece elektronik koruma', 'Sadece kaçak akım koruma', 'Genel amaçlı tam aralıklı koruma'],
+    dogruIndex: 3,
+  ),
+  _Soru(
+    soru: 'Motor koruma şalteri (MMS) genelde hangi iki korumayı birleştirir?',
+    secenekler: ['Frekans + cosφ', 'Nem + sıcaklık', 'Kaçak akım + yıldırım', 'Aşırı yük + kısa devre'],
+    dogruIndex: 3,
+  ),
+  _Soru(
+    soru: 'Kompanzasyonda detuned reaktör kullanımının amacı nedir?',
+    secenekler: ['Nötrü yok etmek', 'Harmonik rezonans riskini azaltmak', 'Frekansı artırmak', 'Gerilimi artırmak'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: 'Yük ayırıcı şalterin ana amacı nedir?',
+    secenekler: ['Frekansı değiştirmek', 'Güvenli izolasyon (yük altında açabilme)', 'Kaçak akımı ölçmek', 'Gerilimi regüle etmek'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: 'Enerji analizörü genelde hangi bilgileri ölçer/gösterir?',
+    secenekler: ['Sadece kablo kesitini', 'Sadece toprak rengini', 'V, I, P, Q, cosφ, harmonik gibi değerleri', 'Sadece IP sınıfını'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: 'Paralel bağlı iki eşit dirençte toplam direnç nasıl olur?',
+    secenekler: ['Tek dirençle aynı', 'Tek direncin yarısı', 'Sonsuz', 'Tek direncin iki katı'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: 'Seri bağlı iki eşit dirençte toplam direnç nasıl olur?',
+    secenekler: ['Tek direncin yarısı', 'Sıfır', 'Tek dirençle aynı', 'Tek direncin iki katı'],
+    dogruIndex: 3,
+  ),
+  _Soru(
+    soru: 'Gerilim düşümü azalsın diye en etkili hamle hangisidir?',
+    secenekler: ['Kesiti artırmak veya hattı kısaltmak', 'SPD’yi sökmek', 'Sigortayı büyütmek', 'RCD takmak'],
+    dogruIndex: 0,
+  ),
+  _Soru(
+    soru: 'AG panoda bara kullanmanın avantajı hangisidir?',
+    secenekler: ['Gerilimi düşürmek', 'Frekansı değiştirmek', 'Daha düzenli ve düşük dirençli dağıtım', 'Kaçak akımı artırmak'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: 'Topraklama sürekliliği testinin amacı nedir?',
+    secenekler: ['Cosφ’yi artırmak', 'Frekansı düşürmek', 'Gerilimi yükseltmek', 'PE hattının kopuk olmadığını doğrulamak'],
+    dogruIndex: 3,
+  ),
+  _Soru(
+    soru: 'Zayıf sıkılmış pabuç bağlantısında hangi belirti daha olasıdır?',
+    secenekler: ['Frekansın artması', 'Gerilimin artması', 'Cosφ’nin 1 olması', 'Klemens/pabuçta kararma ve ısınma'],
+    dogruIndex: 3,
+  ),
+  _Soru(
+    soru: 'Nötr-toprak arası gerilim yüksekse olası sebep hangisidir?',
+    secenekler: ['Kablo rengi', 'IP sınıfı', 'Nötr bağlantı/taşıma problemi veya harmonikler', 'Faz sırası'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: 'Faz-toprak arası ölçülen gerilim normalde faz-nötr gerilimine yakınsa bu neyi gösterir?',
+    secenekler: ['Toprağın referans potansiyelde olduğunu', 'Sigortanın D tipi olduğunu', 'Nötrün olmadığını', 'Frekansın 60 Hz olduğunu'],
+    dogruIndex: 0,
+  ),
+  _Soru(
+    soru: 'Kabloda damar sayısı artırmak doğrudan neyi artırır?',
+    secenekler: ['Frekansı', 'İletken sayısını (paralel iletken imkânı)', 'Cosφ’yi', 'Gerilimi'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: 'Kablo izolesi 70°C yerine 90°C ise ne avantaj sağlar?',
+    secenekler: ['Daha yüksek cosφ', 'Daha düşük frekans', 'Daha yüksek akım taşıma kapasitesi (şarta bağlı)', 'RCD’nin çalışmaması'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: 'Bara sistemlerinde ek noktaları neden kritik izlenir?',
+    secenekler: ['Cosφ’nin sıfırlanması', 'Geçiş direnci ve ısınma riski', 'Gerilim artışı', 'Frekans artışı'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: 'Motor klemens kutusunda U-V-W neyi temsil eder?',
+    secenekler: ['Toprak ucunu', 'Sargı uçlarını', 'Sigorta ucunu', 'Nötr ucunu'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: 'Bir asenkron motorun senkron hızı en çok neye bağlıdır?',
+    secenekler: ['Topraklama direncine', 'Kablo rengine', 'Frekans ve kutup sayısına', 'RCD hassasiyetine'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: '50 Hz, 4 kutuplu motorda senkron hız yaklaşık kaç rpm’dir?',
+    secenekler: ['1500 rpm', '750 rpm', '1000 rpm', '3000 rpm'],
+    dogruIndex: 0,
+  ),
+  _Soru(
+    soru: '50 Hz, 2 kutuplu motorda senkron hız yaklaşık kaç rpm’dir?',
+    secenekler: ['1500 rpm', '1000 rpm', '3000 rpm', '750 rpm'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: 'Faz dengesizliği motorlarda hangi etkiyi artırır?',
+    secenekler: ['Verimi artırmayı', 'Sargı ısınmasını', 'Gerilimi yükseltmeyi', 'Frekansı artırmayı'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: 'Bir yükün direnci artarsa (V sabit), akım nasıl değişir?',
+    secenekler: ['Değişmez', 'Sıfır olur', 'Azalır', 'Artar'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: 'Bir pano içinde kabloların çok sıkı toplanması hangi sorunu artırır?',
+    secenekler: ['Isınma (soğutma zorlaşır)', 'Cosφ', 'Frekans', 'Toprak direnci'],
+    dogruIndex: 0,
+  ),
+  _Soru(
+    soru: 'Kaçak akımın bir kısmı PE üzerinden akarsa RCD ne yapar?',
+    secenekler: ['Gerilimi yükseltir', 'Açma yapabilir (fark algılar)', 'Sigortayı büyütür', 'Hiçbir şey'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: 'Bir ölçümde faz-nötr 230 V iken faz-faz kaç V civarıdır (TR standart)?',
+    secenekler: ['230 V', '400 V civarı', '690 V', '110 V'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: 'AG panolarda bakır bara tercihinin sebeplerinden biri hangisidir?',
+    secenekler: ['Süper iletkenlik', 'Manyetik alan üretmemesi', 'Yüksek iletkenlik ve güvenilir bağlantı', 'Daha düşük ağırlık'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: 'Kablolarda \'minimum bükülme yarıçapı\' neden önemlidir?',
+    secenekler: ['Frekansı düşürmek için', 'Gerilimi yükseltmek için', 'İzolasyona zarar vermemek için', 'Cosφ’yi artırmak için'],
+    dogruIndex: 2,
+  ),
+  _Soru(
+    soru: 'Şebeke gerilimi dalgalanmasına karşı hassas cihazlarda ne tercih edilir?',
+    secenekler: ['Daha ince kablo', 'Topraklamayı sökmek', 'Daha büyük sigorta', 'Regülatör/UPS'],
+    dogruIndex: 3,
+  ),
+  _Soru(
+    soru: 'Bir devrede seri bağlı iki lambadan biri koparsa ne olur?',
+    secenekler: ['Diğeri etkilenmez', 'Sigorta büyür', 'Diğeri daha parlak yanar', 'Diğer lamba da söner'],
+    dogruIndex: 3,
+  ),
+  _Soru(
+    soru: 'Paralel bağlı lambalardan biri koparsa diğerine ne olur?',
+    secenekler: ['Frekans değişir', 'Diğeri yanmaya devam eder', 'Diğeri de söner', 'Gerilim ikiye bölünür'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: 'Yalıtım sınıfı \'Class F\' motorlar neyle ilgilidir?',
+    secenekler: ['IP kodu', 'Sargı izolasyon sıcaklık dayanımıyla', 'Faz sırası', 'RCD hassasiyeti'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: 'IP54 ifadesindeki 5 sayısı neyi belirtir?',
+    secenekler: ['Suya karşı koruma', 'Toza karşı koruma seviyesini', 'Akım seviyesi', 'Gerilim seviyesi'],
+    dogruIndex: 1,
+  ),
+  _Soru(
+    soru: 'IP54 ifadesindeki 4 sayısı neyi belirtir?',
+    secenekler: ['Cosφ', 'Frekans', 'Toza karşı koruma', 'Sıçrayan suya karşı korumayı'],
+    dogruIndex: 3,
+  ),
+  _Soru(
+    soru: '150 m uzunluğunda hatta 63 A akım çekildiğinde gerilim düşümünü azaltmak için en mantıklı adım hangisidir?',
+    secenekler: ['Sigorta değerini büyütmek', 'RCD’yi sökmek', 'hat uzunluğunu iyileştirmek', 'Faz sırasını karıştırmak'],
+    dogruIndex: 2,
+  ),
+  _Soru(
     soru: 'Diyotun temel görevi nedir?',
     secenekler: ['Akımı iki yönde iletmek', 'Tek yönde iletmek', 'Gerilimi yükseltmek', 'Frekansı artırmak'],
     dogruIndex: 1,

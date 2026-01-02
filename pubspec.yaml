@@ -17,7 +17,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
 
-version: 1.0.4+12
+version: 1.0.5+13
 
 
 
@@ -33,12 +33,17 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-   
+
+  google_mobile_ads: ^5.0.0
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
+  in_app_review: ^2.0.9
+  share_plus: ^10.0.0
+  url_launcher: ^6.3.0
  
   
 
@@ -60,12 +65,13 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
 
+
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true 
   assets:
-    - assets/logo.png
+    - assets/logo.jpg
     - assets/images/direnc.webp
     - assets/images/diyot.jpg
     - assets/images/kondansator.jpg
@@ -96,11 +102,32 @@ flutter:
     - assets/images/Motorsema.png
     - assets/images/filtreicon.png
     - assets/images/otomasyonicon.png
+    - assets/images/adianahtar.jpg
+    - assets/images/komutatör.jpg
+    - assets/images/vavien1.jpg
+    - assets/images/vavien2.jpg
+    - assets/images/yikama-pompasi-termik-role-baglanti-semasi.jpg
+    - assets/images/motor1.jpg
+    - assets/images/priz.jpg
+    - assets/images/rj45.png
+    - assets/images/rj451.jpg
+    - assets/images/ipkam1.jpg
+    - assets/images/analog.jpg
+    - assets/images/cctv_power_supply.jpg
+    - assets/images/cctv_tester.webp
+    - assets/images/otomasyon1.png
+    - assets/images/astronomikzamansaati.jpg
+    - assets/images/astronomikzamansaati1.jpg
+    - assets/images/mekanikzamansaati1.png
+    - assets/images/mekanikzamansaati.webp
+    - assets/images/autocad.webp
+    - assets/images/alpsat.jpg
+    
 flutter_launcher_icons:
   android: true
   ios: true
-  image_path_ios: assets/logo.png
-  image_path_android: assets/logo.png
+  image_path_ios: assets/logo.jpg
+  image_path_android: assets/logo.jpg
   remove_alpha_ios: true
    
   # To add assets to your application, add an assets section, like this:
