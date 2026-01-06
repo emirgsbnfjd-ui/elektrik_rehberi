@@ -63,13 +63,16 @@ class _Direnc6BantSayfasiState extends State<Direnc6BantSayfasi> {
 
   // Seçimler
   String b1 = 'Kahverengi'; // 1. rakam (siyah olamaz)
-  String b2 = 'Siyah';      // 2. rakam
-  String b3 = 'Siyah';      // 3. rakam
-  String mul = 'Kırmızı';   // çarpan
-  String tol = 'Altın';     // tolerans
+  String b2 = 'Siyah'; // 2. rakam
+  String b3 = 'Siyah'; // 3. rakam
+  String mul = 'Kırmızı'; // çarpan
+  String tol = 'Altın'; // tolerans
   String tc = 'Kahverengi'; // tempco (sadece 6 bantta)
 
-  String? sonuc;
+  // ✅ Kurumsal sonuç için parçalara ayırıyoruz
+  double? _rNominal; // ohm
+  double? _tolPct; // %
+  int? _tempco; // ppm/°C (6 bant)
 
   int _digit(String c) => digitColors.indexOf(c);
 
@@ -91,13 +94,9 @@ class _Direnc6BantSayfasiState extends State<Direnc6BantSayfasi> {
     final temel = (d1 * 100 + d2 * 10 + d3) * m;
 
     setState(() {
-      if (bantModu == 6) {
-        final ppm = tempcoMap[tc] ?? 100;
-        sonuc =
-            'R = ${_formatOhm(temel)}  ±${t.toStringAsFixed(2)}%  •  TempCo = $ppm ppm/°C';
-      } else {
-        sonuc = 'R = ${_formatOhm(temel)}  ±${t.toStringAsFixed(2)}%';
-      }
+      _rNominal = temel.toDouble();
+      _tolPct = t;
+      _tempco = (bantModu == 6) ? (tempcoMap[tc] ?? 100) : null;
     });
   }
 
@@ -110,7 +109,9 @@ class _Direnc6BantSayfasiState extends State<Direnc6BantSayfasi> {
       mul = 'Kırmızı';
       tol = 'Altın';
       tc = 'Kahverengi';
-      sonuc = null;
+      _rNominal = null;
+      _tolPct = null;
+      _tempco = null;
     });
   }
 
@@ -162,7 +163,10 @@ class _Direnc6BantSayfasiState extends State<Direnc6BantSayfasi> {
                     onSelectionChanged: (s) {
                       setState(() {
                         bantModu = s.first;
-                        sonuc = null; // mod değişince sonuç temizle
+                        // mod değişince sonucu temizle
+                        _rNominal = null;
+                        _tolPct = null;
+                        _tempco = null;
                       });
                     },
                   ),
@@ -191,31 +195,31 @@ class _Direnc6BantSayfasiState extends State<Direnc6BantSayfasi> {
                     '1. Bant (1. Rakam)',
                     b1,
                     digitColors.where((r) => r != 'Siyah').toList(),
-                    (v) => setState(() => b1 = v!),
+                        (v) => setState(() => b1 = v!),
                   ),
                   _dropRow(
                     '2. Bant (2. Rakam)',
                     b2,
                     digitColors,
-                    (v) => setState(() => b2 = v!),
+                        (v) => setState(() => b2 = v!),
                   ),
                   _dropRow(
                     '3. Bant (3. Rakam)',
                     b3,
                     digitColors,
-                    (v) => setState(() => b3 = v!),
+                        (v) => setState(() => b3 = v!),
                   ),
                   _dropRow(
                     '4. Bant (Çarpan)',
                     mul,
                     multiplierMap.keys.toList(),
-                    (v) => setState(() => mul = v!),
+                        (v) => setState(() => mul = v!),
                   ),
                   _dropRow(
                     '5. Bant (Tolerans)',
                     tol,
                     toleranceMap.keys.toList(),
-                    (v) => setState(() => tol = v!),
+                        (v) => setState(() => tol = v!),
                   ),
 
                   // ✅ 6. bant sadece 6 modda gözüksün
@@ -224,7 +228,7 @@ class _Direnc6BantSayfasiState extends State<Direnc6BantSayfasi> {
                       '6. Bant (TempCo)',
                       tc,
                       tempcoMap.keys.toList(),
-                      (v) => setState(() => tc = v!),
+                          (v) => setState(() => tc = v!),
                     ),
 
                   const SizedBox(height: 12),
@@ -246,19 +250,14 @@ class _Direnc6BantSayfasiState extends State<Direnc6BantSayfasi> {
                     ],
                   ),
 
-                  if (sonuc != null) ...[
+                  // ✅ Kurumsal sonuç kartı
+                  if (_rNominal != null && _tolPct != null) ...[
                     const SizedBox(height: 12),
-                    Card(
-                      elevation: 0,
-                      color: Theme.of(context).colorScheme.surface,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Text(
-                          sonuc!,
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                        ),
-                      ),
+                    _SonucKarti(
+                      rNominal: _rNominal!,
+                      tolPct: _tolPct!,
+                      tempco: _tempco,
+                      formatOhm: _formatOhm,
                     ),
                   ],
                 ],
@@ -271,11 +270,11 @@ class _Direnc6BantSayfasiState extends State<Direnc6BantSayfasi> {
   }
 
   Widget _dropRow(
-    String label,
-    String value,
-    List<String> items,
-    ValueChanged<String?> onChanged,
-  ) {
+      String label,
+      String value,
+      List<String> items,
+      ValueChanged<String?> onChanged,
+      ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
@@ -289,6 +288,165 @@ class _Direnc6BantSayfasiState extends State<Direnc6BantSayfasi> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _SonucKarti extends StatelessWidget {
+  const _SonucKarti({
+    required this.rNominal,
+    required this.tolPct,
+    required this.tempco,
+    required this.formatOhm,
+  });
+
+  final double rNominal;
+  final double tolPct;
+  final int? tempco;
+  final String Function(double) formatOhm;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
+    final minR = rNominal * (1 - tolPct / 100);
+    final maxR = rNominal * (1 + tolPct / 100);
+
+    return Card(
+      elevation: 0,
+      color: cs.surface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.verified, color: cs.primary),
+                const SizedBox(width: 8),
+                const Text(
+                  'Sonuç',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                ),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: cs.primary.withOpacity(0.10),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    'Nominal',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: cs.primary,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+
+            _InfoRow(
+              label: 'Direnç',
+              value: formatOhm(rNominal),
+              icon: Icons.speed,
+            ),
+            const SizedBox(height: 8),
+
+            _InfoRow(
+              label: 'Tolerans',
+              value: '±${tolPct.toStringAsFixed(2)}%',
+              icon: Icons.tune,
+            ),
+
+            const SizedBox(height: 10),
+            Divider(height: 1, color: cs.outlineVariant.withOpacity(0.6)),
+            const SizedBox(height: 10),
+
+            _InfoRow(
+              label: 'Aralık',
+              value: '${formatOhm(minR)}  –  ${formatOhm(maxR)}',
+              icon: Icons.swap_horiz,
+              valueStyle: const TextStyle(fontWeight: FontWeight.w700),
+            ),
+
+            if (tempco != null) ...[
+              const SizedBox(height: 10),
+              Divider(height: 1, color: cs.outlineVariant.withOpacity(0.6)),
+              const SizedBox(height: 10),
+              _InfoRow(
+                label: 'TempCo',
+                value: '$tempco ppm/°C',
+                icon: Icons.thermostat,
+              ),
+            ],
+
+            const SizedBox(height: 6),
+            Text(
+              'Not: Aralık, tolerans yüzdesine göre min–max değerleri gösterir.',
+              style: TextStyle(
+                fontSize: 12,
+                color: cs.onSurface.withOpacity(0.65),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _InfoRow extends StatelessWidget {
+  const _InfoRow({
+    required this.label,
+    required this.value,
+    required this.icon,
+    this.valueStyle,
+  });
+
+  final String label;
+  final String value;
+  final IconData icon;
+  final TextStyle? valueStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+
+    return Row(
+      children: [
+        Container(
+          width: 34,
+          height: 34,
+          decoration: BoxDecoration(
+            color: cs.primary.withOpacity(0.10),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, size: 18, color: cs.primary),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              color: cs.onSurface.withOpacity(0.75),
+            ),
+          ),
+        ),
+        Text(
+          value,
+          style: valueStyle ??
+              const TextStyle(
+                fontWeight: FontWeight.w800,
+                fontSize: 14,
+              ),
+        ),
+      ],
     );
   }
 }

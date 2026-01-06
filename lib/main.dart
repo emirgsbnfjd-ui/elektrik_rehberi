@@ -1798,25 +1798,295 @@ Makale(
   ),
   Makale(
     id: 'el2',
-    baslik: 'Transistör Temelleri (BJT/FET)',
-    icerik:
-        'BJT akım kontrollüdür, MOSFET ise gerilim kontrollüdür. '
-        'Anahtarlama uygulamalarında MOSFET, düşük gate kaybı nedeniyle sık kullanılır. '
-        'Transistör, küçük akımlar ile büyük akımları kontrol etmeye yarayan yarı iletken bir devre elemanıdır. '
-        'NPN ve PNP olmak üzere iki tipi vardır. Anahtarlama, yükseltme ve darbe üretimi gibi işlemlerde kullanılır. '
-        'Bölümler: Base (B), Collector (C), Emitter (E). Akım yönü B’den E’ye doğru kontrol edilir.',
+    baslik:
+    'Transistör Temelleri (BJT & MOSFET) – Çalışma Mantığı, Uçlar, Anahtarlama ve Saha Uygulamaları',
     kategori: 'elektronik',
-    resim: 'assets/images/transıstor.jpg',  
+    ikonAsset: 'assets/images/transıstor.jpg',
+    icerik:
+    'Transistör; küçük bir sinyal ile daha büyük akım ve gerilimleri '
+        'kontrol etmeye yarayan yarı iletken bir devre elemanıdır. '
+        'Elektronik devrelerin temel yapı taşıdır ve anahtarlama, yükseltme, '
+        'regülasyon ve darbe üretimi gibi çok geniş bir kullanım alanına sahiptir.\n\n'
+        'Bu makalede; BJT ve MOSFET transistörlerin farkları, uçları, '
+        'çalışma prensipleri, anahtarlama mantığı, sahada sık yapılan hatalar '
+        've multimetre ile temel kontroller tekniker gözüyle anlatılmaktadır.',
+    bloklar: const [
+
+      MakaleBlok.text(
+        ' 1) Transistör Nedir, Ne İşe Yarar?\n'
+            'Transistör, elektronik devrelerde üç temel amaçla kullanılır:\n\n'
+            '• Anahtar olarak (aç/kapa)\n'
+            '• Yükselteç olarak (zayıf sinyali büyütmek)\n'
+            '• Akım/gerilim kontrolü yapmak\n\n'
+            'Basit anlatım:\n'
+            '👉 Küçük bir sinyal ile büyük bir yükü kontrol edebilmeni sağlar.\n\n'
+            'Örnek:\n'
+            '• Mikrodenetleyici çıkışı ile röle sürmek\n'
+            '• LED, motor, fan, bobin kontrolü\n'
+            '• SMPS güç kartlarında anahtarlama',
+      ),
+      MakaleBlok.image(
+        'assets/images/transıstor.jpg',
+        aciklama:
+        'Transistör görseli ',
+      ),
+
+      MakaleBlok.text(
+        ' 2) BJT ve MOSFET Arasındaki Temel Farklar\n'
+            'Transistörler temel olarak iki ana gruba ayrılır:\n\n'
+            '• BJT (Bipolar Junction Transistor)\n'
+            '• MOSFET (Metal Oxide Semiconductor FET)\n\n'
+            'En önemli fark:\n'
+            '• BJT → Akım kontrollüdür\n'
+            '• MOSFET → Gerilim kontrollüdür\n\n'
+            'Saha yorumu:\n'
+            '• Düşük güç ve basit devrelerde BJT\n'
+            '• Güç elektroniği ve SMPS devrelerinde MOSFET tercih edilir',
+      ),
+
+      MakaleBlok.text(
+        ' 3) BJT Transistör (NPN / PNP) Yapısı\n'
+            'BJT transistörler üç uçtan oluşur:\n\n'
+            '• Base (B)\n'
+            '• Collector (C)\n'
+            '• Emitter (E)\n\n'
+            'BJT tipleri:\n'
+            '• NPN (en yaygın)\n'
+            '• PNP\n\n'
+            'Çalışma mantığı (NPN):\n'
+            '• Base–Emitter arasına yaklaşık 0.7 V uygulanır\n'
+            '• Base akımı → Collector–Emitter akımını kontrol eder\n\n'
+            'Altın kural:\n'
+            '❗ Base akımı yoksa transistör kapalıdır',
+      ),
+
+      MakaleBlok.text(
+        ' 4) BJT Anahtarlama Mantığı (Aç / Kapa)\n'
+            'BJT anahtar olarak kullanıldığında iki temel durumu vardır:\n\n'
+            '• Kesim (OFF): Base akımı yok → Transistör kapalı\n'
+            '• Doyum (ON): Yeterli base akımı var → Transistör tam açık\n\n'
+            'Sahada yapılan en büyük hata:\n'
+            '❌ Base direnci kullanmamak\n\n'
+            'Not:\n'
+            '• Base direnci transistörü korur\n'
+            '• Mikrodenetleyici çıkışlarını yakmamak için şarttır',
+      ),
+
+      MakaleBlok.text(
+        '⚡ 5) MOSFET Nedir? Neden Daha Çok Kullanılır?\n'
+            'MOSFET’ler de üç uçtan oluşur:\n\n'
+            '• Gate (G)\n'
+            '• Drain (D)\n'
+            '• Source (S)\n\n'
+            'MOSFET’in en büyük avantajı:\n'
+            '• Gate neredeyse akım çekmez\n'
+            '• Gerilim ile kontrol edilir\n\n'
+            'Bu yüzden:\n'
+            '• Daha az ısınır\n'
+            '• Yüksek frekansta çalışabilir\n'
+            '• SMPS devrelerinde vazgeçilmezdir',
+      ),
+      MakaleBlok.image(
+        'assets/images/mosfet1.jpg',
+        aciklama:
+        'Mosfet görseli ',
+      ),
+
+      MakaleBlok.text(
+        ' 6) N-Channel ve P-Channel MOSFET Farkı\n'
+            'MOSFET’ler iki ana tipe ayrılır:\n\n'
+            '• N-Channel (en yaygın)\n'
+            '• P-Channel\n\n'
+            'N-Channel:\n'
+            '• Gate gerilimi Source’tan büyük olmalı\n'
+            '• Daha düşük Rds(on)\n'
+            '• Güç uygulamalarında tercih edilir\n\n'
+            'P-Channel:\n'
+            '• Genelde high-side anahtarlamada\n'
+            '• Kontrolü daha basit ama kayıpları fazla',
+      ),
+
+      MakaleBlok.text(
+        ' 7) Multimetre ile Transistör Kontrolü\n'
+            'Sahada hızlı kontrol için multimetre yeterlidir.\n\n'
+            'BJT kontrolü:\n'
+            '• Diyot modunda B–E ve B–C ölçülür\n'
+            '• Tek yönde ~0.6–0.7 V görülmeli\n'
+            '• İki yönde kısa devre varsa transistör bozuk\n\n'
+            'MOSFET kontrolü:\n'
+            '• Drain–Source kısa devre olmamalı\n'
+            '• Gate–Source arası megaohm seviyesinde olmalı\n\n'
+            'İpucu:\n'
+            '• MOSFET’ler statik elektrikten kolay bozulur',
+      ),
+
+      MakaleBlok.text(
+        ' 8) Transistör Neden Yanır? (Sahada En Sık Sebepler)\n'
+            '• Aşırı akım\n'
+            '• Yetersiz soğutma\n'
+            '• Yanlış gate/base sürme\n'
+            '• Flyback diyotu kullanılmaması (bobinli yüklerde)\n'
+            '• Yanlış eşdeğer parça kullanımı\n\n'
+            'Örnek:\n'
+            'Röle, motor veya bobin sürerken diyot koyulmazsa '
+            'transistör ilk kapamada yanar.',
+      ),
+
+      MakaleBlok.text(
+        ' 9) BJT mi MOSFET mi? Hangisini Seçmeliyim?\n'
+            'Basit kural:\n\n'
+            '• Küçük akım, basit devre → BJT\n'
+            '• Yüksek akım, SMPS, motor sürme → MOSFET\n\n'
+            'Tekniker önerisi:\n'
+            '• Güncel projelerde MOSFET öğrenmek uzun vadede avantaj sağlar.',
+      ),
+
+      MakaleBlok.text(
+        '✅ 10) Kısa Özet\n'
+            '• Transistör elektronik devrelerin temelidir\n'
+            '• BJT akım, MOSFET gerilim kontrollüdür\n'
+            '• Base/Gate koruması şarttır\n'
+            '• Multimetre ile ön teşhis mümkündür\n'
+            '• Soğutma ve doğru sürme transistör ömrünü belirler',
+      ),
+    ],
   ),
   Makale(
     id: 'el3',
-    baslik: 'Kondansatör (Kapasitör) Nedir?',
-    icerik:
-        'Kondansatör, iki iletken levha arasına yalıtkan dielektrik malzeme konularak oluşturulan enerji depolayıcı elemandır. '
-        'Elektrik yükünü kısa süreli olarak depolar ve gerektiğinde devreye verir. AC sinyalleri geçirir, DC akımı engeller. '
-        'Birimi Farad (F) olup genellikle µF, nF, pF şeklinde kullanılır.',
+    baslik:
+    'Kondansatör (Kapasitör) Nedir? – Çalışma Mantığı, Türleri, Bağlantılar ve Saha Arızaları',
     kategori: 'elektronik',
-    resim: 'assets/images/kondansator.jpg',   
+    ikonAsset: 'assets/images/kondansator.jpg',
+    icerik:
+    'Kondansatör (kapasitör); elektrik enerjisini elektrik alanı '
+        'şeklinde depolayan ve gerektiğinde devreye geri veren temel '
+        'elektronik devre elemanlarından biridir. Güç kaynakları, '
+        'kontrol kartları, motor sürücüleri, PLC kartları ve '
+        'mikrodenetleyici sistemlerinde vazgeçilmezdir.\n\n'
+        'Bu makalede; kondansatörün çalışma prensibi, türleri, '
+        'doğru kullanım yöntemleri ve sahada sık karşılaşılan '
+        'arızalar tekniker bakış açısıyla anlatılmaktadır.',
+    bloklar: const [
+
+      MakaleBlok.text(
+        ' 1) Kondansatör Nedir, Ne İşe Yarar?\n'
+            'Kondansatörün temel görevi:\n\n'
+            '• Elektrik yükünü kısa süreli depolamak\n'
+            '• Gerilim dalgalanmalarını filtrelemek\n'
+            '• AC sinyali geçirmek, DC akımı engellemek\n\n'
+            'Basit örnek:\n'
+            '• Adaptör çıkışındaki dalgalı DC → daha düzgün DC\n'
+            '• Röle çektiğinde oluşan ani gerilim çökmesini önlemek\n\n'
+            'Kondansatör olmazsa:\n'
+            '❌ Devre kararsız çalışır\n'
+            '❌ Mikrodenetleyici reset atar\n'
+            '❌ Röle ve kontaktör parazit yapar',
+      ),
+
+      MakaleBlok.text(
+        ' 2) Çalışma Mantığı (Basit Anlatım)\n'
+            'Kondansatör iki iletken plaka ve aralarındaki '
+            'yalıtkan (dielektrik) malzemeden oluşur.\n\n'
+            '• Gerilim uygulandığında → şarj olur\n'
+            '• Gerilim kesildiğinde → enerjisini devreye verir\n\n'
+            'Önemli bilgi:\n'
+            '• Kondansatör DC akımı sürekli iletmez\n'
+            '• AC sinyalleri frekansa bağlı olarak geçirir',
+      ),
+
+      MakaleBlok.text(
+        ' 3) Kondansatörün Birimi ve Değerleri\n'
+            'Kondansatörün birimi Farad (F)\'dır.\n\n'
+            'Pratikte kullanılan değerler:\n'
+            '• µF (mikrofarad)\n'
+            '• nF (nanofarad)\n'
+            '• pF (pikofarad)\n\n'
+            'Not:\n'
+            '1 F çok büyük bir değerdir, sahada nadiren kullanılır.',
+      ),
+      MakaleBlok.image( 'assets/images/kondansator.jpg', ),
+
+      MakaleBlok.text(
+        ' 4) Kondansatör Türleri (En Yaygın)\n'
+            'Elektronikte en sık kullanılan kondansatörler:\n\n'
+            '1️⃣ Elektrolitik Kondansatör\n'
+            '• Yüksek kapasiteli\n'
+            '• Polaritelidir (+ / -)\n'
+            '• Genelde filtreleme amaçlı\n\n'
+            '2️⃣ Seramik Kondansatör\n'
+            '• Küçük kapasiteli\n'
+            '• Polaritesiz\n'
+            '• Yüksek frekans için ideal\n\n'
+            '3️⃣ Film (Polyester) Kondansatör\n'
+            '• Kararlı yapı\n'
+            '• Zamanlama ve sinyal devreleri',
+      ),
+
+      MakaleBlok.text(
+        ' 5) Elektrolitik Kondansatörlerde Altın Kural\n'
+            '❗ Polariteye dikkat edilmezse kondansatör patlar.\n\n'
+            'Yanlış bağlantı sonucu:\n'
+            '• Şişme\n'
+            '• Akma\n'
+            '• Patlama\n\n'
+            'Saha ipucu:\n'
+            '• Artı (+) ucu genelde uzun bacaktır\n'
+            '• Gövdedeki şerit eksi (-) tarafı gösterir',
+      ),
+
+      MakaleBlok.text(
+        ' 6) Kondansatör Nerelerde Kullanılır?\n'
+            '• Güç kaynakları (filtreleme)\n'
+            '• PLC giriş–çıkış kartları\n'
+            '• Röle ve kontaktör bobinleri\n'
+            '• Motor sürücüleri\n'
+            '• Ses ve sinyal devreleri\n\n'
+            'Örnek:\n'
+            '• 24V röle bobinine paralel kondansatör → parazit azaltma',
+      ),
+
+      MakaleBlok.text(
+        ' 7) Kondansatör Arızaları (Sahada Çok Görülür)\n'
+            'En sık karşılaşılan arızalar:\n\n'
+            '• Şişmiş elektrolitik kondansatör\n'
+            '• Değer kaybı (kapasite düşer)\n'
+            '• İç kısa devre\n'
+            '• Kuruma (yaşlanma)\n\n'
+            'Sonuç:\n'
+            '• Cihaz geç çalışır\n'
+            '• Reset atar\n'
+            '• Çıkış gerilimi dalgalanır',
+      ),
+
+      MakaleBlok.text(
+        ' 8) Multimetre ile Kondansatör Kontrolü\n'
+            'Basit saha kontrolü:\n\n'
+            '1) Multimetreyi ohm veya kapasitans moduna al\n'
+            '2) Prob uçlarını kondansatöre değdir\n'
+            '3) Değer yavaş yükselip düşüyorsa → sağlam\n\n'
+            'İpucu:\n'
+            '• Şüpheli kondansatör en hızlı test için değiştirerek denenir',
+      ),
+
+      MakaleBlok.text(
+        ' 9) Kondansatör Neden Bozulur?\n'
+            '• Aşırı sıcaklık\n'
+            '• Yüksek gerilim\n'
+            '• Uzun süre çalışma\n'
+            '• Kalitesiz ürün\n\n'
+            'Tekniker tavsiyesi:\n'
+            '• Güç kartlarında mutlaka 105°C kondansatör kullan',
+      ),
+
+      MakaleBlok.text(
+        '📌 10) Kısa Özet\n'
+            '• Kondansatör enerji depolar ve filtreleme yapar\n'
+            '• Elektrolitikler polaritelidir\n'
+            '• Seramikler yüksek frekansta iyidir\n'
+            '• Şişmiş kondansatör arıza sebebidir\n'
+            '• Güç kartlarında kondansatör kalitesi kritiktir',
+      ),
+    ],
   ),
   Makale(
   id: 'el4',
@@ -1833,8 +2103,8 @@ Makale(
       '2) DOĞRU POLARİZASYON / TERS POLARİZASYON\n'
       '• Doğru polarizasyon (iletim): Anot (+), Katot (–) olduğunda diyot iletir.\n'
       '  Tipik iletim gerilimi (Vf):\n'
-      '  - Silikon diyot: ~0.6–0.8V\n'
-      '  - Schottky diyot: ~0.2–0.4V (daha düşük kayıp)\n'
+      '  - Silikon(Silisyum) diyot: ~0.6–0.8V\n'
+      '  - Schottky(Germanyum) diyot: ~0.2–0.4V (daha düşük kayıp)\n'
       '• Ters polarizasyon (kesim): Anot (–), Katot (+) olduğunda diyot idealde keser.\n'
       '  Çok az “ters kaçak akım” oluşabilir (normaldir).\n\n'
 
@@ -1909,6 +2179,175 @@ Makale(
       'Özellikle güç devrelerinde diyot seçimini VRRM/IF değerlerine göre yap.\n',
   kategori: 'elektronik',
   resim: 'assets/images/diyot.jpg',
+  ),
+  Makale(
+    id: 'el3',
+    baslik:
+    'Regülatörler (7805 – LM317 – LM2596) – Çalışma Mantığı, Bağlantılar ve Saha Arızaları',
+    kategori: 'elektronik',
+    ikonAsset: 'assets/images/7805.png',
+    icerik:
+    'Regülatörler; elektronik devrelerde giriş gerilimi değişse bile '
+        'çıkışta sabit ve kararlı bir gerilim elde etmek için kullanılan '
+        'devre elemanlarıdır. Adaptörler, güç kartları, kontrol kartları, '
+        'PLC giriş–çıkış devreleri ve mikrodenetleyici sistemlerinde '
+        'en kritik bileşenlerden biridir.\n\n'
+        'Bu makalede; en yaygın kullanılan 7805, ayarlanabilir LM317 '
+        've anahtarlamalı LM2596 regülatörlerin çalışma prensipleri, '
+        'bağlantı şekilleri, avantaj–dezavantajları ve sahada sık '
+        'karşılaşılan arızalar tekniker gözüyle anlatılmaktadır.',
+    bloklar: const [
+
+      MakaleBlok.text(
+        ' 1) Regülatör Nedir, Neden Kullanılır?\n'
+            'Regülatörün temel görevi:\n\n'
+            '• Dalgalı veya yüksek bir DC gerilimi\n'
+            '• Devrenin ihtiyacı olan sabit DC gerilime çevirmektir\n\n'
+            'Örnek:\n'
+            '• Adaptörden gelen 12 V → 5 V\n'
+            '• Aküden gelen 24 V → 12 V\n\n'
+            'Regülatör olmazsa:\n'
+            '❌ Mikrodenetleyici yanar\n'
+            '❌ Sensörler yanlış çalışır\n'
+            '❌ Cihaz reset atar',
+      ),
+
+      MakaleBlok.text(
+        ' 2) Regülatör Türleri (Genel Bakış)\n'
+            'Elektronikte regülatörler iki ana gruba ayrılır:\n\n'
+            '1️⃣ Lineer Regülatörler\n'
+            '• 78xx serisi (7805, 7812 vb.)\n'
+            '• LM317 (ayarlanabilir)\n\n'
+            '2️⃣ Anahtarlamalı (Switching) Regülatörler\n'
+            '• LM2596\n'
+            '• Buck / Boost / Buck-Boost modüller\n\n'
+            'Temel fark:\n'
+            '• Lineer → basit ama ısınır\n'
+            '• Anahtarlamalı → verimli ama karmaşıktır',
+      ),
+
+      MakaleBlok.text(
+        ' 3) 7805 Regülatör (Sabit 5V)\n'
+            '7805, en yaygın kullanılan lineer regülatörlerden biridir.\n\n'
+            'Temel özellikler:\n'
+            '• Sabit çıkış: 5 V\n'
+            '• Giriş gerilimi: genelde 7 – 35 V\n'
+            '• Akım: ~1 A (soğutmaya bağlı)\n\n'
+            'Bacaklar (TO-220):\n'
+            '• IN – GND – OUT\n\n'
+            'Altın kural:\n'
+            '❗ Giriş 5 V’un altına düşerse regülasyon bozulur',
+      ),
+      MakaleBlok.image(
+        'assets/images/7805.png',
+      ),
+      MakaleBlok.image(
+        'assets/images/78051.webp',
+      ),
+
+      MakaleBlok.text(
+        ' 4) 7805’in Dezavantajı: Isınma Problemi\n'
+            '7805 lineer çalıştığı için fazla gerilimi ısıya çevirir.\n\n'
+            'Örnek:\n'
+            '• Giriş: 12 V\n'
+            '• Çıkış: 5 V\n'
+            '• Aradaki 7 V → ısı olarak harcanır\n\n'
+            'Sonuç:\n'
+            '• Soğutucu yoksa regülatör aşırı ısınır\n'
+            '• Termal korumaya girer veya yanar\n\n'
+            'Saha yorumu:\n'
+            '• 12V → 5V yüksek akım varsa 7805 yerine LM2596 tercih edilir',
+      ),
+
+      MakaleBlok.text(
+        ' 5) LM317 (Ayarlanabilir Lineer Regülatör)\n'
+            'LM317, çıkış gerilimi ayarlanabilen bir lineer regülatördür.\n\n'
+            'Özellikler:\n'
+            '• Çıkış: ~1.25 V – 30 V\n'
+            '• Harici dirençlerle ayarlanır\n\n'
+            'Çıkış formülü:\n'
+            'Vout = 1.25 × (1 + R2 / R1)\n\n'
+            'Kullanım alanları:\n'
+            '• Ayarlı güç kaynağı\n'
+            '• Laboratuvar devreleri\n'
+            '• Test sistemleri',
+      ),
+
+      MakaleBlok.text(
+        ' 6) LM317’de Yapılan En Büyük Hatalar\n'
+            '• Direnç değerlerini yanlış seçmek\n'
+            '• Soğutucu kullanmamak\n'
+            '• Giriş–çıkış kondansatörlerini koymamak\n\n'
+            'Not:\n'
+            'LM317 de lineer olduğu için yüksek akımda ciddi ısınır.',
+      ),
+
+      MakaleBlok.text(
+        ' 7) LM2596 (Anahtarlamalı Regülatör – Buck)\n'
+            'LM2596, anahtarlamalı (switching) bir regülatördür.\n\n'
+            'Temel özellikler:\n'
+            '• Yüksek verim (%80–90)\n'
+            '• Isınma çok az\n'
+            '• Geniş giriş aralığı\n\n'
+            'Çalışma mantığı:\n'
+            '• Girişi yüksek frekansta anahtarlayarak\n'
+            '• Bobin ve diyot yardımıyla çıkışı düşürür\n\n'
+            'Saha yorumu:\n'
+            '• Akülü sistemlerde vazgeçilmezdir',
+      ),
+
+      MakaleBlok.text(
+        ' 8) LM2596 Nerelerde Kullanılır?\n'
+            '• Araç elektroniği\n'
+            '• UPS ve inverter kartları\n'
+            '• Arduino / ESP beslemeleri\n'
+            '• Kamera ve network sistemleri\n\n'
+            'Avantaj:\n'
+            '• Aynı girişte 7805’e göre çok daha az ısınır',
+      ),
+
+      MakaleBlok.text(
+        ' 9) Multimetre ile Regülatör Kontrolü\n'
+            'Sahada hızlı kontrol için:\n\n'
+            '1) Giriş gerilimini ölç\n'
+            '2) Çıkış gerilimini ölç\n'
+            '3) Yük altında tekrar ölç\n\n'
+            'Arıza belirtileri:\n'
+            '• Giriş var çıkış yok → regülatör bozuk\n'
+            '• Boşta var yükte düşüyor → regülatör zayıf\n'
+            '• Çıkış dalgalı → kondansatör sorunu',
+      ),
+
+      MakaleBlok.text(
+        ' 10) Regülatör Neden Yanır?\n'
+            '• Aşırı akım çekilmesi\n'
+            '• Kısa devre\n'
+            '• Yetersiz soğutma\n'
+            '• Ters polarite\n'
+            '• Yanlış eşdeğer parça\n\n'
+            'İpucu:\n'
+            'Yanmış regülatörün etrafındaki kondansatör ve diyotlar mutlaka kontrol edilmelidir.',
+      ),
+
+      MakaleBlok.text(
+        ' 11) Hangisini Ne Zaman Kullanmalıyım?\n'
+            'Hızlı seçim rehberi:\n\n'
+            '• Basit, düşük akım → 7805\n'
+            '• Ayarlanabilir, test amaçlı → LM317\n'
+            '• Yüksek akım, akü, verim → LM2596\n\n'
+            'Tekniker önerisi:\n'
+            '• Güncel sistemlerde anahtarlamalı regülatörler daha avantajlıdır.',
+      ),
+
+      MakaleBlok.text(
+        '📌 12) Kısa Özet\n'
+            '• Regülatörler sabit DC gerilim üretir\n'
+            '• Lineer regülatörler basit ama ısınır\n'
+            '• Anahtarlamalı regülatörler verimli ve serindir\n'
+            '• Multimetre ile temel teşhis mümkündür\n'
+            '• Soğutma ve doğru bağlantı regülatör ömrünü belirler',
+      ),
+    ],
   ),
   Makale(
   id: 'el5',
@@ -2224,7 +2663,7 @@ Makale(
     ),
 
     MakaleBlok.text(
-      '🔌 2) Bağlantı Şeması (Doğru Kurulum)\n'
+      ' 2) Bağlantı Şeması (Doğru Kurulum)\n'
       'Sahada en sık yapılan hatalar; receiver kapalıyken ölçüm yapmak veya '
       'LNB beslemesi kapalıyken sinyal aramaktır.\n\n'
       'Standart bağlantı şekli:\n'
@@ -2237,7 +2676,7 @@ Makale(
     ),
 
     MakaleBlok.text(
-      '🛰️ 3) Uydu Bulmanın Mantığı: Seviye mi Kalite mi?\n'
+      '🛰 3) Uydu Bulmanın Mantığı: Seviye mi Kalite mi?\n'
       'Ekranda genellikle iki ana değer görülür:\n\n'
       '• Level / Strength (Seviye): Hatta sinyal enerjisi var mı?\n'
       '• Quality (Kalite): Asıl önemli değer. Doğru uydu ve doğru TP yakalandı mı?\n\n'

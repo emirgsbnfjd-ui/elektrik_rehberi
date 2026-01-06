@@ -13,24 +13,25 @@ enum GirisTuru { pKw, iA, sKva }
 
 class _GucHesabiSayfasiState extends State<GucHesabiSayfasi> {
   // Girişler
-  final _valCtrl = TextEditingController(); // seçilen giriş türü değeri
-  final _vCtrl = TextEditingController(text: '230'); // Mono: 230, Tri: 400
+  final _valCtrl = TextEditingController();
+  final _vCtrl = TextEditingController(text: '230'); // mono 230, tri 400
   final _cosCtrl = TextEditingController(text: '0,90');
-  final _etaCtrl = TextEditingController(text: '0,90'); // verim
+  final _etaCtrl = TextEditingController(text: '0,90');
 
   bool trifaze = false;
   GirisTuru giris = GirisTuru.pKw;
 
-  String sonucMetin = '';
+  // Sonuçlar
+  String? _sekil;
+  String? _sonucSatiri;
+  String? _kisaNot;
 
-  // . ve , desteği
   double? _toDouble(TextEditingController c) {
     final t = c.text.trim().replaceAll(' ', '').replaceAll(',', '.');
     if (t.isEmpty) return null;
     return double.tryParse(t);
   }
 
-  // Sadece sayı + , .
   final _numFormatter = <TextInputFormatter>[
     FilteringTextInputFormatter.allow(RegExp(r'[0-9\.,]')),
   ];
@@ -39,117 +40,138 @@ class _GucHesabiSayfasiState extends State<GucHesabiSayfasi> {
     _vCtrl.text = trifaze ? '400' : '230';
   }
 
+  void _clearResult() {
+    setState(() {
+      _sekil = null;
+      _sonucSatiri = null;
+      _kisaNot = null;
+    });
+  }
+
+  void _error(String msg) {
+    setState(() {
+      _sekil = null;
+      _sonucSatiri = null;
+      _kisaNot = msg;
+    });
+  }
+
+  bool _isReasonableVoltage(double v) {
+    if (!trifaze) return v >= 80 && v <= 300;
+    return v >= 200 && v <= 800;
+  }
+
+  String _girisAdi(GirisTuru g) {
+    switch (g) {
+      case GirisTuru.pKw:
+        return 'P (kW)';
+      case GirisTuru.sKva:
+        return 'S (kVA)';
+      case GirisTuru.iA:
+        return 'I (A)';
+    }
+  }
+
   void hesapla() {
     final val = _toDouble(_valCtrl);
     final v = _toDouble(_vCtrl);
     final cos = _toDouble(_cosCtrl);
     final eta = _toDouble(_etaCtrl);
 
-    // Kontroller
-    if (v == null || v <= 0) {
-      setState(() => sonucMetin = 'Gerilim (V) geçersiz.');
-      return;
+    if (v == null || v <= 0) return _error('Gerilim (V) geçersiz.');
+    if (!_isReasonableVoltage(v)) {
+      return _error(trifaze
+          ? 'Trifaze için gerilim çok uç. 200–800V arası gir.'
+          : 'Monofaze için gerilim çok uç. 80–300V arası gir.');
     }
-    if (cos == null || cos <= 0 || cos > 1) {
-      setState(() => sonucMetin = 'cosφ 0-1 arası olmalı.');
-      return;
-    }
-    if (eta == null || eta <= 0 || eta > 1) {
-      setState(() => sonucMetin = 'Verim (η) 0-1 arası olmalı.');
-      return;
-    }
-    if (val == null || val <= 0) {
-      setState(() => sonucMetin = 'Giriş değerini gir (0’dan büyük).');
-      return;
-    }
+    if (cos == null || cos <= 0 || cos > 1) return _error('cosφ 0–1 arası olmalı.');
+    if (eta == null || eta <= 0 || eta > 1) return _error('Verim (η) 0–1 arası olmalı.');
+    if (val == null || val <= 0) return _error('Giriş değerini gir (0’dan büyük).');
 
-    // Temel çarpan
     final k = trifaze ? (math.sqrt(3) * v) : v;
 
-    // Çözülecek büyüklükler:
-    // P (kW), S (kVA), Q (kVAr), I (A)
     double pKw, sKva, qKvar, iA;
 
-    // İlişkiler:
-    // S = P / (cos * eta)
-    // P = S * cos * eta
-    // I = (S*1000) / (k)
-    // Q = S * sin(phi)  (phi = arccos(cos))
     final phi = math.acos(cos);
     final sinPhi = math.sin(phi);
 
     if (giris == GirisTuru.pKw) {
       pKw = val;
+      if (pKw > 2000) return _error('P çok büyük görünüyor. Daha gerçekçi bir değer gir.');
       sKva = pKw / (cos * eta);
       iA = (sKva * 1000) / k;
     } else if (giris == GirisTuru.sKva) {
       sKva = val;
+      if (sKva > 3000) return _error('S çok büyük görünüyor. Daha gerçekçi bir değer gir.');
       pKw = sKva * cos * eta;
       iA = (sKva * 1000) / k;
     } else {
-      // GirisTuru.iA
       iA = val;
+      if (iA > 4000) return _error('Akım çok büyük görünüyor. Daha gerçekçi bir değer gir.');
       sKva = (iA * k) / 1000;
       pKw = sKva * cos * eta;
     }
 
     qKvar = sKva * sinPhi;
 
-    // Şema (ASCII)
+    if (iA.isNaN || iA.isInfinite || iA <= 0) return _error('Hesap sonucu geçersiz (I).');
+    if (sKva.isNaN || sKva.isInfinite || sKva <= 0) return _error('Hesap sonucu geçersiz (S).');
+    if (pKw.isNaN || pKw.isInfinite || pKw <= 0) return _error('Hesap sonucu geçersiz (P).');
+    if (iA > 6000) return _error('Akım çok uç çıktı. Girdileri kontrol et.');
+
+    // ✅ PRO ŞEMA: tek hat + koruma elemanları
     final sekil = trifaze
         ? '''
-   L1   L2   L3
-    |    |    |
-   [   YÜK   ]   (3~)
-    |    |    |
-        N (ops.)
-V = ${v.toStringAsFixed(0)} V (faz-faz)
+   3~ TEK HAT DİYAGRAMI (TRİFAZE)
+
+ L1 ───────────┐
+ L2 ───────────┼──[ 3P MCB ]──[ RCD ]──[   YÜK   ]
+ L3 ───────────┘
+
+ N  ───────────────────────────[ RCD ]───────────┘   (ops.)
+
+ V = ${v.toStringAsFixed(0)} V  (faz-faz)
 '''
         : '''
-   L
-   |
- [ YÜK ]   (1~)
-   |
-   N
-V = ${v.toStringAsFixed(0)} V (faz-nötr)
+   1~ TEK HAT DİYAGRAMI (MONOFAZE)
+
+ L  ───[ 1P MCB ]──[ RCD ]──[   YÜK   ]────────────┐
+ N  ─────────────────────────[ RCD ]───────────────┘
+
+ V = ${v.toStringAsFixed(0)} V  (faz-nötr)
 ''';
 
-    // Adım adım formül metni
-    String girisAciklama() {
-      switch (giris) {
-        case GirisTuru.pKw:
-          return 'Giriş: P = ${pKw.toStringAsFixed(3)} kW';
-        case GirisTuru.sKva:
-          return 'Giriş: S = ${sKva.toStringAsFixed(3)} kVA';
-        case GirisTuru.iA:
-          return 'Giriş: I = ${iA.toStringAsFixed(3)} A';
-      }
-    }
+    final sonucSatiri = '''
+GİRİŞ BİLGİLERİ
+• Tür        : ${_girisAdi(giris)}
+• Değer     : ${val.toStringAsFixed(3)}
+• Sistem    : ${trifaze ? "Trifaze (3~)" : "Monofaze (1~)"}
+• Gerilim   : ${v.toStringAsFixed(0)} V
+• cosφ      : ${cos.toStringAsFixed(2)}
+• η (Verim) : ${eta.toStringAsFixed(2)}
+
+HESAP SONUÇLARI
+• P (Aktif Güç)    : ${pKw.toStringAsFixed(3)} kW
+• S (Görünür Güç)  : ${sKva.toStringAsFixed(3)} kVA
+• Q (Reaktif Güç)  : ${qKvar.toStringAsFixed(3)} kVAr
+• I (Hat Akımı)    : ${iA.toStringAsFixed(2)} A
+'''.trim();
 
     final kStr = trifaze ? '√3·V' : 'V';
-    final vTip = trifaze ? 'faz-faz' : 'faz-nötr';
+
+    final not = '''
+Formüller:
+• S = P / (cosφ · η)
+• I = (S · 1000) / ($kStr)
+• Q = S · sinφ
+
+φ = arccos(cosφ)  →  sinφ = ${sinPhi.toStringAsFixed(3)}
+'''.trim();
 
     setState(() {
-      sonucMetin = '''
-$sekil
-${trifaze ? "TRİFAZE (3~)" : "MONOFAZE (1~)"}  •  V($vTip) = ${v.toStringAsFixed(0)} V
-cosφ = ${cos.toStringAsFixed(3)}   •   η = ${eta.toStringAsFixed(3)}
-
-=== SONUÇLAR ===
-P (aktif)   : ${pKw.toStringAsFixed(3)} kW
-S (görünür) : ${sKva.toStringAsFixed(3)} kVA
-Q (reaktif) : ${qKvar.toStringAsFixed(3)} kVAr
-I (akım)    : ${iA.toStringAsFixed(2)} A
-
-=== FORMÜL / ADIMLAR ===
-${girisAciklama()}
-
-1) İlişki:  S = P / (cosφ·η)   veya   P = S·cosφ·η
-2) Akım:    I = (S·1000) / ($kStr)    (burada $kStr = ${k.toStringAsFixed(2)})
-3) Reaktif: Q = S·sinφ   (φ = arccos(cosφ) → sinφ = ${sinPhi.toStringAsFixed(4)})
-
-Not: η (verim) motor/trafo gibi yüklerde gerçekçi sonuç verir. Rezistif yükte η≈1 alınabilir.
-'''.trim();
+      _sekil = sekil.trimRight();
+      _sonucSatiri = sonucSatiri;
+      _kisaNot = not;
     });
   }
 
@@ -165,6 +187,7 @@ Not: η (verim) motor/trafo gibi yüklerde gerçekçi sonuç verir. Rezistif yü
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final cs = theme.colorScheme;
 
     String girisLabel() {
       switch (giris) {
@@ -187,7 +210,8 @@ Not: η (verim) motor/trafo gibi yüklerde gerçekçi sonuç verir. Rezistif yü
             children: [
               Card(
                 elevation: 0,
-                color: theme.colorScheme.surface,
+                color: cs.surface,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 child: Padding(
                   padding: const EdgeInsets.all(14),
                   child: Column(
@@ -201,63 +225,57 @@ Not: η (verim) motor/trafo gibi yüklerde gerçekçi sonuç verir. Rezistif yü
                             trifaze = v;
                             _setVarsayilanGerilim();
                           });
+                          _clearResult();
                         },
                         title: const Text('Trifaze'),
                         subtitle: Text(trifaze
-                            ? 'V = 400V (faz-faz) varsayılan'
-                            : 'V = 230V (faz-nötr) varsayılan'),
+                            ? 'Varsayılan: 400V (faz-faz)'
+                            : 'Varsayılan: 230V (faz-nötr)'),
                       ),
                       const SizedBox(height: 8),
-
-                      // Giriş seçimi
-                      Row(
-                        children: [
-                          Expanded(
-                            child: DropdownButtonFormField<GirisTuru>(
-                              value: giris,
-                              items: const [
-                                DropdownMenuItem(
-                                  value: GirisTuru.pKw,
-                                  child: Text('P (kW) → Akım'),
-                                ),
-                                DropdownMenuItem(
-                                  value: GirisTuru.iA,
-                                  child: Text('I (A) → Güçler'),
-                                ),
-                                DropdownMenuItem(
-                                  value: GirisTuru.sKva,
-                                  child: Text('S (kVA) → Akım'),
-                                ),
-                              ],
-                              onChanged: (v) {
-                                if (v == null) return;
-                                setState(() {
-                                  giris = v;
-                                  _valCtrl.clear();
-                                });
-                              },
-                              decoration: const InputDecoration(
-                                labelText: 'Hangi değer biliniyor?',
-                                border: OutlineInputBorder(),
-                              ),
-                            ),
+                      DropdownButtonFormField<GirisTuru>(
+                        value: giris,
+                        items: const [
+                          DropdownMenuItem(
+                            value: GirisTuru.pKw,
+                            child: Text('P (kW) → Akım / Güçler'),
+                          ),
+                          DropdownMenuItem(
+                            value: GirisTuru.iA,
+                            child: Text('I (A) → Güçler'),
+                          ),
+                          DropdownMenuItem(
+                            value: GirisTuru.sKva,
+                            child: Text('S (kVA) → Akım / Güçler'),
                           ),
                         ],
+                        onChanged: (v) {
+                          if (v == null) return;
+                          setState(() {
+                            giris = v;
+                            _valCtrl.clear();
+                          });
+                          _clearResult();
+                        },
+                        decoration: const InputDecoration(
+                          labelText: 'Hangi değer biliniyor?',
+                          border: OutlineInputBorder(),
+                        ),
                       ),
                       const SizedBox(height: 10),
-
-                      // Seçilen giriş
                       _input(
                         label: girisLabel(),
                         controller: _valCtrl,
                         hint: 'Örnek: 5,5',
                         formatters: _numFormatter,
+                        onChanged: (_) => _clearResult(),
                       ),
                       _input(
                         label: 'Gerilim (V)',
                         controller: _vCtrl,
                         hint: trifaze ? '400' : '230',
                         formatters: _numFormatter,
+                        onChanged: (_) => _clearResult(),
                       ),
                       Row(
                         children: [
@@ -267,6 +285,7 @@ Not: η (verim) motor/trafo gibi yüklerde gerçekçi sonuç verir. Rezistif yü
                               controller: _cosCtrl,
                               hint: '0,90',
                               formatters: _numFormatter,
+                              onChanged: (_) => _clearResult(),
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -276,11 +295,11 @@ Not: η (verim) motor/trafo gibi yüklerde gerçekçi sonuç verir. Rezistif yü
                               controller: _etaCtrl,
                               hint: '0,90',
                               formatters: _numFormatter,
+                              onChanged: (_) => _clearResult(),
                             ),
                           ),
                         ],
                       ),
-
                       const SizedBox(height: 12),
                       SizedBox(
                         width: double.infinity,
@@ -294,20 +313,103 @@ Not: η (verim) motor/trafo gibi yüklerde gerçekçi sonuç verir. Rezistif yü
                   ),
                 ),
               ),
-
               const SizedBox(height: 12),
-
-              // Sonuç
               Card(
                 elevation: 0,
+                color: cs.surface,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 child: Padding(
                   padding: const EdgeInsets.all(14),
-                  child: sonucMetin.isEmpty
-                      ? const Text('Sonuç burada (Hesapla\'ya bas)')
-                      : SelectableText(
-                          sonucMetin,
-                          style: const TextStyle(height: 1.25),
+                  child: _kisaNot == null && _sonucSatiri == null && _sekil == null
+                      ? Text(
+                    'Sonuç burada. Değerleri girip “Hesapla”ya bas.',
+                    style: TextStyle(
+                      color: cs.onSurface.withOpacity(0.75),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  )
+                      : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.schema, color: cs.primary),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Sonuç (Şemalı)',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                          ),
+                          const Spacer(),
+                          if (_sonucSatiri != null)
+                            IconButton(
+                              tooltip: 'Kopyala',
+                              onPressed: () {
+                                final txt = [
+                                  if (_sekil != null) _sekil!,
+                                  if (_sonucSatiri != null) _sonucSatiri!,
+                                  if (_kisaNot != null) _kisaNot!,
+                                ].join('\n');
+                                Clipboard.setData(ClipboardData(text: txt));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Kopyalandı')),
+                                );
+                              },
+                              icon: const Icon(Icons.copy),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      if (_sekil != null) ...[
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: cs.primary.withOpacity(0.06),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: cs.outlineVariant.withOpacity(0.7)),
+                          ),
+                          child: SelectableText(
+                            _sekil!,
+                            style: const TextStyle(
+                              fontFamily: 'monospace',
+                              height: 1.15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
+                        const SizedBox(height: 10),
+                      ],
+                      if (_sonucSatiri != null) ...[
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: cs.surface,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: cs.outlineVariant.withOpacity(0.7)),
+                          ),
+                          child: SelectableText(
+                            _sonucSatiri!,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w800,
+                              height: 1.25,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                      ],
+                      if (_kisaNot != null) ...[
+                        Text(
+                          _kisaNot!,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: cs.onSurface.withOpacity(0.7),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -322,6 +424,7 @@ Not: η (verim) motor/trafo gibi yüklerde gerçekçi sonuç verir. Rezistif yü
     required TextEditingController controller,
     required String hint,
     required List<TextInputFormatter> formatters,
+    required ValueChanged<String> onChanged,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -329,6 +432,7 @@ Not: η (verim) motor/trafo gibi yüklerde gerçekçi sonuç verir. Rezistif yü
         controller: controller,
         inputFormatters: formatters,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        onChanged: onChanged,
         decoration: InputDecoration(
           labelText: label,
           hintText: hint,

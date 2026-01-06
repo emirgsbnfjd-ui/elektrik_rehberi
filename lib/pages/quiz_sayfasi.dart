@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 
+
 class QuizSayfasi extends StatefulWidget {
   const QuizSayfasi({super.key});
 
@@ -193,8 +194,6 @@ class _QuizSayfasiState extends State<QuizSayfasi> {
               ),
             );
           }),
-
-          const SizedBox(height: 12),
 
           FilledButton(
             onPressed: cevaplandi ? sonraki : null,

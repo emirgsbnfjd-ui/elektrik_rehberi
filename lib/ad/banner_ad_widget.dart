@@ -14,14 +14,12 @@ class _AdBannerState extends State<AdBanner> {
   bool _isLoaded = false;
 
   String? get _adUnitId {
-    // TEST banner ID'ler
     if (defaultTargetPlatform == TargetPlatform.android) {
       return 'ca-app-pub-6404557439064466/2228402968';
     }
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       return 'ca-app-pub-6404557439064466/7717760726';
     }
-    // Web / Windows / Mac → reklam yok
     return null;
   }
 

@@ -10,6 +10,7 @@ import 'ev_sarj_sayfasi.dart';
 import 'direnc_6bant_sayfasi.dart';
 import 'kablo_sigorta_sayfasi.dart';
 import 'kisa_devre_kesme_sayfasi.dart';
+import 'jenerator_hesap_sayfasi.dart';
 
 
 class HesaplamalarSayfasi extends StatelessWidget {
@@ -94,6 +95,16 @@ class HesaplamalarSayfasi extends StatelessWidget {
               MaterialPageRoute(builder: (_) => const MotorHesapSayfasi()),
             ),
           ),
+           _CalcTile(
+          icon: Icons.factory,
+             title: "Jeneratör Seçimi",
+           subtitle: "Toplam kW • Motor kalkışı • kVA önerisi",
+           onTap: () => Navigator.push(
+              context,
+             MaterialPageRoute(builder: (_) => const JeneratorHesapSayfasi(),
+           ),
+          ),
+         ),
           _CalcTile(
             icon: Icons.electric_car,
             title: "EV Şarj (AC)",
