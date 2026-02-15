@@ -15,7 +15,7 @@ class _AdBannerState extends State<AdBanner> {
 
   String? get _adUnitId {
     if (defaultTargetPlatform == TargetPlatform.android) {
-      return 'ca-app-pub-6404557439064466/2228402968';
+      return 'ca-app-pub-6404557439064466/2004063683';
     }
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       return 'ca-app-pub-6404557439064466/7717760726';

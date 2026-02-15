@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import '../ad/banner_ad_widget.dart';
 
 
 class QuizSayfasi extends StatefulWidget {
@@ -99,6 +100,7 @@ class _QuizSayfasiState extends State<QuizSayfasi> {
   @override
   Widget build(BuildContext context) {
     final toplam = sorular.length;
+    bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Bitti ekranı
     if (index >= toplam) {
@@ -216,11 +218,35 @@ class _QuizSayfasiState extends State<QuizSayfasi> {
             icon: const Icon(Icons.refresh),
             label: const Text('Sıfırla'),
           ),
-        ],
+
+
+          const SizedBox(height: 20),
+          Container(
+            width: double.infinity,
+            height: 60,
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1E252D) : Colors.grey.shade100,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: isDark ? Colors.white10 : Colors.black12,
+                width: 1.0,
+              ),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: const OverflowBox(
+                minHeight: 50,
+                maxHeight: 50,
+                child: AdBanner(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+        ], // ListView'un children listesi burada bitiyor
       ),
     );
-  }
-}
+  } // build metodunun kapanış parantezi
+} //
 
 class _Soru {
   final String soru;

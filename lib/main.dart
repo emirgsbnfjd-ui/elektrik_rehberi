@@ -13,6 +13,7 @@ import 'ad/banner_ad_widget.dart';
 
 
 
+
 final List<String> hesapGecmisi = [];
 
 void main() async {
@@ -163,7 +164,7 @@ class _SplashScreenState extends State<SplashScreen>
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF42A5F5), Color(0xFF1E88E5)],
+            colors: [Color(0xFF1E293B), Color(0xFF0F172A)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -1740,6 +1741,73 @@ Makale(
   ],
 ),
   Makale(
+    id: 'e11',
+    baslik: 'UPS (Kesintisiz Güç Kaynağı) Rehberi: Çalışma Mantığı, Bağlantılar ve Arıza Çözümü',
+    kategori: 'elektrik',
+    ikonAsset: 'assets/images/ups_ikon.jpg',
+    icerik:
+    'UPS (Uninterruptible Power Supply), elektrik enerjisindeki kesintileri, '
+        'gerilim dalgalanmalarını ve ani voltaj değişimlerini süzerek hassas cihazlara '
+        'sürekli ve kaliteli enerji sağlayan bir sistemdir.\n\n'
+        'Sadece elektrik kesilince devreye giren bir batarya grubu değil, aynı zamanda '
+        'şebekedeki "kirli" elektriği temizleyen bir filtredir.\n\n',
+    bloklar: const [
+      // 1) Temel Mantık
+      MakaleBlok.text(
+        ' UPS NEDİR VE NASIL ÇALIŞIR?\n'
+            'UPS, şebekeden aldığı AC enerjiyi önce DC’ye çevirerek aküleri şarj eder, '
+            'ardından bu DC enerjiyi tekrar temiz bir AC sinüs dalgasına çevirerek yüke verir.\n\n'
+            'Üç ana UPS türü vardır:\n'
+            '1- Offline UPS: Sadece elektrik kesilince devreye girer. (En basit tip)\n'
+            '2- Line-Interactive: Voltajı regüle eder, kesintide aküye geçer.\n'
+            '3- Online UPS (Çift Çevrim): Şebeke varken de sürekli inverter üzerinden '
+            'besleme yapar. En güvenli ve profesyonel çözümdür.',
+      ),
+
+      // 2) Bağlantı Şeması
+      MakaleBlok.text(
+        ' UPS PANOSU VE GÜÇ BAĞLANTILARI\n'
+            'UPS kurulumunda bağlantı sırası hayati önem taşır:\n\n'
+            '• Giriş (Input): Şebekeden gelen faz, nötr ve toprak hatları.\n'
+            '• Çıkış (Output): Kritik yüklerin (bilgisayar, tıbbi cihaz vb.) beslendiği hatlar.\n'
+            '• Akü Grubu: Harici akü kabinleri varsa, artı (+) ve eksi (-) kutupların '
+            'doğru seri/paralel bağlanması gerekir.\n\n'
+            '⚠️ DİKKAT: UPS nötr hattı ile şebeke nötr hattı asla karıştırılmamalı, '
+            'mümkünse izole edilmelidir.',
+      ),
+
+      // 3) Arızalar ve Çözümler
+      MakaleBlok.text(
+        '🛠 SIK KARŞILAŞILAN UPS ARIZALARI VE ÇÖZÜMLERİ\n\n'
+            ' 1. UPS Sürekli "Bip" Sesi Veriyor (Akü Modu):\n'
+            '• Neden: Şebeke elektriği kesilmiş veya giriş sigortası atmış olabilir.\n'
+            '• Çözüm: Giriş voltajını kontrol et, sigortaları kontrol et.\n\n'
+            ' 2. Overload (Aşırı Yük) Hatası:\n'
+            '• Neden: UPS kapasitesinden fazla cihaz bağlanmış.\n'
+            '• Çözüm: Gereksiz cihazları fişten çek, UPS’i resetle.\n\n'
+            ' 3. Akü Arızası (Battery Fault):\n'
+            '• Neden: Akülerin ömrü bitmiş veya bağlantılar gevşemiş.\n'
+            '• Çözüm: Akü voltajlarını ölç, ömrü biten (genelde 2-5 yıl) aküleri değiştir.\n\n'
+            ' 4. Bypass Moduna Geçme:\n'
+            '• Neden: Inverter arızası veya aşırı ısınma.\n'
+            '• Çözüm: Havalandırma fanlarını kontrol et, tozları temizle.',
+      ),
+
+      // 4) Bakım Kuralları
+      MakaleBlok.text(
+        '📝 UPS BAKIMINDA ALTIN KURALLAR\n'
+            '• Ortam Sıcaklığı: UPS odası 20-25°C olmalıdır. Sıcaklık akü ömrünü yarı yarıya düşürür.\n'
+            '• Toz Temizliği: Fanlar tozlanırsa cihaz ısınır ve bypass’a geçer.\n'
+            '• Deşarj Testi: Ayda bir kez elektrik kesilerek akülerin sağlıklı çalışıp '
+            'çalışmadığı gözlemlenmelidir.\n\n'
+            'Unutmayın: UPS, içindeki kondansatörler nedeniyle elektrik kesilse bile '
+            'yüksek voltaj barındırabilir. Müdahale etmeden önce mutlaka iç deşarjın '
+            'tamamlanmasını bekleyin.',
+
+      ),
+    ],
+  ),
+  Makale(
   id: 'el1',
   baslik: 'Direnç – Kapasitör – Endüktans (RCL) ve Direnç Renk Kodları',
   icerik:
@@ -2095,7 +2163,7 @@ Makale(
       'Diyot, akımı temelde tek yönde ileten yarı iletken bir devre elemanıdır. '
       'Elektronikte doğrultma, koruma, regülasyon ve anahtarlama gibi çok kritik görevlerde kullanılır.\n\n'
 
-      '────────────────────────────\n'
+
       '1) DİYOTUN UÇLARI: ANOT / KATOT\n'
       '• Anot (A): Akımın giriş ucu gibi düşünebilirsin.\n'
       '• Katot (K): Akımın çıkış ucu. Diyot üzerinde genelde çizgi/bant olan taraf katottur.\n\n'
@@ -2123,7 +2191,6 @@ Makale(
       'E) TVS Diyot (Transient Voltage Suppressor)\n'
       '• Darbe/ani gerilim yükselmelerine karşı koruma (ESD, şebeke darbeleri).\n\n'
 
-      '────────────────────────────\n'
       '4) ZENER DİYOT NEDİR? NE İŞE YARAR?\n'
       'Zener diyot ters yönde belirli bir gerilimde “kontrollü” iletime geçer ve bu gerilimi sabitlemeye yardımcı olur.\n'
       '• Örn: 5.1V zener, ters yönde yaklaşık 5.1V civarında gerilimi sınırlar.\n\n'
@@ -2136,7 +2203,7 @@ Makale(
       '• Seri direnç, zener akımını sınırlar.\n\n'
       'Not: Zener’in gücü önemlidir (0.5W, 1W vb.). Gücü düşük zener ısınır/bozulur.\n\n'
 
-      '────────────────────────────\n'
+
       '5) KÖPRÜ DOĞRULTUCU (BRIDGE) NEDİR?\n'
       'Köprü doğrultucu, 4 diyotla AC gerilimi DC’ye çeviren en yaygın devredir.\n'
       '• 2 diyot her yarım periyotta iletimde olur.\n'
@@ -2149,14 +2216,14 @@ Makale(
       'Doğrultma sonrası büyük elektrolitik kondansatör eklenirse dalgalanma azalır.\n'
       'Kondansatör değeri büyüdükçe ripple azalır ama ilk kalkış akımı artabilir.\n\n'
 
-      '────────────────────────────\n'
+
       '6) DİYOT SEÇERKEN BAKILACAK 3 KRİTİK PARAMETRE\n'
       '1) Maksimum ters gerilim (VRRM): Diyotun ters yönde dayanacağı gerilim.\n'
       '2) Ortalama iletim akımı (IF): Sürekli taşıyabileceği akım.\n'
       '3) Güç/ısı: Diyot ısınırsa soğutma veya daha güçlü model gerekebilir.\n'
       'Ek: Hız (reverse recovery) → SMPS/inverter gibi işlerde kritik.\n\n'
 
-      '────────────────────────────\n'
+
       '7) PRATİK ARIZA / TEST (MULTİMETRE DİYOT MODU)\n'
       '• Multimetre “diyot test” modunda:\n'
       '  - Doğru yönde ~0.5–0.8V (silikon) görürsün.\n'
@@ -2165,7 +2232,7 @@ Makale(
       '• İki yönde de OL ise → açık devre arızası.\n\n'
       'Zener ölçümü: Normal multimetreyle zener gerilimi doğru ölçülemez; besleme + seri direnç ile test gerekir.\n\n'
 
-      '────────────────────────────\n'
+
       '8) EN YAYGIN UYGULAMALAR (SAHADA ÇOK ÇIKAR)\n'
       '• Adaptör doğrultma (köprü + kondansatör)\n'
       '• Motor bobini/role bobini “flyback” diyotu (ters EMK sönümleme)\n'
@@ -2173,7 +2240,7 @@ Makale(
       '• Zener ile giriş sınırlama / referans\n'
       '• TVS ile darbe koruma\n\n'
 
-      '────────────────────────────\n'
+
       '9) ÖNEMLİ UYARI\n'
       'Yanlış diyot yönü (katot/anot karışması) devreyi çalıştırmaz, hatta kısa devre/ısınma yapabilir. '
       'Özellikle güç devrelerinde diyot seçimini VRRM/IF değerlerine göre yap.\n',
@@ -3962,18 +4029,18 @@ class _AnaSayfaState extends State<AnaSayfa> {
             const SizedBox(height: 12),
 
             _KategoriButonu(
-              etiket: '⚡ Elektrik',
-              renk: Colors.blue,
+              etiket: ' Elektrik',
+              renk: Color(0xFF2C3E50),
               sayfa: const KategoriSayfasi(kategori: 'elektrik', baslik: 'Elektrik'),
             ),
             _KategoriButonu(
-              etiket: '🔧 Elektronik',
-              renk: Colors.green,
+              etiket: ' Elektronik',
+              renk: Color(0xFF2C3E50),
               sayfa: const KategoriSayfasi(kategori: 'elektronik', baslik: 'Elektronik'),
             ),
             _KategoriButonu(
-              etiket: '🤖 Otomasyon',
-              renk: Colors.deepOrange,
+              etiket: ' Otomasyon',
+              renk: Color(0xFF2C3E50),
               sayfa: const KategoriSayfasi(kategori: 'otomasyon', baslik: 'Otomasyon'),
             ),
 
@@ -3984,7 +4051,7 @@ class _AnaSayfaState extends State<AnaSayfa> {
                 Expanded(
                   child: _KategoriButonu(
                     etiket: '🔢 Hesaplamalar',
-                    renk: Colors.indigo,
+                    renk: Color(0xFF2C3E50),
                     sayfa: const HesaplamalarSayfasi(),
                   ),
                 ),
@@ -3992,7 +4059,7 @@ class _AnaSayfaState extends State<AnaSayfa> {
                 Expanded(
                   child: _KategoriButonu(
                     etiket: '📝 Quiz',
-                    renk: Colors.purple,
+                    renk: Color(0xFF2C3E50),
                     sayfa: const QuizSayfasi(),
                   ),
                 ),                
@@ -4001,26 +4068,32 @@ class _AnaSayfaState extends State<AnaSayfa> {
               const SizedBox(height: 12),
                                         
               _KategoriButonu(
-                  etiket: '🧯 Arıza Teşhis',
+                  etiket: '⚠️ Arıza Teşhis',
                   renk: const Color(0xFFC62828),
                   sayfa: const ArizaTeshiAnaSayfa(),                 
-               ), 
-               Container(
-  height: 60,
-  width: double.infinity,
-  decoration: BoxDecoration(
-    color: Colors.grey.shade200,
-    borderRadius: BorderRadius.circular(12),
-    border: Border.all(
-      color: Colors.grey.shade400,
-      width: 1,
-    ),
-  ),
-  alignment: Alignment.center,
-  child: AdBanner(), // 🔥 GERÇEK REKLAM
-  ),
+               ),
+            Container(
+              height: 60,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.light
+                    ? Colors.grey.shade100
+                    : const Color(0xFF1E252D),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5),
+                  width: 1,
+                ),
+              ),
+              alignment: Alignment.center,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: const AdBanner(),
+              ),
+            ),
+            // ------------------------------
 
-const SizedBox(height: 16),
+            const SizedBox(height: 16),
           ],
           ),
         ),
@@ -4307,7 +4380,7 @@ class MakaleArama extends SearchDelegate {
           children: [
             ListTile(
               leading: const CircleAvatar(
-                backgroundImage: AssetImage('assets/images/logo1.png'),
+                backgroundImage: AssetImage('assets/logo.jpg'),
               ),
               title: const Text('Elektrik Elektronik Rehberi'),
               subtitle: const Text(''),
@@ -4346,7 +4419,7 @@ class MakaleArama extends SearchDelegate {
                   MaterialPageRoute(builder: (_) => const GizlilikSayfasi()),
                 );
               },
-            ),               
+            ),
           ],
         ),
       ),
