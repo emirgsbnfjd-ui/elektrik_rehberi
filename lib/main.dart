@@ -9,6 +9,7 @@ import 'pages/ariza_teshis/ariza_teshis_ana_sayfa.dart';
 import 'widgets/tikla_zoom_resim.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'ad/banner_ad_widget.dart';
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 
 
 
@@ -114,7 +115,7 @@ class RehberApp extends StatefulWidget {
     );
   }
 }
-           
+
 
 /* -------------------- Splash Screen -------------------- */
 class SplashScreen extends StatefulWidget {
@@ -142,15 +143,32 @@ class _SplashScreenState extends State<SplashScreen>
     _fade  = CurvedAnimation(parent: _c, curve: Curves.easeOut);
     _c.forward();
 
-    Future.delayed(const Duration(milliseconds: 1600), () {
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // 1. Önce biraz bekle (1 saniye), animasyon başlasın ekran otursun
+      await Future.delayed(const Duration(milliseconds: 1000));
+
+      try {
+        // 2. Apple'ın istediği izin popup'ını tetikle
+        final status = await AppTrackingTransparency.trackingAuthorizationStatus;
+        if (status == TrackingStatus.notDetermined) {
+          await AppTrackingTransparency.requestTrackingAuthorization();
+        }
+      } catch (e) {
+        debugPrint("ATT Hatası: $e");
+      }
+
+      // 3. İzin penceresi kapandıktan sonra biraz daha bekle ve ana sayfaya geç
+      await Future.delayed(const Duration(milliseconds: 800));
+
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (_) => AnaSayfa(toggleTheme: widget.toggleTheme),
-      ),
-    );
-  });
- }
+        ),
+      );
+    });
+  }
 
   @override
   void dispose() {
