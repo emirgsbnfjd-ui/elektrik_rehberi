@@ -85,7 +85,7 @@ class _ArizaTeshiAnaSayfaState extends State<ArizaTeshiAnaSayfa> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('🧯 Arıza Teşhis')),
+      appBar: AppBar(title: const Text(' Arıza Teşhis')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

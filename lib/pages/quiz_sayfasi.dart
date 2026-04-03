@@ -1,7 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import '../ad/banner_ad_widget.dart';
 
-
 class QuizSayfasi extends StatefulWidget {
   const QuizSayfasi({super.key});
 
@@ -10,7 +9,7 @@ class QuizSayfasi extends StatefulWidget {
 }
 
 class _QuizSayfasiState extends State<QuizSayfasi> {
-  // ✅ 100 soru buradan yüklenecek 
+  // Not: _sorular100 listesinin bu dosyanın altında veya başka yerde tanımlı olduğunu varsayıyorum
   late List<_Soru> sorular;
 
   int index = 0;
@@ -24,14 +23,13 @@ class _QuizSayfasiState extends State<QuizSayfasi> {
   @override
   void initState() {
     super.initState();
-    sorular = List<_Soru>.from(_sorular100)..shuffle(); // ✅ karışık başlat
+    // Buradaki _sorular100 listen nerede tanımlıysa oradan çekilir
+    sorular = List<_Soru>.from(_sorular100)..shuffle();
   }
 
   void secenekSec(int i) {
     if (cevaplandi) return;
-
     final dogruMu = i == sorular[index].dogruIndex;
-
     setState(() {
       secilen = i;
       cevaplandi = true;
@@ -45,49 +43,34 @@ class _QuizSayfasiState extends State<QuizSayfasi> {
 
   void sonraki() {
     if (!cevaplandi) return;
-
-    if (index < sorular.length - 1) {
-      setState(() {
-        index++;
-        secilen = null;
-        cevaplandi = false;
-      });
-    } else {
-      setState(() {
-        index++; // bitti ekranı
-      });
-    }
+    setState(() {
+      index++;
+      secilen = null;
+      cevaplandi = false;
+    });
   }
 
   void gec() {
-    // cevap vermeden geç
-    if (index < sorular.length - 1) {
-      setState(() {
-        gecilen++;
-        index++;
-        secilen = null;
-        cevaplandi = false;
-      });
-    } else {
-      setState(() {
-        gecilen++;
-        index++; // bitti ekranı
-      });
-    }
-  }
-  void erkenBitir() {
-  setState(() {
-    // kalanları geçilen say
-    gecilen += (sorular.length - index);
-    index = sorular.length; // direkt sonuç ekranı
-    secilen = null;
-    cevaplandi = false;
+    setState(() {
+      gecilen++;
+      index++;
+      secilen = null;
+      cevaplandi = false;
     });
   }
- 
+
+  void erkenBitir() {
+    setState(() {
+      gecilen += (sorular.length - index);
+      index = sorular.length;
+      secilen = null;
+      cevaplandi = false;
+    });
+  }
+
   void bastan() {
     setState(() {
-      sorular.shuffle(); // ✅ her seferinde karışsın
+      sorular.shuffle();
       index = 0;
       dogru = 0;
       yanlis = 0;
@@ -97,49 +80,80 @@ class _QuizSayfasiState extends State<QuizSayfasi> {
     });
   }
 
+  // --- BURASI ANA İNŞA ALANI ---
   @override
   Widget build(BuildContext context) {
     final toplam = sorular.length;
     bool isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // Bitti ekranı
+    // 1. SONUÇ EKRANI (EĞER BİTTİYSE)
     if (index >= toplam) {
       final net = dogru - yanlis;
-      final oran = toplam == 0 ? 0 : (dogru / toplam * 100);
+      final oran = toplam == 0 ? 0.0 : (dogru / toplam * 100);
 
       return Scaffold(
-        appBar: AppBar(title: const Text('Quiz')),
-        body: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Center(
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
+        appBar: AppBar(title: const Text('Sonuçlar'), centerTitle: true),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(30),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                ),
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text('Quiz Bitti 🎉',
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
-                    const SizedBox(height: 12),
-                    Text('Toplam Soru: $toplam'),
-                    Text('✅ Doğru: $dogru'),
-                    Text('❌ Yanlış: $yanlis'),
-                    Text('⏭️ Geçilen: $gecilen'),
-                    Text('📌 Net: $net'),
-                    Text('🎯 Başarı: ${oran.toStringAsFixed(1)}%'),
-                    const SizedBox(height: 16),
-                    FilledButton(onPressed: bastan, child: const Text('Baştan Başla')),
+                    Text(
+                      "%${oran.toStringAsFixed(0)}",
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                    const Text("Başarı"),
                   ],
                 ),
               ),
-            ),
+              const SizedBox(height: 32),
+              const Text('Harika İş Çıkardın! 🎉', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  _buildStatCard(context, "Doğru", dogru.toString(), Colors.green, Icons.check_circle_outline),
+                  const SizedBox(width: 16),
+                  _buildStatCard(context, "Yanlış", yanlis.toString(), Colors.red, Icons.cancel_outlined),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  _buildStatCard(context, "Net", net.toString(), Colors.blue, Icons.analytics_outlined),
+                  const SizedBox(width: 16),
+                  _buildStatCard(context, "Boş", gecilen.toString(), Colors.orange, Icons.not_interested),
+                ],
+              ),
+              const SizedBox(height: 40),
+              SizedBox(
+                width: double.infinity,
+                height: 55,
+                child: FilledButton.icon(
+                  onPressed: bastan,
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Tekrar Dene', style: TextStyle(fontSize: 18)),
+                ),
+              ),
+              TextButton(onPressed: () => Navigator.pop(context), child: const Text("Ana Sayfaya Dön")),
+            ],
           ),
         ),
       );
     }
 
+    // 2. QUIZ EKRANI (DEVAM EDİYORSA)
     final s = sorular[index];
-
     return Scaffold(
       appBar: AppBar(title: const Text('Quiz')),
       body: ListView(
@@ -147,117 +161,145 @@ class _QuizSayfasiState extends State<QuizSayfasi> {
         children: [
           Card(
             child: Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Karışık Soru: ${index + 1} / $toplam'),
-                  Text('✅ $dogru  ❌ $yanlis'),
+                  // Sol taraf: Soru Sayısı
+                  Text(
+                    'Soru: ${index + 1} / $toplam',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+
+                  // Sağ taraf: Modern Skor Kapsülleri
+                  Row(
+                    children: [
+                      // Doğru Sayısı
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.green.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.green.withOpacity(0.4)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.check_circle, color: Colors.green, size: 14),
+                            const SizedBox(width: 4),
+                            Text(
+                              '$dogru',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      // Yanlış Sayısı
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.red.withOpacity(0.4)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.cancel, color: Colors.red, size: 14),
+                            const SizedBox(width: 4),
+                            Text(
+                              '$yanlis',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
           ),
           const SizedBox(height: 12),
-
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
-              child: Text(
-                s.soru,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
-              ),
+              child: Text(s.soru, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
             ),
           ),
           const SizedBox(height: 12),
-
           ...List.generate(s.secenekler.length, (i) {
             Color? bg;
             if (cevaplandi) {
-              if (i == s.dogruIndex) {
-                bg = Colors.green.withOpacity(0.15);
-              } else if (secilen == i && secilen != s.dogruIndex) {
-                bg = Colors.red.withOpacity(0.15);
-              }
+              if (i == s.dogruIndex) bg = Colors.green.withOpacity(0.15);
+              else if (secilen == i) bg = Colors.red.withOpacity(0.15);
             }
-
             return Card(
               color: bg,
               child: ListTile(
                 onTap: () => secenekSec(i),
                 title: Text(s.secenekler[i]),
                 leading: CircleAvatar(child: Text(String.fromCharCode(65 + i))),
-                trailing: cevaplandi
-                    ? (i == s.dogruIndex
-                        ? const Icon(Icons.check_circle, color: Colors.green)
-                        : (secilen == i
-                            ? const Icon(Icons.cancel, color: Colors.red)
-                            : null))
-                    : null,
+                trailing: cevaplandi ? (i == s.dogruIndex ? const Icon(Icons.check_circle, color: Colors.green) : (secilen == i ? const Icon(Icons.cancel, color: Colors.red) : null)) : null,
               ),
             );
           }),
-
+          const SizedBox(height: 12),
           FilledButton(
             onPressed: cevaplandi ? sonraki : null,
             child: Text(index == toplam - 1 ? 'Bitir' : 'Sonraki'),
           ),
           const SizedBox(height: 8),
-          OutlinedButton(
-            onPressed: cevaplandi ? null : gec,
-            child: const Text('Soruyu Geç'),
-          ),
-          const SizedBox(height: 8),        
-          OutlinedButton.icon(
-            onPressed: erkenBitir,
-            icon: const Icon(Icons.flag),
-            label: const Text('Testi Bitir'),
-          ),
+          OutlinedButton(onPressed: cevaplandi ? null : gec, child: const Text('Soruyu Geç')),
           const SizedBox(height: 8),
-          OutlinedButton.icon(
-            onPressed: bastan,
-            icon: const Icon(Icons.refresh),
-            label: const Text('Sıfırla'),
-          ),
-
-
+          OutlinedButton.icon(onPressed: erkenBitir, icon: const Icon(Icons.flag), label: const Text('Testi Bitir')),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(onPressed: bastan, icon: const Icon(Icons.refresh), label: const Text('Sıfırla')),
           const SizedBox(height: 20),
-          Container(
-            width: double.infinity,
-            height: 60,
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1E252D) : Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: isDark ? Colors.white10 : Colors.black12,
-                width: 1.0,
-              ),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: const OverflowBox(
-                minHeight: 50,
-                maxHeight: 50,
-                child: AdBanner(),
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-        ], // ListView'un children listesi burada bitiyor
+          const AdBanner(), // Reklam widget'ın
+        ],
       ),
     );
-  } // build metodunun kapanış parantezi
-} //
+  } // <--- Bak bu parantez build metodunu kapatıyor.
+
+  // --- BURASI YARDIMCI METOD (BUILD'IN DIŞI) ---
+  Widget _buildStatCard(BuildContext context, String title, String value, Color color, IconData icon) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: color.withOpacity(0.3), width: 1),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 5)),
+          ],
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: color, size: 28),
+            const SizedBox(height: 8),
+            Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text(title, style: TextStyle(color: Colors.grey[600], fontSize: 14)),
+          ],
+        ),
+      ),
+    );
+  }
+} // <--- Bu da _QuizSayfasiState sınıfını kapatıyor.
 
 class _Soru {
   final String soru;
   final List<String> secenekler;
   final int dogruIndex;
-
-  const _Soru({
-    required this.soru,
-    required this.secenekler,
-    required this.dogruIndex,
-  });
+  const _Soru({required this.soru, required this.secenekler, required this.dogruIndex});
 }
 
 // ✅ ŞİMDİLİK 3 SORU — sen burayı 100’e tamamlayacaksın

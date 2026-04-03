@@ -10,6 +10,7 @@ import 'widgets/tikla_zoom_resim.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'ad/banner_ad_widget.dart';
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
+import 'pages/theme_service.dart';
 
 
 
@@ -18,25 +19,47 @@ import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 final List<String> hesapGecmisi = [];
 
 void main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
+
+
+  await AppTrackingTransparency.requestTrackingAuthorization();
+  // -----------------------------------------------
+
+
   await MobileAds.instance.initialize();
-  runApp(const RehberApp());
+
+
+  bool savedTheme = await ThemeService.loadTheme();
+
+
+  runApp(RehberApp(isDarkMode: savedTheme));
 }
 
 class RehberApp extends StatefulWidget {
-  const RehberApp({super.key});
+  final bool isDarkMode; // Hafızadan gelen değer buraya düşer
+  const RehberApp({super.key, required this.isDarkMode});
 
   @override
   State<RehberApp> createState() => _RehberAppState();
 }
 
- class _RehberAppState extends State<RehberApp> {
-    ThemeMode _mode = ThemeMode.light; // başlangıç: açık mod
+class _RehberAppState extends State<RehberApp> {
+  late ThemeMode _mode;
 
+  @override
+  void initState() {
+    super.initState();
+    _mode = widget.isDarkMode ? ThemeMode.dark : ThemeMode.light;
+  }
 
-    void _toggleTheme() {
-      setState(() {
-        _mode = _mode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+  void _toggleTheme() {
+    setState(() {
+      // Ekrandaki modu değiştir
+      _mode = _mode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+
+      // 🌙 DEĞİŞTİĞİ ANDA HAFIZAYA KAYDET
+      ThemeService.saveTheme(_mode == ThemeMode.dark);
     });
   }
 
@@ -300,28 +323,28 @@ const List<Makale> tumMakaleler = [
       'Elektrik; elektronların bir iletken içerisinde kontrollü şekilde hareket etmesiyle ortaya çıkan bir enerji türüdür. '
       'Günlük hayatta aydınlatma, ısıtma, motorlar, elektronik cihazlar ve haberleşme sistemlerinin tamamı elektrik enerjisi ile çalışır.\n\n'
 
-      '🔌 ELEKTRİK NASIL OLUŞUR?\n'
+      ' ELEKTRİK NASIL OLUŞUR?\n'
       'Bir iletkende elektronların hareket edebilmesi için iki temel şeye ihtiyaç vardır:\n'
       '• Bir gerilim farkı (itici güç)\n'
       '• Kapalı bir devre yolu\n'
       'Gerilim uygulandığında elektronlar yüksek potansiyelden düşük potansiyele doğru hareket eder ve bu harekete akım denir.\n\n'
 
-      '⚡ AKIM (I) NEDİR?\n'
+      ' AKIM (I) NEDİR?\n'
       'Akım, bir iletkenden birim zamanda geçen elektrik yükü miktarıdır ve amper (A) ile ölçülür.\n'
       'Basitçe: “Elektronların akış miktarı” olarak düşünülebilir.\n'
       'Akımın büyüklüğü; gerilim, devrenin direnci ve yük durumuna bağlıdır.\n\n'
 
-      '🔋 GERİLİM (V) NEDİR?\n'
+      ' GERİLİM (V) NEDİR?\n'
       'Gerilim, iki nokta arasındaki elektriksel potansiyel farktır ve volt (V) ile ölçülür.\n'
       'Akımı harekete geçiren itici kuvvettir.\n'
       'Gerilim yoksa akım akmaz.\n\n'
 
-      '🧱 DİRENÇ (R) NEDİR?\n'
+      ' DİRENÇ (R) NEDİR?\n'
       'Direnç, bir iletkenin akıma karşı gösterdiği zorluktur ve ohm (Ω) ile ölçülür.\n'
       'Direnç arttıkça akım azalır.\n'
       'Kablo kesiti, uzunluk ve malzeme direnci etkiler.\n\n'
 
-      '📐 OHM KANUNU\n'
+      ' OHM KANUNU\n'
       'Elektrik hesaplamalarının temelidir.\n'
       'Formül:\n'
       'V = I × R\n'
@@ -329,7 +352,7 @@ const List<Makale> tumMakaleler = [
       'R = V / I\n'
       'Bu kanun sayesinde bir devrede akım, gerilim veya direnç kolayca hesaplanabilir.\n\n'
 
-      '⚙️ GÜÇ (P) NEDİR?\n'
+      ' GÜÇ (P) NEDİR?\n'
       'Güç, bir devrede harcanan veya üretilen enerji miktarını ifade eder ve watt (W) ile ölçülür.\n'
       'Temel formül:\n'
       'P = V × I\n'
@@ -337,19 +360,19 @@ const List<Makale> tumMakaleler = [
       'P = I² × R\n'
       'P = V² / R\n\n'
 
-      '🔄 AC VE DC AKIM\n'
+      ' AC VE DC AKIM\n'
       '• DC (Doğru Akım): Akım tek yönde akar. (Pil, batarya, adaptör çıkışları)\n'
       '• AC (Alternatif Akım): Akım yönü sürekli değişir. (Ev ve sanayi elektriği)\n'
       'Türkiye’de şebeke gerilimi 230V – 50Hz AC’dir.\n\n'
 
-      '📊 AC GÜÇ TÜRLERİ\n'
+      ' AC GÜÇ TÜRLERİ\n'
       'Alternatif akımda üç farklı güç kavramı vardır:\n'
       '• Aktif Güç (kW): İş yapan gerçek güç\n'
       '• Reaktif Güç (kVAr): Manyetik/kapasitif alan oluşturan güç\n'
       '• Görünür Güç (kVA): Sistemin toplam yükü\n'
       'Aralarındaki ilişki cosφ (güç faktörü) ile ifade edilir.\n\n'
 
-      '🎯 ELEKTRİĞİN AMACI VE KULLANIM ALANLARI\n'
+      ' ELEKTRİĞİN AMACI VE KULLANIM ALANLARI\n'
       'Elektrik enerjisi;\n'
       '• Aydınlatma\n'
       '• Isıtma ve soğutma\n'
@@ -358,7 +381,7 @@ const List<Makale> tumMakaleler = [
       '• Haberleşme ve bilişim\n'
       'gibi birçok alanda kullanılır.\n\n'
 
-      '🛠 NEDEN BU TEMEL BİLGİLER ÖNEMLİ?\n'
+      ' NEDEN BU TEMEL BİLGİLER ÖNEMLİ?\n'
       'Bu kavramlar bilinmeden;\n'
       '• Kablo kesiti seçilemez\n'
       '• Sigorta doğru seçilemez\n'
@@ -385,7 +408,7 @@ const List<Makale> tumMakaleler = [
         'çalışma mantıkları ve bağlantı şekilleri sade bir dille anlatılacaktır.',
     bloklar: const [
       MakaleBlok.text(
-        '🔘 ADİ ANAHTAR NEDİR?\n'
+        ' ADİ ANAHTAR NEDİR?\n'
         'Adi anahtar, bir aydınlatma armatürünü tek noktadan açıp kapatmaya yarayan '
         'en basit anahtar türüdür.\n\n'
         'Genellikle salon, oda, banyo ve tuvalet gibi alanlarda kullanılır.\n\n'
@@ -402,7 +425,7 @@ const List<Makale> tumMakaleler = [
       ),
 
       MakaleBlok.text(
-        '🔁 KOMÜTATÖR ANAHTAR NEDİR?\n'
+        ' KOMÜTATÖR ANAHTAR NEDİR?\n'
         'Komütatör anahtar, bir aydınlatma armatürünü iki farklı noktadan '
         'kontrol etmeye yarayan anahtar türüdür.\n\n'
         'Merdiven altı–üstü, uzun koridorlar gibi alanlarda kullanılır.\n\n'
@@ -417,7 +440,7 @@ const List<Makale> tumMakaleler = [
       ),
 
       MakaleBlok.text(
-        '🔀 VAVİEN ANAHTAR NEDİR?\n'
+        ' VAVİEN ANAHTAR NEDİR?\n'
         'Vavien anahtar sistemi, bir aydınlatma armatürünün üç veya daha fazla '
         'noktadan kontrol edilmesini sağlar.\n\n'
         'Bu sistemde:\n'
@@ -436,7 +459,7 @@ const List<Makale> tumMakaleler = [
         'assets/images/vavien2.jpg',
       ),
       MakaleBlok.text(
-        '🔌 PRİZ NEDİR?\n'
+        ' PRİZ NEDİR?\n'
         'Priz, elektrikli cihazların şebeke enerjisine bağlanmasını sağlayan '
         'tesisat elemanıdır.\n\n'
         'Bir prizde üç temel bağlantı bulunur:\n'
@@ -468,7 +491,7 @@ const List<Makale> tumMakaleler = [
 
     // Güvenlik
     MakaleBlok.text(
-      '🚨 ÖNCE GÜVENLİK (KURAL SETİ)\n'
+      ' ÖNCE GÜVENLİK (KURAL SETİ)\n'
       '• Panoda çalışmadan önce mutlaka enerjiyi kes (şalter/sigorta) ve kontrol kalemi/avometre ile doğrula.\n'
       '• Motor devrelerinde hem 380V güç hem de 24V/220V kumanda olabilir; ikisini de kontrol et.\n'
       '• Klemens sıkılıkları kritik: gevşek klemens → ısınma → kontakt yanması/yangın riski.\n'
@@ -480,7 +503,7 @@ const List<Makale> tumMakaleler = [
 
     // Genel yapı
     MakaleBlok.text(
-      '🧩 MOTOR DEVRESİNİN GENEL YAPISI\n'
+      ' MOTOR DEVRESİNİN GENEL YAPISI\n'
       '1) Güç Devresi: Şebeke (L1-L2-L3) → Şalter/Sigorta → Kontaktör ana kontaklar → Termik → Motor\n'
       '2) Kumanda Devresi: Start/Stop butonları → (gerekirse) zaman rölesi → kontaktör bobini (A1-A2)\n\n'
       'Kumanda devresi kontaktörü çektirir, güç devresi motoru besler.',
@@ -488,7 +511,7 @@ const List<Makale> tumMakaleler = [
 
     // Kontaktör uçları
     MakaleBlok.text(
-      '⚙️ KONTAKTÖR UÇLARI (SAHADA EN ÇOK LAZIM OLANLAR)\n'
+      '️ KONTAKTÖR UÇLARI (SAHADA EN ÇOK LAZIM OLANLAR)\n'
       'Kontaktör üzerinde 3 ana bölüm görürsün:\n\n'
       'A) Bobin uçları:\n'
       '• A1 – A2: Kontaktör bobin uçlarıdır.\n'
@@ -511,7 +534,7 @@ const List<Makale> tumMakaleler = [
 
     // Termik uçları
     MakaleBlok.text(
-      '🛡️ TERMİK RÖLE UÇLARI (95-96 / 97-98 NE?)\n'
+      ' TERMİK RÖLE UÇLARI (95-96 / 97-98 NE?)\n'
       'Termik röle iki taraftan okunur:\n\n'
       'A) Güç hattı (motor akımı buradan geçer):\n'
       '• Genelde kontaktör çıkışından termiğe girilir, termikten motora çıkılır.\n'
@@ -525,7 +548,7 @@ const List<Makale> tumMakaleler = [
 
     // Motor klemens
     MakaleBlok.text(
-      '🔌 MOTOR KLEMENS BAĞLANTILARI (U1-V1-W1 / U2-V2-W2)\n'
+      ' MOTOR KLEMENS BAĞLANTILARI (U1-V1-W1 / U2-V2-W2)\n'
       'Trifaze motor klemens kutusunda genelde 6 uç vardır:\n'
       '• U1 – V1 – W1 (üst sıra)\n'
       '• U2 – V2 – W2 (alt sıra)\n\n'
@@ -537,7 +560,7 @@ const List<Makale> tumMakaleler = [
 
     // Start Stop
     MakaleBlok.text(
-      '▶️ START / STOP DEVRESİ (EN KLASİK MOTOR KUMANDASI)\n'
+      ' START / STOP DEVRESİ (EN KLASİK MOTOR KUMANDASI)\n'
       'Kumanda devresi mantığı:\n'
       '• STOP butonu: NC seçilir (normalde enerji geçirsin, basınca kessin)\n'
       '• START butonu: NO seçilir (basınca enerji versin)\n\n'
@@ -549,7 +572,7 @@ const List<Makale> tumMakaleler = [
 
     // Mühürleme
     MakaleBlok.text(
-      '🔁 MÜHÜRLEME (SELF-HOLD) – 13-14 NASIL KULLANILIR?\n'
+      ' MÜHÜRLEME (SELF-HOLD) – 13-14 NASIL KULLANILIR?\n'
       'Start butonuna basınca motorun sürekli çalışması için mühürleme yapılır.\n\n'
       'Mantık:\n'
       '• Kontaktörün NO yardımcı kontağı (13-14), Start butonuna paralel bağlanır.\n'
@@ -561,7 +584,7 @@ const List<Makale> tumMakaleler = [
 
     // İkaz / alarm
     MakaleBlok.text(
-      '💡 TERMİK ATTI ALARM YAK (97-98 KULLANIMI)\n'
+      ' TERMİK ATTI ALARM YAK (97-98 KULLANIMI)\n'
       'Termik atınca bir ikaz lambası veya buzzer çalıştırmak istersen:\n'
       '• 97-98 (NO) kontağı kullanılır.\n'
       'Termik normaldeyken açık, termik atınca kapanır → alarm devreye girer.\n\n'
@@ -570,7 +593,7 @@ const List<Makale> tumMakaleler = [
 
     // Zaman rölesi ile gecikmeli
     MakaleBlok.text(
-      '⏱️ ZAMAN RÖLESİ İLE GECİKMELİ ÇALIŞTIRMA / DURDURMA\n'
+      ' ZAMAN RÖLESİ İLE GECİKMELİ ÇALIŞTIRMA / DURDURMA\n'
       'Zaman rölesi (timer) motoru belirli bir gecikmeyle başlatmak veya durdurmak için kullanılır.\n\n'
       'En yaygın iki senaryo:\n'
       '1) Gecikmeli Çalıştırma:\n'
@@ -584,7 +607,7 @@ const List<Makale> tumMakaleler = [
 
     // Zaman saati (timer switch) ile otomatik çalışma
     MakaleBlok.text(
-      '🕒 ZAMAN SAATİ (PROGRAM SAATİ) İLE MOTOR/POMPA OTOMATİĞİ\n'
+      ' ZAMAN SAATİ (PROGRAM SAATİ) İLE MOTOR/POMPA OTOMATİĞİ\n'
       'Zaman saati; belirli saatlerde kontaktör bobinine komut vererek motoru otomatik çalıştırabilir.\n\n'
       'Pratik mantık:\n'
       '• Zaman saati çıkışı → kontaktör bobin hattına “izin” verir.\n'
@@ -597,7 +620,7 @@ const List<Makale> tumMakaleler = [
 
     // Sık hatalar
     MakaleBlok.text(
-      '⚠️ SAHADA EN SIK HATALAR (SENİ YAKALAMASIN)\n'
+      ' SAHADA EN SIK HATALAR (SENİ YAKALAMASIN)\n'
       '• Bobin gerilimini yanlış sanmak (24V bobine 220V vermek → bobin gider)\n'
       '• Termik 95-96’yı kumandaya seri koymamak (termik atsa bile motor çalışır)\n'
       '• Mühürleme kontağını yanlış bağlamak (stop basınca kesmemek)\n'
@@ -656,7 +679,7 @@ const List<Makale> tumMakaleler = [
         'RCD üzerinde “TEST” düğmesi bulunur. Basıldığında cihazın kaçak akım algılama mekanizması kontrol edilir ve rölenin atması beklenir.\n'
         'Öneri: Ayda 1 kez test etmek iyi bir alışkanlıktır. Teste basınca atmıyorsa cihaz arızalı olabilir veya bağlantıda sorun olabilir.\n\n'
         '────────────────────────────\n'
-        '⚠️ 9) DAİRE/İŞYERİ TESİSATINDA EN SIK KARŞILAŞILAN ARIZALAR\n\n'
+        ' 9) DAİRE/İŞYERİ TESİSATINDA EN SIK KARŞILAŞILAN ARIZALAR\n\n'
         'A) “Sigorta atıyor” (MCB açıyor)\n'
         '1) Kısa devre:\n'
         '  Belirti: Sigorta anında atar.\n'
@@ -720,7 +743,7 @@ const List<Makale> tumMakaleler = [
   id: 'e3',
   baslik: 'Sigorta (MCB) Türleri: B-C-D Eğrileri, Amper Seçimi ve Kablo Kesiti Rehberi',
   kategori: 'elektrik',
-  ikonAsset: 'assets/images/kablo1.png', // ✅ küçük ikon (koymak istersen)
+  ikonAsset: 'assets/images/kablo1.png',
   icerik:
       'Sigorta (MCB – Miniature Circuit Breaker), elektrik tesisatında hatları '
       'aşırı akım ve kısa devreye karşı koruyan temel elemandır.\n\n'
@@ -733,7 +756,7 @@ const List<Makale> tumMakaleler = [
 
     // 1) MCB nedir
     MakaleBlok.text(
-      '🧠 MCB (OTOMAT SİGORTA) NEDİR?\n'
+      ' MCB (OTOMAT SİGORTA) NEDİR?\n'
       'MCB, hattaki akım normalin üstüne çıktığında devreyi açarak kabloyu ve cihazları korur.\n\n'
       'MCB iki şeye karşı açma yapar:\n'
       '• Aşırı yük (termik açma): Uzun süre fazla akım → kablo ısınır\n'
@@ -743,7 +766,7 @@ const List<Makale> tumMakaleler = [
 
     // 2) Eğriler
     MakaleBlok.text(
-      '📈 SİGORTA EĞRİLERİ: B – C – D NE DEMEK?\n'
+      ' SİGORTA EĞRİLERİ: B – C – D NE DEMEK?\n'
       'Sigorta eğrisi, sigortanın ani akım artışında ne kadar hızlı açacağını belirler.\n\n'
       '• B Tipi (3–5× In): Rezistif yüklerde idealdir (aydınlatma, prizde hafif yükler)\n'
       '• C Tipi (5–10× In): Karma yükler ve motorlu cihazlar için en yaygın tip (ev-işyeri)\n'
@@ -760,7 +783,7 @@ const List<Makale> tumMakaleler = [
 
     // 3) Kırma kapasitesi
     MakaleBlok.text(
-      '⚡ KIRMA KAPASİTESİ (kA) NEDİR? 6kA MI 10kA MI?\n'
+      ' KIRMA KAPASİTESİ (kA) NEDİR? 6kA MI 10kA MI?\n'
       'Kırma kapasitesi, sigortanın kısa devre akımını güvenle kesebilme sınırıdır.\n\n'
       '• 6 kA: Konutlarda en yaygın ve çoğu durumda yeterli\n'
       '• 10 kA: Trafoya yakın, kısa devre akımının yüksek olabildiği yerlerde tercih edilir\n\n'
@@ -769,30 +792,30 @@ const List<Makale> tumMakaleler = [
 
     // 4) Evde standart devreler
     MakaleBlok.text(
-      '🏠 EVDE HANGİ HATTA KAÇ AMPER SİGORTA KULLANILIR?\n'
+      ' EVDE HANGİ HATTA KAÇ AMPER SİGORTA KULLANILIR?\n'
       'Aşağıdaki değerler ev içi standart uygulamalar için pratik rehberdir.\n\n'
-      '💡 Aydınlatma hattı:\n'
+      ' Aydınlatma hattı:\n'
       '• Sigorta: B10A veya C10A\n'
       '• Kablo: 1.5 mm² (genelde)\n\n'
       '🔌 Genel priz hattı:\n'
       '• Sigorta: C16A\n'
       '• Kablo: 2.5 mm²\n\n'
-      '🍳 Mutfak priz hattı (yük fazla):\n'
+      ' Mutfak priz hattı (yük fazla):\n'
       '• Sigorta: C16A veya C20A (ayrı hat önerilir)\n'
       '• Kablo: 2.5 mm² (C16) / 4 mm² (C20 daha sağlıklı)\n\n'
-      '🧺 Çamaşır / Bulaşık makinesi (ayrı hat önerilir):\n'
+      ' Çamaşır / Bulaşık makinesi (ayrı hat önerilir):\n'
       '• Sigorta: C16A\n'
       '• Kablo: 2.5 mm²\n\n'
-      '🔥 Fırın / Ocak (cihaz gücüne bağlı):\n'
+      ' Fırın / Ocak (cihaz gücüne bağlı):\n'
       '• Sigorta: C20A – C25A\n'
       '• Kablo: 4 mm² (C20) / 6 mm² (C25 için daha güvenli)\n\n'
-      '❄️ Klima hattı:\n'
+      ' Klima hattı:\n'
       '• Küçük klima: C16A (2.5 mm²)\n'
       '• Büyük klima: C20A (4 mm²) veya projeye göre\n\n'
-      '♨️ Kombi hattı:\n'
+      ' Kombi hattı:\n'
       '• Sigorta: B10A veya C10A\n'
       '• Kablo: 1.5 mm² (pratikte) / 2.5 mm² de kullanılabilir\n\n'
-      '✅ Özet kural: 1.5 mm² → 10A, 2.5 mm² → 16A, 4 mm² → 20–25A (şartlara göre)',
+      ' Özet kural: 1.5 mm² → 10A, 2.5 mm² → 16A, 4 mm² → 20–25A (şartlara göre)',
     ),
 
     MakaleBlok.image(
@@ -804,7 +827,7 @@ const List<Makale> tumMakaleler = [
 
     // 5) Kablo kesiti seçimi detay
     MakaleBlok.text(
-      '📏 KABLO KESİTİ (mm²) NASIL SEÇİLİR? PRATİK KURALLAR\n'
+      ' KABLO KESİTİ (mm²) NASIL SEÇİLİR? PRATİK KURALLAR\n'
       'Kablo seçimi sadece akıma bakmaz; hat uzunluğu, ortam sıcaklığı, boru/kanal içinde olması, '
       'aynı boruda kaç kablo olduğu gibi etkenler akım taşıma kapasitesini düşürür.\n\n'
       'Pratik ev içi yaklaşım:\n'
@@ -817,7 +840,7 @@ const List<Makale> tumMakaleler = [
 
     // 6) RCBO/RCD konusu
     MakaleBlok.text(
-      '🛡️ RCD / RCCB / RCBO (KAÇAK AKIM) İLE İLİŞKİSİ\n'
+      '🛡 RCD / RCCB / RCBO (KAÇAK AKIM) İLE İLİŞKİSİ\n'
       'MCB aşırı akım ve kısa devreyi keser.\n'
       'Kaçak akım rölesi (RCD/RCCB) ise insanı elektrik çarpmasına karşı korur.\n\n'
       '• RCCB (RCD): Sadece kaçak akımı algılar, aşırı akım koruması yoktur\n'
@@ -830,21 +853,12 @@ const List<Makale> tumMakaleler = [
 
     // 7) En kritik hatalar
     MakaleBlok.text(
-      '🚫 EN SIK YAPILAN HATALAR (DİKKAT)\n'
+      ' EN SIK YAPILAN HATALAR (DİKKAT)\n'
       '• “Sigorta atıyor” diye amper büyütmek → kablo ısınır, yangın riski artar\n'
       '• Priz hattına 1.5 mm² kablo çekip C16A takmak → yanlış\n'
       '• Mutfak/fırın/klima gibi yüksek yükleri tek priz hattına bindirmek → ayrı hat daha doğru\n'
       '• Topraklamayı ihmal etmek → kaçak akımda hayati risk\n\n'
       'Kural: Sigorta, kablodan büyük seçilmez; önce kablo ve devre planı doğru olmalı.',
-    ),
-
-    // 8) Mini özet
-    MakaleBlok.text(
-      '✅ HIZLI ÖZET\n'
-      '• Evde en yaygın: C16A priz (2.5 mm²), B/C10A aydınlatma (1.5 mm²)\n'
-      '• Yük arttıkça: C20A + 4 mm², C25A + 6 mm² düşün\n'
-      '• Motorlu yüklerde C tipi daha uyumlu\n'
-      '• RCD/RCBO, çarpılmaya karşı ana güvenlik katmanıdır\n',
     ),
   ],
 ),
@@ -855,14 +869,14 @@ const List<Makale> tumMakaleler = [
       'TOPRAKLAMA ÖLÇÜMÜ NEDİR?\n\n'
       'Topraklama ölçümü; elektrik tesisatlarında insanların can güvenliğini sağlamak, cihazları korumak ve kaçak akımların güvenli şekilde toprağa iletilmesini doğrulamak için yapılan ölçümdür. Ölçüm sonucunda elde edilen değer “topraklama direnci (Ω)” olarak ifade edilir.\n\n'
 
-      '🔹 TOPRAKLAMA NEDEN ÖNEMLİDİR?\n\n'
+      ' TOPRAKLAMA NEDEN ÖNEMLİDİR?\n\n'
       '• Elektrik çarpmasını önler\n'
       '• Kaçak akımların güvenli şekilde toprağa iletilmesini sağlar\n'
       '• Elektrikli cihazların arızalanmasını önler\n'
       '• Parafudr ve yıldırımdan korunma sistemlerinin doğru çalışmasını sağlar\n'
       '• Yönetmeliklere uygunluk sağlar\n\n'
 
-      '🔹 YÖNETMELİĞE GÖRE TOPRAKLAMA DİRENÇ DEĞERLERİ\n\n'
+      ' YÖNETMELİĞE GÖRE TOPRAKLAMA DİRENÇ DEĞERLERİ\n\n'
       'Topraklama direnci sınırları tesisin türüne göre değişir:\n\n'
       '• Konut ve genel tesisler: ≤ 10 Ω\n'
       '• Hassas elektronik cihazlar: ≤ 5 Ω\n'
@@ -870,14 +884,14 @@ const List<Makale> tumMakaleler = [
       '• Trafo ve enerji tesisleri: ≤ 2 Ω\n\n'
       'Not: Saha koşulları ve yönetmelik maddelerine göre bu değerler değişiklik gösterebilir.\n\n'
 
-      '🔹 TOPRAKLAMA ÖLÇÜMÜNDE KULLANILAN CİHAZ (MEGGER)\n\n'
+      ' TOPRAKLAMA ÖLÇÜMÜNDE KULLANILAN CİHAZ (MEGGER)\n\n'
       'Topraklama ölçümleri için özel olarak üretilmiş “Topraklama Ölçüm Cihazı (Megger)” kullanılır. Bu cihaz, klasik multimetre ile ölçüm yapılamayan toprak direncini doğru şekilde ölçer.\n\n'
       'Megger cihazı üzerinde genellikle şu bağlantılar bulunur:\n'
       '• E (Earth)  → Toprak elektrodu\n'
       '• P (Potential) → Potansiyel kazığı\n'
       '• C (Current) → Akım kazığı\n\n'
 
-      '🔹 3 NOKTA METODU (EN YAYGIN ÖLÇÜM YÖNTEMİ)\n\n'
+      ' 3 NOKTA METODU (EN YAYGIN ÖLÇÜM YÖNTEMİ)\n\n'
       'Sahada en sık kullanılan yöntem “3 nokta metodu”dur. Bu yöntemde iki adet yardımcı kazık kullanılır.\n\n'
 
       'ADIM 1 – TOPRAK ELEKTRODUNU AYIR\n'
@@ -900,27 +914,27 @@ const List<Makale> tumMakaleler = [
       'ADIM 5 – DOĞRULAMA ÖLÇÜMLERİ\n'
       'Potansiyel kazığı birkaç metre ileri ve geri alınarak ölçüm tekrarlanır. Değerler birbirine yakınsa ölçüm sağlıklıdır.\n\n'
 
-      '🔹 ÖLÇÜM SONUCU NASIL DEĞERLENDİRİLİR?\n\n'
+      ' ÖLÇÜM SONUCU NASIL DEĞERLENDİRİLİR?\n\n'
       '• Ölçülen değer yönetmelik sınırlarının altındaysa → Topraklama uygundur\n'
       '• Değer yüksekse → İlave topraklama çubuğu çakılmalı veya zemin iyileştirilmelidir\n\n'
 
-      '🔹 TOPRAKLAMA DİRENCİ YÜKSEK ÇIKARSA NE YAPILIR?\n\n'
+      ' TOPRAKLAMA DİRENCİ YÜKSEK ÇIKARSA NE YAPILIR?\n\n'
       '• İlave bakır topraklama çubuğu eklenir\n'
       '• Topraklama çubukları arası mesafe artırılır\n'
       '• Nemlendirici topraklama jelleri kullanılabilir\n'
       '• Daha iletken zeminlere yönelinir\n\n'
            
 
-      '🔹 SIK YAPILAN HATALAR\n\n'
+      ' SIK YAPILAN HATALAR\n\n'
       '• Topraklama elektrodu tesisata bağlıyken ölçüm yapmak\n'
       '• Kazıkları çok yakın çakmak\n'
       '• Oksitli ve gevşek bağlantılar\n'
       '• Multimetre ile toprak direnci ölçmeye çalışmak\n\n'
 
-      '🔹 SONUÇ\n\n'
+      ' SONUÇ\n\n'
       'Topraklama ölçümü, elektrik tesisatlarının en kritik güvenlik kontrollerinden biridir. Doğru cihaz, doğru yöntem ve uygun saha koşulları ile yapılan ölçümler; hem can güvenliği hem de tesis güvenliği açısından hayati öneme sahiptir.',
   kategori: 'elektrik',
-  ikonAsset: 'assets/images/topraklama_icon.png', // ✅ küçük ikon
+  ikonAsset: 'assets/images/topraklama_icon.png',
   ),
 Makale(
   id: 'e5',
@@ -937,9 +951,9 @@ Makale(
       'her modun ne işe yaradığı ve sahada doğru kullanım detaylı şekilde anlatılır.',
   bloklar: const [
 
-    // 1️⃣ Multimetre nedir
+    // 1⃣ Multimetre nedir
     MakaleBlok.text(
-      '📟 MULTİMETRE NEDİR?\n'
+      ' MULTİMETRE NEDİR?\n'
       'Multimetre; birden fazla ölçüm fonksiyonunu tek gövdede '
       'toplayan çok amaçlı ölçü aletidir.\n\n'
       'Temel ölçümler:\n'
@@ -958,14 +972,14 @@ Makale(
     'assets/images/multimetre.png',
     ),
 
-    // 2️⃣ Kadran sembolleri – Gerilim
+    // 2 Kadran sembolleri – Gerilim
     MakaleBlok.text(
       '⚡ GERİLİM ÖLÇÜM SEMBOLLERİ (V)\n\n'
       '🔌 AC GERİLİM (ŞEBEKE):\n'
       'Sembol:  V~   veya   ∿\n'
       '• Priz, pano, şebeke ölçümü\n'
       '• 220V / 380V ölçümleri\n\n'
-      '🔋 DC GERİLİM:\n'
+      ' DC GERİLİM:\n'
       'Sembol:  V⎓   veya   V—\n'
       '• Pil, akü, adaptör, elektronik devre\n\n'
       'Not:\n'
@@ -973,14 +987,14 @@ Makale(
       'DC ölçümde + / – yönü ölçüm işaretini etkiler.',
     ),
 
-    // 3️⃣ Akım sembolleri
+    // 3 Akım sembolleri
     MakaleBlok.text(
-      '🔄 AKIM ÖLÇÜM SEMBOLLERİ (A)\n\n'
+      ' AKIM ÖLÇÜM SEMBOLLERİ (A)\n\n'
       '🔌 AC AKIM:\n'
       'Sembol:  A~\n'
       '• Alternatif akım\n'
       '• Multimetrede nadir, pens ampermetrede yaygın\n\n'
-      '🔋 DC AKIM:\n'
+      ' DC AKIM:\n'
       'Sembol:  A⎓   veya   A—\n'
       '• Elektronik devre akımı\n\n'
       '⚠️ UYARI:\n'
@@ -988,9 +1002,9 @@ Makale(
       'Akım modunda priz ölçülmez!',
     ),
 
-    // 4️⃣ Direnç
+    // 4 Direnç
     MakaleBlok.text(
-      '🟤 DİRENÇ ÖLÇÜMÜ\n'
+      ' DİRENÇ ÖLÇÜMÜ\n'
       'Sembol:  Ω\n\n'
       'Ne için kullanılır?\n'
       '• Direnç değeri ölçümü\n'
@@ -1000,10 +1014,10 @@ Makale(
       'Direnç ölçümü mutlaka enerjisiz devrede yapılır.',
     ),
 
-    // 5️⃣ Süreklilik (buzzer)
+    // 5 Süreklilik (buzzer)
     MakaleBlok.text(
-      '🔔 SÜREKLİLİK TESTİ (BUZZER)\n'
-      'Sembol:  🔔   veya   )))\n\n'
+      ' SÜREKLİLİK TESTİ (BUZZER)\n'
+      'Sembol:  Zil İşareti    )))\n\n'
       'Ne işe yarar?\n'
       '• Kablo sağlam mı?\n'
       '• Sigorta atık mı?\n'
@@ -1012,9 +1026,9 @@ Makale(
       '→ Hat süreklidir.',
     ),
 
-    // 6️⃣ Diyot
+    // 6 Diyot
     MakaleBlok.text(
-      '🔺 DİYOT TESTİ\n'
+      ' DİYOT TESTİ\n'
       'Sembol:  →|—\n\n'
       'Ne için kullanılır?\n'
       '• Diyot, LED, köprü diyot kontrolü\n\n'
@@ -1023,9 +1037,9 @@ Makale(
       '• Ters yönde OL / ∞',
     ),
 
-    // 7️⃣ Kapasitans & frekans
+    // 7 Kapasitans & frekans
     MakaleBlok.text(
-      '📦 DİĞER KADRAN SEMBOLLERİ\n\n'
+      ' DİĞER KADRAN SEMBOLLERİ\n\n'
       'Kapasitans:\n'
       'Sembol:  —| |—   veya   F\n'
       '• Kondansatör ölçümü (µF, nF)\n\n'
@@ -1037,7 +1051,7 @@ Makale(
       '• Prob ile sıcaklık ölçümü',
     ),
 
-    // 8️⃣ Giriş soketleri
+    // 8 Giriş soketleri
     MakaleBlok.text(
       '🔌 PROB GİRİŞLERİ (ÇOK KRİTİK)\n'
       '• COM → Siyah prob (ortak)\n'
@@ -1046,9 +1060,9 @@ Makale(
       'Yanlış soket = sigorta yanar.',
     ),
 
-    // 9️⃣ En sık hatalar
+    // 9 En sık hatalar
     MakaleBlok.text(
-      '🚫 MULTİMETREDE EN SIK YAPILAN HATALAR\n'
+      ' MULTİMETREDE EN SIK YAPILAN HATALAR\n'
       '• Akım modunda priz ölçmek\n'
       '• Enerjili devrede direnç ölçmek\n'
       '• Yanlış sokette ölçüm yapmak\n'
@@ -1056,13 +1070,13 @@ Makale(
       'Bu hatalar cihazı ve kullanıcıyı riske atar.',
     ),
 
-    // 🔟 Hızlı özet
+    // Hızlı özet
     MakaleBlok.text(
-      '✅ HIZLI ÖZET\n'
+      ' HIZLI ÖZET\n'
       '• V~ → AC gerilim (priz/pano)\n'
       '• V⎓ → DC gerilim (pil/adaptör)\n'
       '• Ω → direnç\n'
-      '• 🔔 → süreklilik\n'
+      '• Zil İşareti → süreklilik\n'
       '• →|— → diyot\n'
       '• Akım ölçümü seri yapılır\n'
       '• Doğru kademe = güvenli ölçüm',
@@ -1079,36 +1093,36 @@ Makale(
         'Özellikle panolarda, motorlarda ve canlı hatlarda çok tercih edilir.\n\n'
 
         'Pens Ampermetre ile Akım Ölçümü\n\n'
-        '🔹 Cihazın kadranını AC A (∿A) konumuna getir. (DC ölçüm yapılacaksa DC A seçilir.)\n'
-        '🔹 Ölçüm yapılacak hatta SADECE TEK FAZ iletkeni (faz veya nötr) pensin içine al.\n'
-        '❗ Faz + nötr birlikte ölçülürse değer 0 çıkar.\n'
-        '🔹 Pens tamamen kapalı olmalıdır; yarım kapalı ölçüm hatalı sonuç verir.\n'
-        '🔹 Ekrandaki değer, hat üzerinden geçen anlık akımdır.\n\n'
+        ' Cihazın kadranını AC A (∿A) konumuna getir. (DC ölçüm yapılacaksa DC A seçilir.)\n'
+        ' Ölçüm yapılacak hatta SADECE TEK FAZ iletkeni (faz veya nötr) pensin içine al.\n'
+        ' Faz + nötr birlikte ölçülürse değer 0 çıkar.\n'
+        ' Pens tamamen kapalı olmalıdır; yarım kapalı ölçüm hatalı sonuç verir.\n'
+        ' Ekrandaki değer, hat üzerinden geçen anlık akımdır.\n\n'
 
         'Pens Ampermetre Güvenlik İpuçları\n\n'
-        '🔹 İzolasyonu hasarlı kablolar ölçülmemelidir.\n'
-        '🔹 Yüksek akımlı panolarda tek elle ölçüm yap, diğer elini metal yüzeylerden uzak tut.\n'
-        '🔹 Ölçüm sırasında pensin metal aksamı ile iletkene temas ettirilmemelidir.\n\n'
+        ' İzolasyonu hasarlı kablolar ölçülmemelidir.\n'
+        ' Yüksek akımlı panolarda tek elle ölçüm yap, diğer elini metal yüzeylerden uzak tut.\n'
+        ' Ölçüm sırasında pensin metal aksamı ile iletkene temas ettirilmemelidir.\n\n'
 
         'Meger (İzolasyon Test Cihazı) Nedir?\n\n'
         'Meger, kabloların ve motor sargılarının izolasyon direncini ölçmek için kullanılır. '
         'Genellikle 500 V, 1000 V gibi yüksek DC test gerilimleri uygular.\n\n'
 
         'Meger ile İzolasyon Ölçümü\n\n'
-        '🔹 Ölçüm öncesi hattın GERİLİMSİZ olduğundan emin ol.\n'
-        '🔹 Test edilecek faz ile toprak arasına probları bağla.\n'
-        '🔹 Test tuşuna bas ve ölçüm süresince problara dokunma.\n'
-        '🔹 Ölçüm sonucu genellikle Megaohm (MΩ) cinsindendir.\n'
-        '🔹 1 MΩ altı değerler izolasyon zayıflığına işaret eder.\n\n'
+        ' Ölçüm öncesi hattın GERİLİMSİZ olduğundan emin ol.\n'
+        ' Test edilecek faz ile toprak arasına probları bağla.\n'
+        ' Test tuşuna bas ve ölçüm süresince problara dokunma.\n'
+        ' Ölçüm sonucu genellikle Megaohm (MΩ) cinsindendir.\n'
+        ' 1 MΩ altı değerler izolasyon zayıflığına işaret eder.\n\n'
 
         'Faz Kalemi Nedir?\n\n'
         'Faz kalemi, bir hattın enerjili olup olmadığını kontrol etmek için kullanılan basit kontrol cihazıdır.\n\n'
 
         'Faz Kalemi Kullanımı\n\n'
-        '🔹 Ucu iletken veya priz fazına dokundur.\n'
-        '🔹 Elinle faz kaleminin arka metal kısmına temas et.\n'
-        '🔹 Işık yanıyorsa hat fazdır ve enerjilidir.\n'
-        '❗ Faz kalemi ölçüm cihazı değildir; sadece kontrol amaçlı kullanılır.\n\n'
+        ' Ucu iletken veya priz fazına dokundur.\n'
+        ' Elinle faz kaleminin arka metal kısmına temas et.\n'
+        ' Işık yanıyorsa hat fazdır ve enerjilidir.\n'
+        ' Faz kalemi ölçüm cihazı değildir; sadece kontrol amaçlı kullanılır.\n\n'
 
         'Pano Tipi Voltmetre ve Ampermetre\n\n'
         'Pano tipi ölçü aletleri, sürekli izleme amaçlı kullanılır.\n'
@@ -1116,15 +1130,15 @@ Makale(
         'Ampermetre ise genellikle akım trafosu (CT) üzerinden seri ölçüm yapar.\n\n'
 
         'Akım Trafosu (CT) Kullanımı\n\n'
-        '🔹 Ölçülecek faz iletkeni CT içinden geçirilir.\n'
-        '🔹 CT sekonder uçları ampermetreye bağlanır.\n'
-        '❗ CT sekonderi açık bırakılmamalıdır; tehlikelidir.\n\n'
+        ' Ölçülecek faz iletkeni CT içinden geçirilir.\n'
+        ' CT sekonder uçları ampermetreye bağlanır.\n'
+        ' CT sekonderi açık bırakılmamalıdır; tehlikelidir.\n\n'
 
         'Sahada Pratik Tavsiyeler\n\n'
-        '🔹 Akım ölçümü için önce pens ampermetre tercih edilmelidir.\n'
-        '🔹 Gerilim var/yok kontrolü için faz kalemi yeterlidir ancak kesin ölçüm için multimetre kullan.\n'
-        '🔹 İzolasyon ölçümü yapmadan önce mutlaka hattı ayır.\n'
-        '🔹 Ölçüm cihazlarının probları ve pens izolasyonları düzenli kontrol edilmelidir.\n\n'
+        ' Akım ölçümü için önce pens ampermetre tercih edilmelidir.\n'
+        ' Gerilim var/yok kontrolü için faz kalemi yeterlidir ancak kesin ölçüm için multimetre kullan.\n'
+        ' İzolasyon ölçümü yapmadan önce mutlaka hattı ayır.\n'
+        ' Ölçüm cihazlarının probları ve pens izolasyonları düzenli kontrol edilmelidir.\n\n'
 
         'Bu ölçüm cihazları doğru kullanıldığında arıza tespiti hızlanır, yanlış müdahaleler ve iş kazaları önlenir.',
     kategori: 'elektrik',
@@ -1138,7 +1152,7 @@ YILDIZ–ÜÇGEN YOL VERME NEDİR?
 
 Yıldız–üçgen yol verme; üç fazlı asenkron motorlarda ilk kalkış anında oluşan yüksek akımı düşürmek amacıyla kullanılan bir yol verme yöntemidir. Özellikle orta ve büyük güçlü motorlarda, direkt yol verme ciddi akım ve gerilim düşümlerine sebep olabilir.
 
-🔹 DİREKT YOL VERMEDE OLUŞAN PROBLEM
+ DİREKT YOL VERMEDE OLUŞAN PROBLEM
 
 Üç fazlı motorlar direkt yol verildiğinde:
 • Kalkış akımı nominal akımın 5–7 katına çıkabilir
@@ -1211,16 +1225,15 @@ Bu elemanlar birlikte çalışarak motorun güvenli şekilde yol almasını sağ
 
 Yıldız–üçgen yol verme yöntemi, uygun motor ve doğru ayarlamalarla kullanıldığında hem elektriksel hem de mekanik açıdan güvenli bir çözüm sunar. Ancak motor etiket bilgileri mutlaka kontrol edilmeli ve bağlantılar doğru yapılmalıdır.
 
-⚙️ Yıldız–Üçgen Yol Verici Elemanları\n\n
+ Yıldız–Üçgen Yol Verici Elemanları\n\n
 Ana kontaktör, yıldız kontaktörü, üçgen kontaktörü, termik röle ve zaman rölesinin pano içi yerleşimi aşağıda gösterilmiştir.\n\n
 Motor gücüne göre sahada en sık kullanılan yaklaşık değerler aşağıdadır.\n\n
 
-
-⚠️ Not: • Değerler standart asenkron motorlar için yaklaşık saha değerleridir.
+️ Not: • Değerler standart asenkron motorlar için yaklaşık saha değerleridir.
 • Motor verimi, cosφ, yol verme şekli (direkt / yıldız–üçgen / soft starter) sonucu etkiler.
 • Termik röle ayarı, motorun etiket akımına göre yapılmalıdır.
 
-🔧 Motor Akımına Uygun Termik, Kontaktör ve Sigorta Seçimi
+ Motor Akımına Uygun Termik, Kontaktör ve Sigorta Seçimi
 
 ''',
   kategori: 'elektrik',
@@ -1243,7 +1256,7 @@ Motor gücüne göre sahada en sık kullanılan yaklaşık değerler aşağıdad
   bloklar: const [
     // 1) Giriş - Tanım
     MakaleBlok.text(
-      '⚡ KOMPANZASYON PANOSU NEDİR?\n'
+      ' KOMPANZASYON PANOSU NEDİR?\n'
       'Kompanzasyon panosu, tesisin çektiği reaktif gücü (özellikle endüktif yüklerden: motor, trafo, balast, kaynak vb.) '
       'kondansatör kademeleri ile dengeleyip güç katsayısını (cosφ) iyileştiren panodur.\n\n'
       'Basit mantık:\n'
@@ -1260,7 +1273,7 @@ Motor gücüne göre sahada en sık kullanılan yaklaşık değerler aşağıdad
 
     // 2) Ne işe yarar - nerede kullanılır
     MakaleBlok.text(
-      '🎯 NE İŞE YARAR? (PRATİK)\n'
+      ' NE İŞE YARAR? (PRATİK)\n'
       'Kompanzasyonun sahadaki faydası “boşa akan reaktif akımı azaltmak”tır.\n\n'
       'Kullanım yerleri:\n'
       '• Fabrikalar, atölyeler, AVM’ler, siteler\n'
@@ -1272,7 +1285,7 @@ Motor gücüne göre sahada en sık kullanılan yaklaşık değerler aşağıdad
 
     // 3) Pano içindeki temel elemanlar
     MakaleBlok.text(
-      '🧩 KOMPANZASYON PANOSUNDA NELER VAR?\n'
+      ' KOMPANZASYON PANOSUNDA NELER VAR?\n'
       'Temel elemanlar:\n'
       '• RGK Rölesi (beyin)\n'
       '• Akım Trafosu (CT) (ölçüm gözü)\n'
@@ -1290,7 +1303,7 @@ Motor gücüne göre sahada en sık kullanılan yaklaşık değerler aşağıdad
 
     // 4) Genel akış: Nereden girer, nereden çıkar
     MakaleBlok.text(
-      '🔁 “NEREDEN GİRER NEREDEN ÇIKAR?” BAĞLANTI AKIŞI (MANTIK)\n'
+      ' “NEREDEN GİRER NEREDEN ÇIKAR?” BAĞLANTI AKIŞI (MANTIK)\n'
       'Kompanzasyon panosu genelde ana dağıtım panosuna paralel çalışır.\n\n'
       '1) GÜÇ (KUVVET) TARAFI:\n'
       '• Pano beslemesi ana baradan alınır (L1-L2-L3)\n'
@@ -1316,7 +1329,7 @@ Motor gücüne göre sahada en sık kullanılan yaklaşık değerler aşağıdad
 
     // 6) CT (Akım trafosu) çok kritik bölüm
     MakaleBlok.text(
-      '🧲 AKIM TRAFOSU (CT) NASIL BAĞLANIR? (EN KRİTİK NOKTA)\n'
+      ' AKIM TRAFOSU (CT) NASIL BAĞLANIR? (EN KRİTİK NOKTA)\n'
       'CT kompanzasyonun “doğru görmesi” için şarttır.\n\n'
       '• CT, genelde ana beslemenin bir fazına takılır (çoğunlukla L1)\n'
       '• CT yönü önemlidir: P1 → şebeke yönü, P2 → yük yönü (üreticiye göre değişebilir)\n'
@@ -1329,7 +1342,7 @@ Motor gücüne göre sahada en sık kullanılan yaklaşık değerler aşağıdad
 
     // 7) Güç devresi detay: kademe hattı
     MakaleBlok.text(
-      '🔌 KADEME GÜÇ DEVRESİ (KUVVET) DETAYI\n'
+      ' KADEME GÜÇ DEVRESİ (KUVVET) DETAYI\n'
       'Her kademe şu sırayla gider:\n'
       'ANA BARA (L1-L2-L3) → KADEME SİGORTASI/ŞALTERİ → KONTAKTÖR ANA KONTAKLARI → KONDANSATÖR\n\n'
       'Kondansatörler genelde 3 faz bağlıdır (L1-L2-L3).\n'
@@ -1341,7 +1354,7 @@ Motor gücüne göre sahada en sık kullanılan yaklaşık değerler aşağıdad
 
     // 8) Kontrol devresi detay: RGK çıkışları
     MakaleBlok.text(
-      '🎛️ RGK (REAKTİF GÜÇ KONTROL RÖLESİ) BAĞLANTI MANTIĞI\n'
+      ' RGK (REAKTİF GÜÇ KONTROL RÖLESİ) BAĞLANTI MANTIĞI\n'
       'RGK rölesinde genelde şu bağlantılar olur:\n'
       '• Besleme: L-N (veya modele göre farklı)\n'
       '• Ölçüm: CT girişi (S1-S2)\n'
@@ -1356,7 +1369,7 @@ Motor gücüne göre sahada en sık kullanılan yaklaşık değerler aşağıdad
 
     // 9) Montaj adımları (pratik saha akışı)
     MakaleBlok.text(
-      '🧰 MONTAJ / KURULUM ADIMLARI (SAHA SIRASI)\n'
+      ' MONTAJ / KURULUM ADIMLARI (SAHA SIRASI)\n'
       '1) Proje/hesap:\n'
       '• Tesis gücü, mevcut cosφ, hedef cosφ belirlenir\n'
       '• Toplam kondansatör kVAr ihtiyacı ve kademe dağılımı planlanır\n\n'
@@ -1383,7 +1396,7 @@ Motor gücüne göre sahada en sık kullanılan yaklaşık değerler aşağıdad
 
     // 10) Devreye alma ayarları (net)
     MakaleBlok.text(
-      '✅ DEVREYE ALMA (EN ÇOK LAZIM OLAN AYARLAR)\n'
+      ' DEVREYE ALMA (EN ÇOK LAZIM OLAN AYARLAR)\n'
       'Genel hedef:\n'
       '• cosφ ≈ 0.95 civarı (tesis ve dağıtım şirketi şartlarına göre)\n\n'
       'RGK’da tipik kontrol listesi:\n'
@@ -1398,7 +1411,7 @@ Motor gücüne göre sahada en sık kullanılan yaklaşık değerler aşağıdad
 
     // 11) Harmonik / reaktör notu (kısa ama kritik)
     MakaleBlok.text(
-      '🎚️ HARMONİK VARSA NE OLUR? (REAKTÖRLÜ SİSTEM)\n'
+      '️ HARMONİK VARSA NE OLUR? (REAKTÖRLÜ SİSTEM)\n'
       'Tesisinde sürücüler (VFD), UPS, LED sürücüleri, kaynak makineleri fazlaysa harmonik yükselir.\n'
       'Bu durumda standart kondansatör sistemi:\n'
       '• aşırı akım/ısınma\n'
@@ -1424,7 +1437,7 @@ Motor gücüne göre sahada en sık kullanılan yaklaşık değerler aşağıdad
 
     // 13) Hızlı özet / saha checklist
     MakaleBlok.text(
-      '📌 HIZLI ÖZET + CHECKLIST\n'
+      ' HIZLI ÖZET + CHECKLIST\n'
       'Kompanzasyon panosu:\n'
       '• Reaktif gücü dengeler, cosφ’i yükseltir\n'
       '• CT → RGK → kontaktör → kondansatör kademeleri mantığıyla çalışır\n\n'
@@ -1459,7 +1472,7 @@ Motor gücüne göre sahada en sık kullanılan yaklaşık değerler aşağıdad
 
     // 1) Zaman saati nedir
     MakaleBlok.text(
-      '⏱️ ZAMAN SAATİ NEDİR?\n'
+      ' ZAMAN SAATİ NEDİR?\n'
       'Zaman saati, bağlı olduğu elektrik hattını önceden ayarlanan saatlere '
       'göre otomatik olarak açan veya kapatan cihazdır.\n\n'
       'Genel amaç:\n'
@@ -1473,7 +1486,7 @@ Motor gücüne göre sahada en sık kullanılan yaklaşık değerler aşağıdad
 
     // 2) Mekanik zaman saati
     MakaleBlok.text(
-      '⚙️ MEKANİK ZAMAN SAATİ NEDİR?\n'
+      '⚙ MEKANİK ZAMAN SAATİ NEDİR?\n'
       'Mekanik zaman saati, içindeki motor ve döner disk sistemiyle çalışan '
       'klasik zaman saatidir.\n\n'
       'Çalışma mantığı:\n'
@@ -1509,7 +1522,7 @@ Motor gücüne göre sahada en sık kullanılan yaklaşık değerler aşağıdad
 
     // 3) Astronomik zaman saati
     MakaleBlok.text(
-      '🌅 ASTRONOMİK ZAMAN SAATİ NEDİR?\n'
+      ' ASTRONOMİK ZAMAN SAATİ NEDİR?\n'
       'Astronomik zaman saati, bulunduğu konuma göre '
       'gün doğumu ve gün batımı saatlerini otomatik hesaplayan '
       'akıllı zaman saatidir.\n\n'
@@ -1555,7 +1568,7 @@ Motor gücüne göre sahada en sık kullanılan yaklaşık değerler aşağıdad
 
     // 4) Karşılaştırma
     MakaleBlok.text(
-      '🆚 MEKANİK vs ASTRONOMİK ZAMAN SAATİ KARŞILAŞTIRMASI\n'
+      ' MEKANİK vs ASTRONOMİK ZAMAN SAATİ KARŞILAŞTIRMASI\n'
       'Mekanik Zaman Saati:\n'
       '• Sabit saatle çalışır\n'
       '• Gün doğumu/batımı dikkate alınmaz\n'
@@ -1619,7 +1632,7 @@ Makale(
 
     // 1) AutoCAD nedir
     MakaleBlok.text(
-      '📐 AUTOCAD NEDİR?\n'
+      ' AUTOCAD NEDİR?\n'
       'AutoCAD, teknik çizimlerin bilgisayar destekli (CAD) olarak '
       'hazırlanmasını sağlayan bir çizim yazılımıdır.\n\n'
       'Elle çizime göre avantajları:\n'
@@ -1632,7 +1645,7 @@ Makale(
 
     // 2) Elektrik alanında nerelerde kullanılır
     MakaleBlok.text(
-      '⚡ AUTOCAD ELEKTRİKTE NERELERDE KULLANILIR?\n'
+      ' AUTOCAD ELEKTRİKTE NERELERDE KULLANILIR?\n'
       'AutoCAD, elektrik projelerinin hemen her aşamasında kullanılır:\n\n'
       '• Aydınlatma projeleri\n'
       '• Priz ve kuvvet tesisatı\n'
@@ -1659,27 +1672,27 @@ Makale(
 
     // 4) Elektrik AutoCAD çizim türleri
     MakaleBlok.text(
-      '🗂️ ELEKTRİK AUTOCAD ÇİZİM TÜRLERİ\n'
+      ' ELEKTRİK AUTOCAD ÇİZİM TÜRLERİ\n'
       'Elektrik projelerinde en sık karşılaşılan çizimler:\n\n'
-      '1️⃣ Aydınlatma Planı\n'
+      '1 Aydınlatma Planı\n'
       '• Armatür yerleri\n'
       '• Anahtarlar ve hatlar\n'
       '• Linye ve sorti mantığı\n\n'
-      '2️⃣ Priz & Kuvvet Planı\n'
+      '2 Priz & Kuvvet Planı\n'
       '• Priz yerleşimleri\n'
       '• Kuvvet hatları\n'
       '• Makine beslemeleri\n\n'
-      '3️⃣ Pano Yerleşim Planı\n'
+      '3 Pano Yerleşim Planı\n'
       '• Ana pano, tali pano konumları\n'
       '• Pano numaraları\n\n'
-      '4️⃣ Tek Hat Şeması\n'
+      '4 Tek Hat Şeması\n'
       '• Enerjinin kaynaktan yüke kadar izlediği yol\n'
       '• Şalter, sigorta, kontaktör, röle gösterimleri',
     ),
 
     // 5) Tek hat şeması mantığı
     MakaleBlok.text(
-      '📊 TEK HAT ŞEMASI (ONE LINE DIAGRAM) MANTIĞI\n'
+      ' TEK HAT ŞEMASI (ONE LINE DIAGRAM) MANTIĞI\n'
       'Tek hat şeması, üç fazlı sistemlerin sadeleştirilmiş gösterimidir.\n\n'
       'Tek hat şemasında:\n'
       '• Fazlar tek çizgi ile temsil edilir\n'
@@ -1692,7 +1705,7 @@ Makale(
 
     // 6) AutoCAD’de sembol mantığı
     MakaleBlok.text(
-      '🔣 AUTOCAD ELEKTRİK SEMBOLLERİ MANTIĞI\n'
+      ' AUTOCAD ELEKTRİK SEMBOLLERİ MANTIĞI\n'
       'Elektrik projelerinde kullanılan semboller standarttır.\n\n'
       'Örnek semboller:\n'
       '• Priz sembolleri (topraklı, trifaze, UPS priz)\n'
@@ -1706,7 +1719,7 @@ Makale(
 
     // 7) Elektrik birimleri ve projede nasıl gösterilir
     MakaleBlok.text(
-      '📏 ELEKTRİK BİRİMLERİ (PROJE OKURKEN)\n'
+      ' ELEKTRİK BİRİMLERİ (PROJE OKURKEN)\n'
       'AutoCAD elektrik projelerinde sık görülen birimler:\n\n'
       '• V (Volt): Gerilim\n'
       '• A (Amper): Akım\n'
@@ -1721,7 +1734,7 @@ Makale(
 
     // 8) Layer (katman) mantığı
     MakaleBlok.text(
-      '🧱 LAYER (KATMAN) MANTIĞI – ELEKTRİKÇİ GÖZÜYLE\n'
+      ' LAYER (KATMAN) MANTIĞI – ELEKTRİKÇİ GÖZÜYLE\n'
       'AutoCAD’de her şey layer mantığıyla çizilir.\n\n'
       'Elektrik projelerinde tipik layer’lar:\n'
       '• AYDINLATMA\n'
@@ -1737,7 +1750,7 @@ Makale(
 
     // 9) Sahada AutoCAD projesi nasıl okunur
     MakaleBlok.text(
-      '👷 AUTOCAD PROJESİ SAHADA NASIL OKUNUR?\n'
+      ' AUTOCAD PROJESİ SAHADA NASIL OKUNUR?\n'
       'Sahacı için altın kurallar:\n\n'
       '• Önce pano numaralarına bak\n'
       '• Hangi linyenin hangi panodan çıktığını kontrol et\n'
@@ -1745,16 +1758,6 @@ Makale(
       '• Tek hat şeması ile planı birlikte değerlendir\n\n'
       'Unutma:\n'
       'AutoCAD çizimi, sahada birebir uygulanmak için vardır.',
-    ),
-
-    // 10) Kısa özet
-    MakaleBlok.text(
-      '📌 KISA ÖZET\n'
-      '• AutoCAD elektrik projelerinin standart çizim dilidir\n'
-      '• Aydınlatma, priz, pano ve tek hat şemaları burada çizilir\n'
-      '• Semboller ve birimler evrenseldir\n'
-      '• Layer mantığı projeyi okunur kılar\n'
-      '• AutoCAD bilen elektrikçi sahada 1–0 öndedir',
     ),
   ],
 ),
@@ -1796,7 +1799,7 @@ Makale(
 
       // 3) Arızalar ve Çözümler
       MakaleBlok.text(
-        '🛠 SIK KARŞILAŞILAN UPS ARIZALARI VE ÇÖZÜMLERİ\n\n'
+        ' SIK KARŞILAŞILAN UPS ARIZALARI VE ÇÖZÜMLERİ\n\n'
             ' 1. UPS Sürekli "Bip" Sesi Veriyor (Akü Modu):\n'
             '• Neden: Şebeke elektriği kesilmiş veya giriş sigortası atmış olabilir.\n'
             '• Çözüm: Giriş voltajını kontrol et, sigortaları kontrol et.\n\n'
@@ -1813,7 +1816,7 @@ Makale(
 
       // 4) Bakım Kuralları
       MakaleBlok.text(
-        '📝 UPS BAKIMINDA ALTIN KURALLAR\n'
+        ' UPS BAKIMINDA ALTIN KURALLAR\n'
             '• Ortam Sıcaklığı: UPS odası 20-25°C olmalıdır. Sıcaklık akü ömrünü yarı yarıya düşürür.\n'
             '• Toz Temizliği: Fanlar tozlanırsa cihaz ısınır ve bypass’a geçer.\n'
             '• Deşarj Testi: Ayda bir kez elektrik kesilerek akülerin sağlıklı çalışıp '
@@ -1829,24 +1832,24 @@ Makale(
   id: 'el1',
   baslik: 'Direnç – Kapasitör – Endüktans (RCL) ve Direnç Renk Kodları',
   icerik:
-      '🔹 ELEKTRONİK DEVRELERİN TEMEL ELEMANLARI\n\n'
+      ' ELEKTRONİK DEVRELERİN TEMEL ELEMANLARI\n\n'
 
-      '🔸 Direnç (R):\n'
+      ' Direnç (R):\n'
       'Elektrik akımına karşı zorluk gösteren devre elemanıdır. '
       'Üzerinden geçen elektrik enerjisini ısı enerjisine dönüştürür. '
       'Akımı sınırlamak, gerilim bölmek ve devreyi korumak amacıyla kullanılır.\n\n'
 
-      '🔸 Kapasitör (C):\n'
+      ' Kapasitör (Kondansatör) (C):\n'
       'Elektrik enerjisini elektrik alanında depolayan elemandır. '
       'Ani gerilim değişimlerine karşı dengeleme yapar. '
       'Filtreleme, zamanlama ve enerji depolama devrelerinde yaygın olarak kullanılır.\n\n'
 
-      '🔸 Endüktans / Bobin (L):\n'
+      ' Endüktans / Bobin (L):\n'
       'Elektrik enerjisini manyetik alan şeklinde depolar. '
       'Akım değişimine karşı koyar. '
       'Motor sürücüleri, filtre devreleri ve güç elektroniğinde sıkça kullanılır.\n\n'
 
-      '📐 ZAMAN SABİTİ (τ):\n'
+      ' ZAMAN SABİTİ (τ):\n'
       '• RC devrelerinde: τ = R × C\n'
       '• RL devrelerinde: τ = L / R\n'
       'Zaman sabiti, devrenin %63 seviyesine ulaşma süresini ifade eder.\n\n'
@@ -1857,7 +1860,7 @@ Makale(
       'Dirençlerin üzerindeki renk halkaları, direnç değerini ve toleransını gösterir. '
       'Bu sayede ölçüm cihazı olmadan direnç değeri okunabilir.\n\n'
 
-      '📌 ÖRNEK OKUMA:\n'
+      ' ÖRNEK OKUMA:\n'
       'Kahverengi (1) – Siyah (0) – Kırmızı (×100)\n'
       '→ 10 × 100 = 1.000 Ω = 1 kΩ\n\n'
 
@@ -2028,7 +2031,7 @@ Makale(
       ),
 
       MakaleBlok.text(
-        '✅ 10) Kısa Özet\n'
+        ' 10) Kısa Özet\n'
             '• Transistör elektronik devrelerin temelidir\n'
             '• BJT akım, MOSFET gerilim kontrollüdür\n'
             '• Base/Gate koruması şarttır\n'
@@ -2095,15 +2098,15 @@ Makale(
       MakaleBlok.text(
         ' 4) Kondansatör Türleri (En Yaygın)\n'
             'Elektronikte en sık kullanılan kondansatörler:\n\n'
-            '1️⃣ Elektrolitik Kondansatör\n'
+            '1 Elektrolitik Kondansatör\n'
             '• Yüksek kapasiteli\n'
             '• Polaritelidir (+ / -)\n'
             '• Genelde filtreleme amaçlı\n\n'
-            '2️⃣ Seramik Kondansatör\n'
+            '2 Seramik Kondansatör\n'
             '• Küçük kapasiteli\n'
             '• Polaritesiz\n'
             '• Yüksek frekans için ideal\n\n'
-            '3️⃣ Film (Polyester) Kondansatör\n'
+            '3 Film (Polyester) Kondansatör\n'
             '• Kararlı yapı\n'
             '• Zamanlama ve sinyal devreleri',
       ),
@@ -2165,7 +2168,7 @@ Makale(
       ),
 
       MakaleBlok.text(
-        '📌 10) Kısa Özet\n'
+        ' 10) Kısa Özet\n'
             '• Kondansatör enerji depolar ve filtreleme yapar\n'
             '• Elektrolitikler polaritelidir\n'
             '• Seramikler yüksek frekansta iyidir\n'
@@ -2292,18 +2295,18 @@ Makale(
             '• Adaptörden gelen 12 V → 5 V\n'
             '• Aküden gelen 24 V → 12 V\n\n'
             'Regülatör olmazsa:\n'
-            '❌ Mikrodenetleyici yanar\n'
-            '❌ Sensörler yanlış çalışır\n'
-            '❌ Cihaz reset atar',
+            ' Mikrodenetleyici yanar\n'
+            ' Sensörler yanlış çalışır\n'
+            ' Cihaz reset atar',
       ),
 
       MakaleBlok.text(
         ' 2) Regülatör Türleri (Genel Bakış)\n'
             'Elektronikte regülatörler iki ana gruba ayrılır:\n\n'
-            '1️⃣ Lineer Regülatörler\n'
+            '1 Lineer Regülatörler\n'
             '• 78xx serisi (7805, 7812 vb.)\n'
             '• LM317 (ayarlanabilir)\n\n'
-            '2️⃣ Anahtarlamalı (Switching) Regülatörler\n'
+            '2 Anahtarlamalı (Switching) Regülatörler\n'
             '• LM2596\n'
             '• Buck / Boost / Buck-Boost modüller\n\n'
             'Temel fark:\n'
@@ -2425,7 +2428,7 @@ Makale(
       ),
 
       MakaleBlok.text(
-        '📌 12) Kısa Özet\n'
+        ' 12) Kısa Özet\n'
             '• Regülatörler sabit DC gerilim üretir\n'
             '• Lineer regülatörler basit ama ısınır\n'
             '• Anahtarlamalı regülatörler verimli ve serindir\n'
@@ -2443,7 +2446,7 @@ Makale(
       'LED\'in çalışması, PN birleşiminde elektronlar ile deliklerin birleşmesi sonucu '
       'enerjinin foton (ışık) olarak açığa çıkmasına dayanır.\n\n'
 
-      '🔹 LED\'in Yapısı ve Çalışma Prensibi:\n'
+      ' LED\'in Yapısı ve Çalışma Prensibi:\n'
       'LED\'ler anot (+) ve katot (–) olmak üzere iki uca sahiptir. '
       'Anot ucu daha uzun, katot ucu genellikle daha kısadır. '
       'LED ters bağlanırsa iletime geçmez ve ışık vermez.\n\n'
@@ -2453,11 +2456,11 @@ Makale(
       'LED\'lerin en önemli avantajları düşük güç tüketimi, uzun ömür, '
       'hızlı tepki süresi ve kompakt yapıya sahip olmalarıdır.\n\n'
 
-      '🔹 LED Kullanım Alanları:\n'
+      ' LED Kullanım Alanları:\n'
       'LED\'ler aydınlatma sistemleri, elektronik göstergeler, sensörler, '
       'otomotiv uygulamaları ve optik iletişim sistemlerinde yaygın olarak kullanılır.\n\n'
 
-      '🔹 Breadboard (Deney Tahtası) Nedir?\n'
+      ' Breadboard (Deney Tahtası) Nedir?\n'
       'Breadboard, elektronik devrelerin lehim yapılmadan kurulmasını sağlayan '
       'delikli bir deney platformudur. '
       'Öğrenciler, teknisyenler ve mühendisler tarafından prototip devreler '
@@ -2467,40 +2470,199 @@ Makale(
       'Genellikle kenarlardaki hatlar besleme (+ ve –), '
       'orta kısımdaki hatlar ise devre elemanlarının bağlanması için kullanılır.\n\n'
 
-      '🔹 LED ve Breadboard Birlikte Kullanımı:\n'
+      ' LED ve Breadboard Birlikte Kullanımı:\n'
       'LED\'ler breadboard üzerinde seri bir direnç ile birlikte kullanılır. '
       'Direnç, LED üzerinden geçen akımı sınırlandırarak LED\'in yanmasını önler. '
-      'Bu yöntem, temel elektronik deneylerinin en yaygın uygulamasıdır.\n\n'
-
-      '🔹 Önemli Uyarılar:\n'
-      'Breadboard üzerinde yüksek akım veya yüksek gerilim devreleri denenmemelidir. '
-      'Breadboard, düşük güçlü deney ve eğitim amaçlı kullanımlar için uygundur.',
+      'Bu yöntem, temel elektronik deneylerinin en yaygın uygulamasıdır.',
   kategori: 'elektronik',
   resim: 'assets/images/led.png',
   ikonAsset: 'assets/images/ledicon.png',
   ),
   Makale(
-    id: 'el6',
-    baslik: 'Osiloskop Nedir ve Ne İşe Yarar?',
-    icerik:
-      'Osiloskop, elektrik sinyallerini zamana bağlı olarak ekranda dalga formu şeklinde gösteren ölçü cihazıdır. '
-      'Yatay eksen zamanı, dikey eksen gerilimi temsil eder. '
-      'Analog ve dijital türleri vardır. '
-      'Kullanım alanları: sinyal analizi, arıza tespiti, frekans ve genlik ölçümleri. '
-      'Trigger ayarı, ölçümü sabitlemek için kullanılır.',
+    id: 'e16',
+    baslik: 'Osiloskop Rehberi: Nedir, Nasıl Kullanılır?',
     kategori: 'elektronik',
-    resim: 'assets/images/osiloskop.jpg',
+    ikonAsset: 'assets/images/osiloskop.jpg',
+    icerik:
+    'Elektronik dünyasında ilerledikçe, multimetrenin yetmediği anlarla karşılaşırsınız. '
+        'Bir multimetre size gerilimin değerini rakamla söylerken; osiloskop, o gerilimin '
+        'zamana bağlı değişimini bir grafik olarak ekrana yansıtır.\n\n'
+        'Kısacası osiloskop, elektriğin "izini" sürmemizi sağlayan bir cihazdır. '
+        'Bu bölümde, karmaşık görünen bu cihazın temel çalışma mantığını ve '
+        'kritik ayarlarını profesyonel bir bakış açısıyla inceleyeceğiz.',
+    bloklar: const [
+      MakaleBlok.text(
+        ' OSİLOSKOP NEDİR VE NEDEN ÖNEMLİDİR?\n'
+            'Sadece gerilimin varlığını bilmek yetmez; o gerilimin temiz mi, gürültülü mü '
+            'yoksa dalgalı mı olduğunu görmemiz gerekir.\n\n'
+            'Özellikle sinyal işleme, haberleşme sistemleri ve güç kaynağı tasarımlarında '
+            'sinyalin formunu, frekansını ve genliğini eş zamanlı görmek hatayı bulmak için tek yoldur.',
+      ),
+      MakaleBlok.image(
+        'assets/images/osiloskop.jpg',
+        aciklama:
+        'Osiloskop ekranı iki eksenli bir koordinat sistemidir. '
+            'Dikey eksen (Y) Gerilimi, yatay eksen (X) ise Zamanı temsil eder.',
+      ),
+
+      MakaleBlok.text(
+        ' TEMEL KONTROLLER: VOLTS/DIV VE TIME/DIV\n'
+            'Osiloskop panelinde en çok kullanacağınız iki ana ayar şunlardır:\n\n'
+            '1. VOLTS/DIV: Ekrandaki her bir kare dikeyde kaç voltu temsil etsin? '
+            'Örneğin 2V ayarındayken sinyal 3 kare yükseliyorsa, ölçülen değer 6 Volttur.\n\n'
+            '2. TIME/DIV: Yataydaki her bir karenin temsil ettiği zaman dilimidir. '
+            'Hızlı sinyalleri yakalamak veya yavaş sinyalleri genişletip incelemek için kullanılır.',
+      ),
+
+      MakaleBlok.text(
+        ' TETİKLEME (TRIGGER) MANTIĞI\n'
+            'Ekranda sürekli kayan, bir türlü sabit durmayan bir dalga görüyorsanız '
+            'Trigger ayarını gözden geçirmelisiniz.\n\n'
+            'Tetikleme ünitesi, cihazın çizime hangi voltaj seviyesinden başlayacağını belirler. '
+            'Doğru ayarlandığında, tekrarlanan sinyaller üst üste binerek ekranda sabitlenmiş bir görüntü oluşturur.'
+        'Trigger seviyesi, sinyalin başlangıç noktasını belirleyerek görüntüyü dondurur.',
+      ),
+
+      MakaleBlok.text(
+        '️ PROB KULLANIMI VE GÜVENLİK NOTLARI\n'
+            'Ölçüme başlamadan önce probunuzun kalibrasyonunu cihaz üzerindeki test çıkışından kontrol etmelisiniz. '
+            'Kare dalganın köşeleri tam dik değilse, prob üzerindeki ayar vidasıyla düzeltme yapılması gerekir.\n\n'
+            'Önemli Uyarı: Osiloskobun şase ucu (timsah ucu) doğrudan cihazın toprak hattına bağlıdır. '
+            'Ölçüm yaparken bu ucu devrenin sadece şase/GND noktasına bağladığınızdan emin olun. '
+            'Aksi takdirde kısa devreye neden olarak hem devrenize hem cihazınıza zarar verebilirsiniz.',
+      ),
+
+      MakaleBlok.text(
+        ' UYGULAMA TAVSİYESİ\n'
+            'Hassas devrelerde çalışırken her zaman 10X kademesini tercih edin. '
+            'Bu mod, osiloskobun ölçülen devre üzerindeki yük etkisini azaltarak '
+            'daha doğru sonuçlar almanızı ve yüksek gerilimlerden korunmanızı sağlar.',
+      ),
+    ],
   ),
   Makale(
-    id: 'el7',
-    baslik: 'Mikrodenetleyici Nedir?',
-    icerik:
-      'Mikrodenetleyici, bir çip içinde işlemci (CPU), bellek (RAM/Flash) ve giriş-çıkış birimleri (GPIO) barındıran küçük bir bilgisayardır. '
-      'Gömülü sistemlerde belirli bir görevi otomatik olarak yerine getirir. '
-      'Arduino, PIC ve STM32 en bilinen mikrodenetleyici serileridir. '
-      'Avantajı: düşük maliyet, düşük güç tüketimi ve kolay programlanabilirlik.',
+    id: 'e12',
+    baslik: 'Mikroişlemci ve Mikrodenetleyici: Aralarındaki Farklar ve Çalışma Mantığı',
     kategori: 'elektronik',
-    resim: 'assets/images/mikrodenetleyici.png',
+    ikonAsset: 'assets/images/mikroişlemcivs.jpg',
+    icerik:
+    'Elektronik dünyasının "beyni" olarak adlandırılan bu iki bileşen, genellikle birbirinin yerine kullanılsa da aslında görevleri ve mimarileri oldukça farklıdır.\n\n'
+        'Bir bilgisayarın devasa işlem gücü ile bir çamaşır makinesinin kontrol mekanizması arasındaki farkı anlamak, bu iki teknolojiyi anlamaktan geçer. '
+        'Bu makalede, her iki birimin anatomisini ve hangi projede hangisini seçmeniz gerektiğini detaylandıracağız.',
+    bloklar: const [
+      MakaleBlok.text(
+        '🧠 MİKROİŞLEMCİ (CPU) NEDİR?\n'
+            'Mikroişlemci, sadece merkezi işlem birimidir (CPU). Kendi başına bir bilgisayar değildir; '
+            'çalışabilmesi için dışarıdan RAM, ROM (Hafıza) ve Giriş/Çıkış (I/O) birimlerine ihtiyaç duyar.\n\n'
+            'Özellikleri:\n'
+            '• Çok yüksek işlem hızı (GHz seviyeleri).\n'
+            '• Karmaşık hesaplamalar ve çoklu görevler (Multitasking) için tasarlanmıştır.\n'
+            '• Bilgisayarlar, tabletler ve yüksek performanslı sunucularda kullanılır.',
+      ),
+      MakaleBlok.image(
+        'assets/images/mikroişlemcivs.jpg',
+        aciklama: 'Bir mikroişlemci sistemi: CPU merkezdedir, diğer tüm birimler dışarıdan bağlanır.',
+      ),
+
+      MakaleBlok.text(
+        '🕹️ MİKRODENETLEYİCİ (MCU) NEDİR?\n'
+            'Mikrodenetleyici, "tek bir çip üzerinde bilgisayar" demektir. İşlemcinin yanına RAM, ROM ve I/O birimleri aynı paketin içine yerleştirilmiştir.\n\n'
+            'Özellikleri:\n'
+            '• Düşük güç tüketimi ve düşük maliyet.\n'
+            '• Belirli bir görevi yerine getirmek için özelleşmiştir.\n'
+            '• Arduino (Atmega), STM32 ve PIC serileri en popüler örnekleridir.\n'
+            '• Mikrodalga fırınlar, otomobil kontrol üniteleri ve akıllı saatlerde bulunur.',
+      ),
+      MakaleBlok.image(
+        'assets/images/mikrodenetleyici.png',
+        aciklama: 'Mikrodenetleyici mimarisi: Tüm birimler tek bir kılıf içerisindedir.',
+      ),
+
+      MakaleBlok.text(
+        ' TEMEL FARKLAR: HANGİSİ NEREDE KULLANILIR?\n'
+            'Aralarındaki farkı daha iyi anlamak için şu kıyaslamalara göz atabiliriz:\n\n'
+            '1. Donanım Yapısı: Mikroişlemcilerde donanım haricidir ve esnektir. Mikrodenetleyicilerde donanım sabittir ve dahilidir.\n\n'
+            '2. Güç Tüketimi: Mikrodenetleyiciler pille çalışabilecek kadar az güç harcar. İşlemciler ise yüksek enerjiye ve genellikle soğutmaya ihtiyaç duyar.\n\n'
+            '3. Maliyet: Tek bir görev için mikrodenetleyici kullanmak çok daha ekonomiktir. Karmaşık bir işletim sistemi çalıştırılacaksa işlemci şarttır.',
+      ),
+
+      MakaleBlok.text(
+        ' MİMARİ YAPILAR: VON NEUMANN VE HARVARD\n'
+            'Bu cihazların çalışma hızını etkileyen en önemli unsur mimarileridir:\n\n'
+            '• Von Neumann Mimarisi: Veri ve komutlar aynı yolu kullanır. Basittir ama bazen dar boğaz oluşturabilir.\n'
+            '• Harvard Mimarisi: Veri ve komutlar için ayrı yollar vardır. Bu da mikrodenetleyicilerin komutları çok daha hızlı işlemesini sağlar.',
+      ),
+    ],
+  ),
+  Makale(
+    id: 'e13',
+    baslik: 'Sensör Teknolojileri: Endüstriyel ve Elektronik Algılayıcılar Rehberi',
+    kategori: 'elektronik',
+    ikonAsset: 'assets/images/Sensörler.jpg',
+    icerik:
+    'Sensörler, fiziksel ortamdaki değişimleri (ısı, ışık, basınç, mesafe) algılayıp '
+        'elektriksel sinyallere dönüştüren bileşenlerdir. Modern dünyada bir akıllı telefondan '
+        'endüstriyel robot kollarına kadar her sistem, çevresini bu algılayıcılar sayesinde tanır.\n\n'
+        'Bu makalede, temel direnç değişimli sensörlerden gelişmiş optik sistemlere kadar '
+        'tüm sensör gruplarını teknik detaylarıyla ele alacağız.',
+    bloklar: const [
+      MakaleBlok.text(
+        ' 1. SICAKLIK SENSÖRLERİ (Termistörler ve RTD)\n'
+            'Sıcaklık değişimiyle direnç değerini değiştiren elemanlardır. En yaygın iki tip şunlardır:\n\n'
+            '• NTC (Negative Temperature Coefficient): Sıcaklık arttıkça direnci azalan elemandır. Hassas ölçümlerde ve koruma devrelerinde sıkça kullanılır.\n'
+            '• PTC (Positive Temperature Coefficient): Sıcaklık arttıkça direnci artan elemandır. Genellikle aşırı ısınma koruması (sigorta niyetine) amaçlı tercih edilir.\n'
+            '• Termokupl (Isıl Çift): İki farklı metalin birleşim noktasındaki sıcaklık farkından voltaj üreten, çok yüksek sıcaklıkları ölçebilen endüstriyel elemanlardır.',
+      ),
+      MakaleBlok.image(
+        'assets/images/Sensörler.jpg',
+      ),
+
+      MakaleBlok.text(
+        ' 2. MESAFE VE KONUM SENSÖRLERİ\n'
+            'Bir nesnenin varlığını veya uzaklığını temassız ölçmek için kullanılırlar:\n\n'
+            '• Ultrasonik Sensörler: Ses dalgası gönderip yankısını alarak mesafe ölçer (Örn: HC-SR04).\n'
+            '• Kızılötesi (IR) Sensörler: Işık yansımasıyla çalışır; engel algılama ve çizgi izleme gibi görevlerde kullanılır.\n'
+            '• Lidar: Lazer ışınları kullanarak 3D haritalama ve çok hassas mesafe ölçümü yapar.',
+      ),
+
+      MakaleBlok.text(
+        ' 3. ENDÜSTRİYEL YAKLAŞIM (PROXIMITY) SENSÖRLERİ\n'
+            'Fabrika otomasyonunda metal veya metal olmayan cisimleri algılamak için kullanılırlar:\n\n'
+            '• İndüktif Sensörler: Sadece metal nesneleri algılar. Manyetik alan değişimiyle çalışır.\n'
+            '• Kapasitif Sensörler: Hem metal hem de plastik, cam, sıvı gibi metal olmayan nesneleri algılayabilir.\n'
+            '• Manyetik (Reed) Sensörler: Mıknatıs yaklaştığında kontak kapatan, basit ama güvenilir sensörlerdir.',
+      ),
+
+      MakaleBlok.text(
+        '️ 4. KUVVET, BASINÇ VE GERİNİM SENSÖRLERİ\n'
+            'Mekanik baskıyı elektriksel veriye dönüştürürler:\n\n'
+            '• Load Cell (Yük Hücresi): Dijital tartılarda kullanılır. Üzerindeki baskıyla direnci değişen "Strain Gauge" yapısını barındırır.\n'
+            '• Barometrik Basınç Sensörleri: Atmosfer basıncını ölçerek yükseklik tayini (altimetre) yapılmasına imkan tanır.',
+      ),
+
+      MakaleBlok.text(
+        ' 5. HAREKET VE YÖNELİM SENSÖRLERİ (IMU)\n'
+            'Modern cihazların denge ve hareket kabiliyetini sağlarlar:\n\n'
+            '• İvmeölçer (Accelerometer): Cihazın hangi yöne hızlandığını ve yerçekimi yönünü ölçer.\n'
+            '• Jiroskop (Gyroscope): Cihazın kendi ekseni etrafındaki dönme hızını (açısal hız) tespit eder.\n'
+            '• Manyetometre: Dünyanın manyetik alanını ölçerek pusula görevi görür.',
+      ),
+
+      MakaleBlok.text(
+        ' 6. OPTİK VE GAZ SENSÖRLERİ\n'
+            '• LDR (Foto Direnç): Üzerine düşen ışık miktarıyla direnci değişir. Gece lambalarında temel elemandır.\n'
+            '• Gaz Sensörleri (MQ Serisi): Havadaki yanıcı gaz, duman veya CO2 konsantrasyonuna göre kimyasal tepkime vererek direnç değiştirir.',
+      ),
+
+      MakaleBlok.text(
+        'TEKNİK SEÇİM KRİTERLERİ\n'
+            'Bir projede sensör seçerken şu dört parametre profesyonel standarttır:\n'
+            '1. Hassasiyet (Sensitivity): Girişteki değişim çıkışı ne kadar etkiliyor?\n'
+            '2. Lineerlik: Giriş ve çıkış arasındaki artış doğru orantılı mı?\n'
+            '3. Çözünürlük: Ölçebildiği en küçük değişim miktarı nedir?\n'
+            '4. Tepki Süresi: Fiziksel olay gerçekleştikten kaç milisaniye sonra veri üretiliyor?',
+      ),
+    ],
   ),
   Makale(
   id: 'el8',
@@ -2639,15 +2801,15 @@ Makale(
       'üstündeki frekansları zayıflatır. Genellikle RLC devreleri ile oluşturulur. '
       'Radyo alıcılarında, haberleşme sistemlerinde ve sensör uygulamalarında kullanılır.\n\n'
 
-      '🔧 RC ve RLC Filtreler:\n'
+      ' RC ve RLC Filtreler:\n'
       'RC filtreler direnç ve kondansatörden oluşur, yapıları basit ve maliyetleri düşüktür. '
       'RLC filtreler ise direnç, bobin ve kondansatör içerir; daha keskin ve seçici filtreleme sağlar.\n\n'
 
-      '✂️ Kesim Frekansı:\n'
+      ' Kesim Frekansı:\n'
       'Filtrenin sinyali zayıflatmaya başladığı frekansa kesim frekansı denir. '
       'RC devrelerinde kesim frekansı fc = 1 / (2πRC) formülü ile hesaplanır.\n\n'
 
-      '🧰 Tekniker Notu:\n'
+      ' Tekniker Notu:\n'
       'Güç kaynaklarında alçak geçiren filtre, çıkıştaki AC dalgalanmayı azaltmak için; '
       'ses ve haberleşme devrelerinde ise istenmeyen parazitleri bastırmak için kullanılır.',
   kategori: 'elektronik',
@@ -2737,7 +2899,7 @@ Makale(
   bloklar: const [
 
     MakaleBlok.text(
-      '🧰 1) Satfinder 6 Ne İşe Yarar?\n'
+      ' 1) Satfinder 6 Ne İşe Yarar?\n'
       'Satfinder 6 ile sahada şunları yapabilirsin:\n\n'
       '• Çanağı doğru uyduya kilitlemek (Level / Quality takibi)\n'
       '• Transponder (TP) tarayıp sinyal doğrulamak\n'
@@ -2766,7 +2928,7 @@ Makale(
       '• Level / Strength (Seviye): Hatta sinyal enerjisi var mı?\n'
       '• Quality (Kalite): Asıl önemli değer. Doğru uydu ve doğru TP yakalandı mı?\n\n'
       'Altın kural:\n'
-      '✅ Çanak ayarında hedef her zaman “Quality” değerini artırmaktır.\n\n'
+      ' Çanak ayarında hedef her zaman “Quality” değerini artırmaktır.\n\n'
       'Level yüksek ama Quality sıfırsa; yanlış uydu, yanlış TP, '
       'yanlış LNB ayarı veya DiSEqC hatası olabilir.',
     ),
@@ -2785,7 +2947,7 @@ Makale(
     ),
 
     MakaleBlok.text(
-      '🧭 5) Uyduyu Hızlı Bulma (Sahada Zaman Kazandıran Yöntem)\n'
+      ' 5) Uyduyu Hızlı Bulma (Sahada Zaman Kazandıran Yöntem)\n'
       '1) Uyduyu seç (örnek: Türksat 42°E)\n'
       '2) Güçlü ve yaygın bir TP seç\n'
       '3) Çanağı yavaşça sağ–sol hareket ettir\n'
@@ -2797,7 +2959,7 @@ Makale(
     ),
 
     MakaleBlok.text(
-      '🧩 6) DiSEqC Nedir? (Switch ve Motor Mantığı)\n'
+      ' 6) DiSEqC Nedir? (Switch ve Motor Mantığı)\n'
       'DiSEqC; ölçüm cihazı veya receiver ile '
       'switch ya da motor arasında komut iletimini sağlayan protokoldür.\n\n'
       'En yaygın DiSEqC türleri:\n'
@@ -2809,7 +2971,7 @@ Makale(
     ),
 
     MakaleBlok.text(
-      '📈 7) dB / dBµV / MER / BER Değerleri\n'
+      ' 7) dB / dBµV / MER / BER Değerleri\n'
       'Cihaza göre şu değerler görülebilir:\n\n'
       '• dB: Göreli seviye veya kazanç\n'
       '• dBµV: RF sinyal seviyesi (karasal/kablo sistemlerde yaygın)\n'
@@ -2821,7 +2983,7 @@ Makale(
     ),
 
     MakaleBlok.text(
-      '🧯 8) En Sık Karşılaşılan Arızalar\n'
+      ' 8) En Sık Karşılaşılan Arızalar\n'
       '• Level var Quality yok → yanlış uydu veya TP\n'
       '• Bazı kanallar yok → 22 kHz / LO ayarı hatalı\n'
       '• Yağmurda sinyal gidiyor → çanak sınırda ayarlı\n'
@@ -2832,7 +2994,7 @@ Makale(
     ),
 
     MakaleBlok.text(
-      '✅ 9) Kısa Özet\n'
+      ' 9) Kısa Özet\n'
       '• Uydu ayarında hedef Quality değeridir\n'
       '• LNB ve DiSEqC ayarları en kritik noktalardır\n'
       '• DVB-S/S2 uydu, DVB-T/T2 karasal, DVB-C kablo yayınıdır\n'
@@ -2887,7 +3049,7 @@ Makale(
 
     // Kablo türleri
     MakaleBlok.text(
-      '🧵 ETHERNET KABLO TÜRLERİ (CAT KABLOLAR)\n'
+      ' ETHERNET KABLO TÜRLERİ (CAT KABLOLAR)\n'
       'RJ45 konnektörü farklı kategori Ethernet kabloları ile kullanılır.\n\n'
       '• CAT5e:\n'
       '  1000 Mbps (1 Gbps) hız destekler. Ev ve küçük ofisler için yeterlidir.\n\n'
@@ -2900,7 +3062,7 @@ Makale(
 
     // Renk sıralaması
     MakaleBlok.text(
-      '🎨 RJ45 RENK SIRALAMASI (T568A – T568B)\n'
+      ' RJ45 RENK SIRALAMASI (T568A – T568B)\n'
       'Ethernet kablolarında iki uluslararası standart vardır:\n\n'
       '🔹 T568B (Türkiye’de en yaygın):\n'
       '1️⃣ Beyaz-Turuncu\n'
@@ -2932,7 +3094,7 @@ Makale(
 
     // Düz / Çapraz
     MakaleBlok.text(
-      '🔁 DÜZ KABLO ve ÇAPRAZ KABLO FARKI\n'
+      ' DÜZ KABLO ve ÇAPRAZ KABLO FARKI\n'
       '• Düz Kablo:\n'
       '  İki ucu da aynı standart (T568B–T568B). Günümüzde en yaygın kullanım.\n\n'
       '• Çapraz Kablo:\n'
@@ -2943,7 +3105,7 @@ Makale(
 
     // Fiber
     MakaleBlok.text(
-      '🚀 FİBER İNTERNET NEDİR?\n'
+      ' FİBER İNTERNET NEDİR?\n'
       'Fiber internet, veriyi elektrik sinyali yerine ışık sinyaliyle ileten '
       'yüksek hızlı internet altyapısıdır.\n\n'
       'Avantajları:\n'
@@ -2956,10 +3118,10 @@ Makale(
     // Ev internet mantığı
     MakaleBlok.text(
       '🏠 EV İNTERNET ALTYAPISI NASIL ÇALIŞIR?\n'
-      '1️⃣ Dış hattan (fiber veya bakır) bina içine gelir\n'
-      '2️⃣ Modem veya ONT cihazına bağlanır\n'
-      '3️⃣ Modem RJ45 çıkışı ile router/switch’e gider\n'
-      '4️⃣ Ev içi prizlere veya cihazlara Ethernet ile dağıtılır\n\n'
+      '1 Dış hattan (fiber veya bakır) bina içine gelir\n'
+      '2 Modem veya ONT cihazına bağlanır\n'
+      '3 Modem RJ45 çıkışı ile router/switch’e gider\n'
+      '4 Ev içi prizlere veya cihazlara Ethernet ile dağıtılır\n\n'
       'IP kamera, akıllı TV, bilgisayar ve access point cihazları bu ağ üzerinden çalışır.',
     ),
 
@@ -3012,7 +3174,7 @@ Makale(
 
     // 2) Analog kamera
     MakaleBlok.text(
-      '📼 ANALOG KAMERA NEDİR?\n'
+      ' ANALOG KAMERA NEDİR?\n'
       'Analog kameralar, görüntüyü analog sinyal olarak ileten ve genellikle '
       'koaksiyel kablo (RG59) ile çalışan kamera türleridir.\n\n'
       'Özellikleri:\n'
@@ -3036,7 +3198,7 @@ Makale(
 
     // 3) IP kamera
     MakaleBlok.text(
-      '🌐 IP KAMERA NEDİR?\n'
+      ' IP KAMERA NEDİR?\n'
       'IP kameralar, görüntüyü dijital veri olarak ileten ve network üzerinden '
       'çalışan modern kamera sistemleridir.\n\n'
       'Özellikleri:\n'
@@ -3060,7 +3222,7 @@ Makale(
 
     // 4) DVR / NVR
     MakaleBlok.text(
-      '💾 DVR ve NVR ARASINDAKİ FARK\n'
+      ' DVR ve NVR ARASINDAKİ FARK\n'
       '• DVR (Analog Sistem):\n'
       '  Analog kameralar DVR’a koaksiyel kablo ile bağlanır.\n\n'
       '• NVR (IP Sistem):\n'
@@ -3072,7 +3234,7 @@ Makale(
 
     // 5) PoE mantığı
     MakaleBlok.text(
-      '⚡ PoE (POWER OVER ETHERNET) NEDİR?\n'
+      ' PoE (POWER OVER ETHERNET) NEDİR?\n'
       'PoE, IP kameraların tek bir Ethernet kablosu üzerinden '
       'hem veri hem de enerji almasını sağlayan teknolojidir.\n\n'
       'Avantajları:\n'
@@ -3093,7 +3255,7 @@ Makale(
 
     // 6) Kamera sisteminde kullanılanlar
     MakaleBlok.text(
-      '🧰 KAMERA SİSTEMİNDE KULLANILAN EKİPMANLAR\n'
+      ' KAMERA SİSTEMİNDE KULLANILAN EKİPMANLAR\n'
       '• Kamera (Analog / IP)\n'
       '• DVR veya NVR\n'
       '• PoE Switch (IP sistemlerde)\n'
@@ -3107,12 +3269,12 @@ Makale(
 
     // 7) IP atama
     MakaleBlok.text(
-      '🧠 IP KAMERAYA IP ATAMA NASIL YAPILIR?\n'
+      ' IP KAMERAYA IP ATAMA NASIL YAPILIR?\n'
       'IP kameralar ağa bağlandığında genellikle otomatik IP alır (DHCP).\n\n'
       'Statik IP vermek için:\n'
-      '1️⃣ Bilgisayar ve kamera aynı ağa bağlanır\n'
-      '2️⃣ Kamera arayüzüne girilir (web veya yazılım)\n'
-      '3️⃣ IP adresi manuel olarak ayarlanır\n'
+      '1 Bilgisayar ve kamera aynı ağa bağlanır\n'
+      '2 Kamera arayüzüne girilir (web veya yazılım)\n'
+      '3 IP adresi manuel olarak ayarlanır\n'
       'Örnek:\n'
       'IP: 192.168.1.100\n'
       'Gateway: 192.168.1.1\n'
@@ -3122,13 +3284,13 @@ Makale(
 
     // 8) Telefona bağlama
     MakaleBlok.text(
-      '📱 KAMERAYA TELEFONDAN NASIL BAĞLANILIR?\n'
+      ' KAMERAYA TELEFONDAN NASIL BAĞLANILIR?\n'
       'Günümüzde çoğu kamera sistemi mobil uygulama ile uzaktan izlenebilir.\n\n'
       'Genel adımlar:\n'
-      '1️⃣ NVR/DVR internete bağlanır\n'
-      '2️⃣ Cihaza bulut (P2P) aktif edilir\n'
-      '3️⃣ Telefon uygulaması yüklenir\n'
-      '4️⃣ QR kod veya seri numarası eklenir\n\n'
+      '1 NVR/DVR internete bağlanır\n'
+      '2 Cihaza bulut (P2P) aktif edilir\n'
+      '3 Telefon uygulaması yüklenir\n'
+      '4 QR kod veya seri numarası eklenir\n\n'
       'Telefon üzerinden:\n'
       '• Canlı izleme\n'
       '• Geriye dönük kayıt izleme\n'
@@ -3138,7 +3300,7 @@ Makale(
 
     // 9) Kamera test cihazı
     MakaleBlok.text(
-      '🧪 KAMERA TEST CİHAZI NE İŞE YARAR?\n'
+      ' KAMERA TEST CİHAZI NE İŞE YARAR?\n'
       'Kamera test cihazı, montaj sırasında kameranın çalışıp çalışmadığını '
       'kontrol etmek için kullanılır.\n\n'
       'Sağladıkları:\n'
@@ -3190,7 +3352,7 @@ Makale(
 
     // Dijital giriş
     MakaleBlok.text(
-      '🔘 DİJİTAL GİRİŞ (DIGITAL INPUT) NEDİR?\n'
+      ' DİJİTAL GİRİŞ (DIGITAL INPUT) NEDİR?\n'
       'Dijital girişler yalnızca iki durumu algılar: 0 veya 1 (OFF / ON).\n\n'
       'Bağlanan elemanlar:\n'
       '• Start / Stop butonları\n'
@@ -3221,7 +3383,7 @@ Makale(
 
     // Analog giriş
     MakaleBlok.text(
-      '📈 ANALOG GİRİŞ (ANALOG INPUT) NEDİR?\n'
+      ' ANALOG GİRİŞ (ANALOG INPUT) NEDİR?\n'
       'Analog girişler sürekli değişen fiziksel değerleri sayısal değere çevirir.\n\n'
       'Bağlanan sensörler:\n'
       '• Sıcaklık (PT100, termokupl, transmitter)\n'
@@ -3237,7 +3399,7 @@ Makale(
 
     // Analog çıkış
     MakaleBlok.text(
-      '🎚️ ANALOG ÇIKIŞ (ANALOG OUTPUT) NEDİR?\n'
+      ' ANALOG ÇIKIŞ (ANALOG OUTPUT) NEDİR?\n'
       'Analog çıkışlar, sahadaki cihazlara değişken kontrol sinyali gönderir.\n\n'
       'Kullanım alanları:\n'
       '• Motor hız kontrolü (VFD)\n'
@@ -3251,7 +3413,7 @@ Makale(
 
     // HSC
     MakaleBlok.text(
-      '⚡ HIZLI SAYICI GİRİŞLERİ (HSC – HIGH SPEED COUNTER)\n'
+      ' HIZLI SAYICI GİRİŞLERİ (HSC – HIGH SPEED COUNTER)\n'
       'HSC girişleri, PLC’nin standart tarama süresinden bağımsız olarak '
       'yüksek frekanslı sinyalleri saymasını sağlar.\n\n'
       'Kullanım alanları:\n'
@@ -3275,7 +3437,7 @@ Makale(
 
     // Gürültü
     MakaleBlok.text(
-      '🛡️ TOPRAKLAMA ve GÜRÜLTÜ ÖNLEMLERİ\n'
+      ' TOPRAKLAMA ve GÜRÜLTÜ ÖNLEMLERİ\n'
       '• Analog kablolar ekranlı olmalıdır\n'
       '• Ekran tek noktadan topraklanmalıdır\n'
       '• Güç ve sinyal kabloları ayrı tavadan taşınmalıdır\n'
@@ -3310,7 +3472,7 @@ Makale(
 
     // Röle nedir
     MakaleBlok.text(
-      '🔹 RÖLE NEDİR?\n'
+      ' RÖLE NEDİR?\n'
       'Röle, düşük akımlı kumanda devreleriyle daha yüksek akımlı devreleri '
       'kontrol etmeye yarayan elektromekanik bir anahtarlama elemanıdır.\n\n'
       'Temel özellikleri:\n'
@@ -3322,7 +3484,7 @@ Makale(
 
     // Röle kullanım alanları
     MakaleBlok.text(
-      '🧰 RÖLE NERELERDE KULLANILIR?\n'
+      ' RÖLE NERELERDE KULLANILIR?\n'
       '• PLC çıkışlarını izole etmek\n'
       '• İkaz lambası ve buzzer kontrolü\n'
       '• Küçük solenoid valfler\n'
@@ -3332,7 +3494,7 @@ Makale(
 
     // Kontaktör nedir
     MakaleBlok.text(
-      '🔹 KONTAKTÖR NEDİR?\n'
+      ' KONTAKTÖR NEDİR?\n'
       'Kontaktör, yüksek akımlı yüklerin (özellikle motorların) '
       'uzaktan ve güvenli şekilde anahtarlanmasını sağlayan elektromekanik elemandır.\n\n'
       'Temel özellikleri:\n'
@@ -3345,7 +3507,7 @@ Makale(
 
     // Kontaktör kullanım alanları
     MakaleBlok.text(
-      '⚙️ KONTAKTÖR NERELERDE KULLANILIR?\n'
+      ' KONTAKTÖR NERELERDE KULLANILIR?\n'
       '• Asenkron motorlar\n'
       '• Pompalar ve fanlar\n'
       '• Kompresörler\n'
@@ -3356,7 +3518,7 @@ Makale(
 
     // Teknik farklar
     MakaleBlok.text(
-      '📊 KONTAKTÖR ve RÖLE ARASINDAKİ TEMEL FARKLAR\n'
+      ' KONTAKTÖR ve RÖLE ARASINDAKİ TEMEL FARKLAR\n'
       '• Akım kapasitesi:\n'
       '  Röle → Düşük / Orta\n'
       '  Kontaktör → Yüksek\n\n'
@@ -3373,7 +3535,7 @@ Makale(
 
     // AC sınıfları
     MakaleBlok.text(
-      '📘 KONTAKTÖR AC KULLANIM SINIFLARI (AC-1 / AC-3)\n'
+      ' KONTAKTÖR AC KULLANIM SINIFLARI (AC-1 / AC-3)\n'
       'Kontaktörler kullanılacak yüke göre sınıflandırılır.\n\n'
       '• AC-1:\n'
       '  Rezistif yükler (ısıtıcı, fırın vb.)\n\n'
@@ -3384,7 +3546,7 @@ Makale(
 
     // Bobin gerilimleri
     MakaleBlok.text(
-      '⚡ BOBİN GERİLİMLERİ (COIL VOLTAGE)\n'
+      ' BOBİN GERİLİMLERİ (COIL VOLTAGE)\n'
       'Röle ve kontaktör bobinleri farklı gerilimlerde çalışabilir.\n\n'
       'Yaygın bobin gerilimleri:\n'
       '• 24V DC (PLC sistemlerinde en yaygın)\n'
@@ -3407,7 +3569,7 @@ Makale(
 
     // Tekniker notu
     MakaleBlok.text(
-      '🧑‍🔧 TEKNİKER NOTU\n'
+      ' TEKNİKER NOTU\n'
       'PLC çıkışı → Röle → Kontaktör zinciri, '
       'hem PLC’yi korur hem de sistemin güvenliğini artırır.\n\n'
       'Yük büyüdükçe doğrudan sürme yerine kademeli kumanda tercih edilmelidir.',
@@ -3440,7 +3602,7 @@ Makale(
 
   bloklar: const [
     MakaleBlok.text(
-      '🛑 1) ACİL DURDURMA (E-STOP) KURALI\n'
+      ' 1) ACİL DURDURMA (E-STOP) KURALI\n'
       'E-Stop, makinenin tehlikeli hareketini en hızlı ve güvenli şekilde durdurmak için kullanılır.\n\n'
       ' Doğru uygulama:\n'
       '• Kolay erişilebilir ve görünür yerde olmalı\n'
@@ -3453,7 +3615,7 @@ Makale(
     ),
 
     MakaleBlok.text(
-      '🔒 2) LOTO (KİLİTLEME / ETİKETLEME) – HAYAT KURTARIR\n'
+      ' 2) LOTO (KİLİTLEME / ETİKETLEME) – HAYAT KURTARIR\n'
       'Bakım/arıza sırasında enerji verilmesini engellemek için LOTO uygulanır.\n\n'
       ' Minimum LOTO adımları:\n'
       '1) Sistemi durdur\n'
@@ -3476,7 +3638,7 @@ Makale(
     ),
 
     MakaleBlok.text(
-      '🧠 4) 24V DC BESLEME KURALI (PLC/SENSÖR)\n'
+      ' 4) 24V DC BESLEME KURALI (PLC/SENSÖR)\n'
       'PLC ve sensör beslemesi temiz ve kararlı olmalı.\n\n'
       ' İyi pratikler:\n'
       '• 24V DC güç kaynağına girişte sigorta/MCB kullan\n'
@@ -3487,7 +3649,7 @@ Makale(
     ),
 
     MakaleBlok.text(
-      '🧷 5) I/O KABLOLAMA – DİJİTAL / ANALOG AYRIMI\n'
+      ' 5) I/O KABLOLAMA – DİJİTAL / ANALOG AYRIMI\n'
       'Hatalı kablolama ve parazit; sahada “hayalet arıza” üretir.\n\n'
       ' Kural seti:\n'
       '• Analog ve dijital kablolar ayrı kanal/borudan gitsin\n'
@@ -3499,7 +3661,7 @@ Makale(
     ),
 
     MakaleBlok.text(
-      '🧯 6) KORUMA ELEMANLARI: SIGORTA – TERMİK – KAÇAK AKIM\n'
+      ' 6) KORUMA ELEMANLARI: SIGORTA – TERMİK – KAÇAK AKIM\n'
       'Koruma elemanlarını doğru seçmezsen, ekipmanı değil tesisatı yakarsın.\n\n'
       ' Genel yaklaşım:\n'
       '• Motor hatlarında: kontaktör + termik (veya motor koruma şalteri)\n'
@@ -3509,7 +3671,7 @@ Makale(
     ),
 
     MakaleBlok.text(
-      '🏷️ 7) ETİKETLEME – NUMARALANDIRMA – DOKÜMANTASYON\n'
+      ' 7) ETİKETLEME – NUMARALANDIRMA – DOKÜMANTASYON\n'
       'Etiket yoksa arıza süresi 3 kat uzar.\n\n'
       ' Minimum standart:\n'
       '• Kablo uçları: her iki uçta numara\n'
@@ -3520,7 +3682,7 @@ Makale(
     ),
 
     MakaleBlok.text(
-      '🧪 8) DEVREYE ALMA (COMMISSIONING) CHECKLIST\n'
+      ' 8) DEVREYE ALMA (COMMISSIONING) CHECKLIST\n'
       'Sistemi enerjiye vermeden önce kısa kontrol listesi hayat kurtarır.\n\n'
       ' Enerji öncesi:\n'
       '• Klemens sıkılığı, PE süreklilik ölçümü\n'
@@ -3576,7 +3738,7 @@ Makale(
 
     // NO NC
     MakaleBlok.text(
-      '🔘 NO ve NC KONTAKLAR (NORMALDE AÇIK / KAPALI)\n'
+      ' NO ve NC KONTAKLAR (NORMALDE AÇIK / KAPALI)\n'
       'Ladder diyagramında kontaklar, girişlerin durumunu temsil eder.\n\n'
       '• NO (Normally Open – Normalde Açık):\n'
       '  Giriş aktif değilken açık, aktif olunca kapanır.\n\n'
@@ -3588,7 +3750,7 @@ Makale(
 
     // Bobin
     MakaleBlok.text(
-      '🧲 BOBİN (COIL) NEDİR?\n'
+      ' BOBİN (COIL) NEDİR?\n'
       'Bobin, ladder diyagramında bir çıkışı veya dahili biti temsil eder.\n\n'
       '• Motor kontaktörü\n'
       '• Röle\n'
@@ -3599,7 +3761,7 @@ Makale(
 
     // Seri paralel
     MakaleBlok.text(
-      '🔗 SERİ ve PARALEL MANTIK\n'
+      ' SERİ ve PARALEL MANTIK\n'
       '• Seri bağlanan kontaklar → VE (AND) mantığı\n'
       '• Paralel bağlanan kontaklar → VEYA (OR) mantığı\n\n'
       'Örnek:\n'
@@ -3610,7 +3772,7 @@ Makale(
 
     // Self hold
     MakaleBlok.text(
-      '🔁 SELF HOLD (KENDİNİ TUTMA) MANTIĞI\n'
+      ' SELF HOLD (KENDİNİ TUTMA) MANTIĞI\n'
       'Self hold, start butonuna basıldıktan sonra sistemin '
       'çalışmaya devam etmesini sağlar.\n\n'
       'Mantık:\n'
@@ -3622,7 +3784,7 @@ Makale(
 
     // Timer
     MakaleBlok.text(
-      '⏱️ TIMER (ZAMAN RÖLESİ) BLOKLARI\n'
+      ' TIMER (ZAMAN RÖLESİ) BLOKLARI\n'
       'Ladder diyagramında zaman röleleri gecikmeli işlemler için kullanılır.\n\n'
       'En yaygın timer türleri:\n'
       '• TON (On-Delay): Giriş aktif olduktan sonra süre dolunca çıkış verir\n'
@@ -3633,7 +3795,7 @@ Makale(
 
     // Counter
     MakaleBlok.text(
-      '🔢 COUNTER (SAYAÇ) BLOKLARI\n'
+      ' COUNTER (SAYAÇ) BLOKLARI\n'
       'Counter blokları, giriş darbelerini sayar.\n\n'
       '• CTU (Count Up): Yukarı sayar\n'
       '• CTD (Count Down): Aşağı sayar\n'
@@ -3643,11 +3805,11 @@ Makale(
 
     // Tarama
     MakaleBlok.text(
-      '🔄 PLC TARAMA (SCAN) MANTIĞI\n'
+      ' PLC TARAMA (SCAN) MANTIĞI\n'
       'PLC çalışma sırası:\n'
-      '1️⃣ Girişleri oku\n'
-      '2️⃣ Programı çalıştır (ladder tarama)\n'
-      '3️⃣ Çıkışları güncelle\n\n'
+      '1 Girişleri oku\n'
+      '2 Programı çalıştır (ladder tarama)\n'
+      '3 Çıkışları güncelle\n\n'
       'Bu döngü milisaniyeler içinde sürekli tekrar eder.',
     ),
 
@@ -3663,7 +3825,7 @@ Makale(
 
     // Özet
     MakaleBlok.text(
-      '✅ HIZLI ÖZET\n'
+      ' HIZLI ÖZET\n'
       '• Ladder, röleli kumandanın PLC karşılığıdır\n'
       '• NO/NC mantıkla çalışır\n'
       '• Seri = AND, Paralel = OR\n'
@@ -3686,7 +3848,7 @@ Makale(
 
     // Motor plaka
     MakaleBlok.text(
-      '🏷️ MOTOR PLAKA BİLGİLERİ (MUTLAKA GİRİLMELİ)\n'
+      ' MOTOR PLAKA BİLGİLERİ (MUTLAKA GİRİLMELİ)\n'
       'VFD devreye alınmadan önce motor etiket bilgileri doğru girilmelidir.\n\n'
       '• Anma gerilimi (V)\n'
       '• Anma akımı (A)\n'
@@ -3698,7 +3860,7 @@ Makale(
 
     // Frekans sınırları
     MakaleBlok.text(
-      '📈 MAKSİMUM ve MİNİMUM FREKANS\n'
+      ' MAKSİMUM ve MİNİMUM FREKANS\n'
       'Motorun çalışacağı hız aralığı bu parametrelerle belirlenir.\n\n'
       '• Minimum frekans: Motorun durmaya yakın çalışacağı hız\n'
       '• Maksimum frekans: Motorun çıkabileceği en yüksek hız\n\n'
@@ -3709,7 +3871,7 @@ Makale(
 
     // Rampa
     MakaleBlok.text(
-      '⏱️ HIZLANMA ve YAVAŞLAMA RAMPALARI\n'
+      ' HIZLANMA ve YAVAŞLAMA RAMPALARI\n'
       'Rampa süreleri, motorun kalkış ve duruş süresini belirler.\n\n'
       '• Kısa rampa → hızlı tepki ama mekanik zorlanma\n'
       '• Uzun rampa → yumuşak kalkış/duruş\n\n'
@@ -3718,7 +3880,7 @@ Makale(
 
     // Start stop
     MakaleBlok.text(
-      '▶️ START / STOP KOMUT KAYNAĞI\n'
+      ' START / STOP KOMUT KAYNAĞI\n'
       'VFD’nin nereden komut alacağı bu parametreyle seçilir.\n\n'
       '• Panel (tuş takımı)\n'
       '• Harici butonlar (dijital giriş)\n'
@@ -3728,7 +3890,7 @@ Makale(
 
     // Hız referansı
     MakaleBlok.text(
-      '🎚️ HIZ REFERANSI SEÇİMİ\n'
+      ' HIZ REFERANSI SEÇİMİ\n'
       'Motor hızının nasıl ayarlanacağı bu parametreyle belirlenir.\n\n'
       '• Potansiyometre\n'
       '• 0–10V analog sinyal\n'
@@ -3739,7 +3901,7 @@ Makale(
 
     // Motor koruma
     MakaleBlok.text(
-      '🛡️ MOTOR KORUMA PARAMETRELERİ\n'
+      ' MOTOR KORUMA PARAMETRELERİ\n'
       'VFD, motoru aşırı akım ve ısınmaya karşı korur.\n\n'
       '• Motor anma akımı\n'
       '• Termik koruma\n'
@@ -3749,7 +3911,7 @@ Makale(
 
     // Kontrol modu
     MakaleBlok.text(
-      '⚙️ KONTROL MODU (V/f – Vektör)\n'
+      ' KONTROL MODU (V/f – Vektör)\n'
       '• V/f kontrol:\n'
       '  Basit ve yaygın kullanım\n\n'
       '• Vektör kontrol:\n'
@@ -3781,7 +3943,7 @@ Makale(
 
     // Timer nedir
     MakaleBlok.text(
-      '⏱️ TIMER (ZAMAN RÖLESİ) NEDİR?\n'
+      ' TIMER (ZAMAN RÖLESİ) NEDİR?\n'
       'Timer, bir giriş aktif veya pasif olduktan sonra '
       'önceden ayarlanan süre dolunca çıkış üreten fonksiyon bloğudur.\n\n'
       'Röleli kumanda devrelerindeki zaman rölelerinin PLC karşılığıdır.',
@@ -3789,7 +3951,7 @@ Makale(
 
     // TON
     MakaleBlok.text(
-      '▶️ TON – ON DELAY (GECİKMELİ ÇEKME)\n'
+      ' TON – ON DELAY (GECİKMELİ ÇEKME)\n'
       'TON timer, giriş aktif olduktan sonra '
       'ayarlanan süre dolunca çıkışı aktif eder.\n\n'
       'Kullanım örnekleri:\n'
@@ -3801,7 +3963,7 @@ Makale(
 
     // TOF
     MakaleBlok.text(
-      '⏹️ TOF – OFF DELAY (GECİKMELİ BIRAKMA)\n'
+      ' TOF – OFF DELAY (GECİKMELİ BIRAKMA)\n'
       'TOF timer, giriş pasif olduktan sonra '
       'ayarlanan süre boyunca çıkışı aktif tutar.\n\n'
       'Kullanım örnekleri:\n'
@@ -3812,7 +3974,7 @@ Makale(
 
     // TP
     MakaleBlok.text(
-      '🔔 TP – PULSE TIMER (DARBELİ ZAMANLAYICI)\n'
+      'TP – PULSE TIMER (DARBELİ ZAMANLAYICI)\n'
       'TP timer, giriş aktif olduğunda '
       'belirlenen süre boyunca darbe üretir.\n\n'
       'Kullanım örnekleri:\n'
@@ -3823,7 +3985,7 @@ Makale(
 
     // Parametreler
     MakaleBlok.text(
-      '⚙️ TIMER PARAMETRELERİ\n'
+      ' TIMER PARAMETRELERİ\n'
       '• PT (Preset Time): Ayarlanan süre\n'
       '• ET (Elapsed Time): Geçen süre\n'
       '• Q: Timer çıkışı\n\n'
@@ -3841,7 +4003,7 @@ Makale(
 
     // Özet
     MakaleBlok.text(
-      '✅ HIZLI ÖZET\n'
+      ' HIZLI ÖZET\n'
       '• TON → Gecikmeli çalıştırma\n'
       '• TOF → Gecikmeli durdurma\n'
       '• TP → Süreli darbe\n'
@@ -3864,7 +4026,7 @@ Makale(
 
     // Counter nedir
     MakaleBlok.text(
-      '🔢 COUNTER (SAYAÇ) BLOKLARI NEDİR?\n'
+      ' COUNTER (SAYAÇ) BLOKLARI NEDİR?\n'
       'Counter blokları, PLC’ye gelen her darbe (pulse) sinyalini sayar.\n\n'
       'Kullanım amaçları:\n'
       '• Ürün/adet sayma\n'
@@ -3875,7 +4037,7 @@ Makale(
 
     // CTU
     MakaleBlok.text(
-      '⬆️ CTU (COUNT UP) – YUKARI SAYICI\n'
+      '⬆ CTU (COUNT UP) – YUKARI SAYICI\n'
       'CTU bloğu, girişine gelen her darbe ile sayacı 1 artırır.\n\n'
       'Genel mantık:\n'
       '• CU (Count Up): Darbe geldikçe +1\n'
@@ -3890,7 +4052,7 @@ Makale(
 
     // CTD
     MakaleBlok.text(
-      '⬇️ CTD (COUNT DOWN) – AŞAĞI SAYICI\n'
+      '⬇ CTD (COUNT DOWN) – AŞAĞI SAYICI\n'
       'CTD bloğu, başlangıçta verilen bir değerden geriye doğru sayar.\n\n'
       'Genel mantık:\n'
       '• CD (Count Down): Darbe geldikçe -1\n'
@@ -3905,7 +4067,7 @@ Makale(
 
     // Reset
     MakaleBlok.text(
-      '♻️ RESET (SIFIRLAMA) GİRİŞİ\n'
+      ' RESET (SIFIRLAMA) GİRİŞİ\n'
       'CTU ve CTD bloklarında bulunan reset girişi, sayaç değerini sıfırlamak '
       've sistemi yeni sayım döngüsüne hazırlamak için kullanılır.\n\n'
       'Sahada doğru kullanım:\n'
@@ -3928,7 +4090,7 @@ Makale(
 
     // Özet
     MakaleBlok.text(
-      '✅ HIZLI ÖZET\n'
+      ' HIZLI ÖZET\n'
       '• CTU → Darbe geldikçe artırır, hedefe gelince Q aktif\n'
       '• CTD → Darbe geldikçe azaltır, sıfıra inince Q aktif\n'
       '• Reset → Sayacı sıfırlar / yeni döngü başlatır\n'
@@ -3946,11 +4108,11 @@ Makale(
       'Yanlış parametre, motor ısınması ve tork kaybına neden olabilir.',
   bloklar: const [
     MakaleBlok.text(
-      '🎯 AMAÇ\n'
+      ' AMAÇ\n'
       'Bu makale, VFD parametrelerine hızlı bir giriş yapar ve hangi başlıkların kritik olduğunu özetler.',
     ),
     MakaleBlok.text(
-      '✅ ÖNE ÇIKANLAR\n'
+      ' ÖNE ÇIKANLAR\n'
       '• Motor plaka verileri\n'
       '• Min/Max frekans\n'
       '• Rampa süreleri\n'
